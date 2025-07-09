@@ -1,0 +1,51 @@
+@layer base {
+
+    * {
+        @apply box-border;
+        @apply m-0 p-0;
+        @apply text-text-primary;
+    }
+    /* Estilos para el texto general */
+    body {
+        @apply bg-bg-primary font-body text-base text-text-primary leading-normal m-2;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        @apply font-heading text-text-primary leading-normal;
+    }
+
+    /* Estilos para títulos */
+    h1 {
+        @apply text-4xl font-extrabold mb-2;
+    }
+
+    h2 {
+        @apply text-3xl font-bold mb-1;
+    }
+
+    h3 {
+        @apply text-2xl font-semibold mb-1;
+    }
+
+    h4 {
+        @apply text-xl font-medium mb-1;
+    }
+
+    h5 {
+        @apply text-lg font-medium;
+    }
+
+    h6 {
+        @apply text-base font-medium;
+    }
+
+    /* Estilos para párrafos y texto */
+    p, span, label {
+        @apply text-text-primary font-body text-base font-normal leading-normal text-justify mb-4;
+    }
+}

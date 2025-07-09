@@ -1,0 +1,81 @@
+/* CSS Custom Properties (Variables) */
+
+:root {
+  /* Colors */
+  --color-1: #FFF8EC;
+  --color-2: #FFC36D;
+  --color-3: #FE6700;
+  --color-4: #A1390B;
+  --color-5: #461604;
+
+  /* Fonts */
+  --font-heading: 'Montserrat', system-ui, -apple-system, sans-serif;
+  --font-body: 'Nunito', system-ui, -apple-system, sans-serif;
+
+  /* Text Colors */
+  --color-text-primary: #461604;
+  --color-text-secondary: #FFF8EC;
+
+  /* Background Colors */
+  --color-bg-primary: #FFF8EC;
+  --color-bg-secondary: #FFC36D;
+
+  /* Buttons */
+  --color-btn-primary: #FFC36D;
+  --color-btn-primary-hover: #FF9E32;
+  --color-btn-secondary: #FFF8EC;
+  --color-btn-secondary-hover: #FFF0D3;
+
+  /* Feedback */
+  --color-success: #10b981;
+  --color-warning: #f59e0b;
+  --color-error: #A1390B;
+
+  /* Spacing */
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  --spacing-2xl: 3rem;
+
+  /* Typography */
+  --font-size-xs: 0.75rem;  /* 12px */
+  --font-size-sm: 0.875rem; /* 14px */
+  --font-size-base: 1rem;   /* 16px */ 
+  --font-size-lg: 1.125rem; /* 18px */
+  --font-size-xl: 1.25rem;  /* 20px */
+  --font-size-2xl: 1.5rem;  /* 24px */
+  --font-size-3xl: 1.875rem;  /* 30px */
+  --font-size-4xl: 2.25rem;  /* 36px */
+  --font-size-5xl: 3rem;  /* 48px */
+
+  /* Pesos de fuente */
+  --font-light: 300;
+  --font-normal: 400;
+  --font-medium: 500;
+  --font-semibold: 600;
+  --font-bold: 700;
+
+  /* Alturas de línea */
+  --leading-tight: 1.25;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.625;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgba(70 22 4, 0.1);
+  --shadow-md: 0 4px 6px -1px rgba(70 22 4, 0.15);
+  --shadow-lg: 0 10px 15px -3px rgba(70 22 4, 0.2);
+
+  /* Border Radius */
+  --radius-sm: 0.125rem;
+  --radius-md: 0.375rem;
+  --radius-lg: 0.5rem;
+  --radius-full: 9999px;
+
+  /* Breakpoints */
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+}

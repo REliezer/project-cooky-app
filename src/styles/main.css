@@ -1,0 +1,9 @@
+@config '../../tailwind.config.js';
+
+/* Global styles */
+@import 'tailwindcss';
+
+@import './variables.css';
+@import './base/base.css';
+@import './base/fonts.css';
+
