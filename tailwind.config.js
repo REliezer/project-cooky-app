@@ -22,10 +22,12 @@ module.exports = {
           secondary: '#FFC36D',
         },
         btn: {
-          primary: '#FFC36D',
-          'primary-hover': '#FF9E32',
-          secondary: '#FFF8EC',
-          'secondary-hover': '#FFF0D3',
+          primary: '#FE6700',
+          'primary-hover': '#CC4A02',
+          secondary: '#FFC36D',
+          'secondary-hover': '#FF9E32',
+          outline: '#FFF8EC',
+          'outline-hover': '#FFF0D3',
         },
         feedback: {
           success: '#10b981',

@@ -82,3 +82,6 @@ export interface ModalProps {
   title?: string;
   children: React.ReactNode;
 }
+
+// Export component types
+export * from './components';
