@@ -11,14 +11,11 @@ export default function Button({
     ...props 
 }: ButtonProps): JSX.Element {
     
-    // Base styles
-    const baseStyles = 'inline-flex items-center justify-center font-semibold rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2';
-    
     // Variant styles
     const variantStyles = {
-        primary: 'bg-btn-primary text-secondary hover:bg-btn-primary-hover focus:ring-orange-500 shadow-lg',
-        secondary: 'bg-btn-secondary text-primary hover:bg-btn-secondary-hover focus:ring-gray-500 shadow-lg',
-        outline: 'bg-btn-outline border border-orange-600 text-orange-600 hover:bg-btn-outline-hover focus:ring-orange-500'
+        primary: 'primary-button',
+        secondary: 'secondary-button',
+        outline: 'outline-button'
     };
     
     // Size styles
@@ -33,7 +30,6 @@ export default function Button({
     
     // Combine all styles
     const buttonClasses = [
-        baseStyles,
         variantStyles[variant],
         sizeStyles[size],
         (disabled || isLoading) && disabledStyles,
@@ -42,7 +38,7 @@ export default function Button({
     
     return (
         <button 
-            className={buttonClasses}
+            className={`base-button-styles ${buttonClasses}`}
             disabled={disabled || isLoading}
             {...props}
         >

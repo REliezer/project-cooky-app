@@ -3,6 +3,9 @@ import { createRoot } from 'react-dom/client'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import MainLayout from './components/layout/MainLayout'
 import LandingPage from './pages/LandingPage'
+import Login from './pages/Login'
+import Register from './pages/Register'
+import Test from './pages/test'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -10,7 +13,9 @@ createRoot(document.getElementById('root')!).render(
       <Routes>
         <Route path="/" element={<MainLayout />}>
           <Route index element={<LandingPage />} />
-          {/* Aquí puedes agregar más rutas */}
+          <Route path='/login' element={<Login />} />
+          <Route path='/register' element={<Register />} />
+          <Route path='/test' element={<Test />} />
         </Route>
       </Routes>
     </BrowserRouter>

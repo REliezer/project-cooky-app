@@ -46,10 +46,10 @@
 
     /* Estilos para párrafos y texto */
     p, label {
-        @apply text-text-primary font-body text-base md:text-lg font-normal leading-relaxed text-justify mb-4;
-    }
+        @apply text-text-primary font-body text-base md:text-lg font-normal leading-relaxed;
+    } 
 
     span {
-        @apply text-text-primary font-semibold font-body text-base md:text-lg font-normal leading-relaxed text-justify mb-4;
+        @apply text-text-primary font-semibold font-body text-base md:text-lg leading-relaxed;
     }
 }
