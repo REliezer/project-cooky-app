@@ -67,6 +67,7 @@ export interface ItemListProps {
     imageUrl: string;
     isSelected?: boolean;
   };
+  onToggle?: () => void;
 }
 
 export interface ListCardProps {
