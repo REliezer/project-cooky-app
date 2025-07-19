@@ -80,4 +80,6 @@ export interface ListCardProps {
     imageUrl: string;
     isSelected?: boolean;
   }[];
+  onDelete?: () => void;
+  onClick?: () => void;
 }
