@@ -40,7 +40,7 @@ export interface FormFieldConfig {
 
 export interface DynamicFormProps {
   fields: FormFieldConfig[];
-  onSubmit: (formData: Record<string, any>) => void | Promise<void>;
+  onSubmit: (formData: Record<string, string | number | boolean>) => void | Promise<void>;
   submitButtonText?: string;
   submitButtonVariant?: 'primary' | 'secondary' | 'outline';
   isLoading?: boolean;
@@ -58,6 +58,7 @@ export interface PlanCardProps {
     planDuration: string;
     planFeatures: string[];
   };
+  onPlanSelect?: (plan: PlanCardProps['plan']) => void;
 }
 
 export interface ItemListProps {
