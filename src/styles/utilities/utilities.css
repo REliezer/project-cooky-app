@@ -48,4 +48,35 @@
     .outline-button {
         @apply bg-btn-outline border border-orange-600 text-orange-600 hover:bg-btn-outline-hover focus:ring-orange-500;
     }
+
+    
+    /* Modal overlay */
+    .modal-overlay {
+        position: fixed;
+        inset: 0;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .modal-content {
+        @apply bg-bg-primary border border-[#461604] w-[80%] md:w-[40%]; 
+        border-radius: 10px;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
+    }
+    
+    /* Modal header */
+    .modal-header {
+        padding: 1rem 1.5rem;
+        border-top-left-radius: 8px;
+        border-top-right-radius: 8px;
+    }   
+            
+    /* Modal footer */
+    .modal-footer {
+        @apply flex justify-end gap-4 px-6 py-4;
+        border-bottom-left-radius: 8px;
+        border-bottom-right-radius: 8px;
+    }
 }

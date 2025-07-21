@@ -23,11 +23,12 @@ export interface GraphicsProps {
 // Dynamic Form Types
 export interface FormFieldConfig {
   name: string;
-  type: 'text' | 'email' | 'password' | 'number' | 'tel' | 'url' | 'search' | 'date' | 'time' | 'datetime-local' | 'textarea';
+  type: 'text' | 'email' | 'password' | 'number' | 'tel' | 'url' | 'search' | 'date' | 'time' | 'datetime-local' | 'textarea' | 'list';
   label: string;
   placeholder?: string;
   required?: boolean;
   disabled?: boolean;
+  options?: Array<{ value: string; label: string }>;
   validation?: {
     minLength?: number;
     maxLength?: number;
@@ -83,4 +84,14 @@ export interface ListCardProps {
   }[];
   onDelete?: () => void;
   onClick?: () => void;
+}
+
+//Modal
+export interface ModalProps {
+    isOpen: boolean;
+    type?: 'signout' | 'form';
+    title: string;
+    children: React.ReactNode;
+    onConfirm: () => void;
+    onCancel: () => void;
 }

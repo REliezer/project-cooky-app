@@ -113,7 +113,27 @@ export default function DynamicForm({
         }
 
         try {
-            await onSubmit(formData);
+            // Filter out undefined values and convert to appropriate types
+            const processedFormData: Record<string, string | number | boolean> = {};
+            
+            fields.forEach(field => {
+                const rawValue = formData[field.name];
+                if (rawValue !== undefined && rawValue !== null && rawValue !== '') {
+                    if (field.type === 'number') {
+                        const numValue = parseFloat(String(rawValue));
+                        if (!isNaN(numValue)) {
+                            processedFormData[field.name] = numValue;
+                        }
+                    } else {
+                        processedFormData[field.name] = String(rawValue);
+                    }
+                } else if (field.required) {
+                    // For required fields that are empty, use empty string
+                    processedFormData[field.name] = '';
+                }
+            });
+            
+            await onSubmit(processedFormData);
             if (resetOnSubmit) {
                 initializeFormData();
             }
@@ -143,7 +163,7 @@ export default function DynamicForm({
             required: field.required,
             disabled: field.disabled || isLoading,
             value,
-            onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
+            onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>
                 handleInputChange(field.name, e.target.value),
             className: `${baseInputClasses} ${field.className || ''}`.trim()
         };
@@ -156,6 +176,26 @@ export default function DynamicForm({
                     minLength={field.validation?.minLength}
                     maxLength={field.validation?.maxLength}
                 />
+            );
+        }
+
+        if (field.type === 'list') {
+            return (
+                <select
+                    {...commonProps}
+                    value={value}
+                >
+                    {field.placeholder && (
+                        <option value="" disabled>
+                            {field.placeholder}
+                        </option>
+                    )}
+                    {field.options?.map((option) => (
+                        <option key={option.value} value={option.value}>
+                            {option.label}
+                        </option>
+                    ))}
+                </select>
             );
         }
 
