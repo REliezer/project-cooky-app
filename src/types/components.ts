@@ -95,3 +95,23 @@ export interface ModalProps {
     onConfirm: () => void;
     onCancel: () => void;
 }
+
+//Card
+export interface CardProps {
+  cardholderName: string;
+  cardNumber: string;
+  expiryDate: string;
+  cvv: string;
+}
+
+export type CardType = 'visa' | 'mastercard' | 'amex' | 'discover' | 'unknown';
+
+export interface CardInfo {
+  type: CardType;
+  isValid: boolean;
+  errors: {
+    number?: string;
+    expiry?: string;
+    name?: string;
+  };
+}
