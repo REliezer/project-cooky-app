@@ -12,7 +12,7 @@ export default function Graphics({ variant = 'right', title, subtitle }: Graphic
                     alt="Graphics decoration"
                     className="w-[120px] h-auto flex-shrink-0"
                 />
-                <div className="flex flex-col items-center justify-center p-3">
+                <div className="flex flex-col items-center justify-center p-3 w-full">
                     <h1 className="mb-4">
                         {title}
                     </h1>
