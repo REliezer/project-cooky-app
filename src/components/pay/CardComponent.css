@@ -1,0 +1,52 @@
+/* Estilos para el efecto 3D de volteo de tarjeta */
+
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+.transform-style-preserve-3d {
+  transform-style: preserve-3d;
+}
+
+.backface-hidden {
+  backface-visibility: hidden;
+}
+
+.rotate-y-180 {
+  transform: rotateY(180deg);
+}
+
+.card-container {
+  width: 356px; /* w-89 equivale a 22.25rem = 356px */
+  height: 192px; /* h-48 equivale a 12rem = 192px */
+}
+
+.card {
+  transition: transform 0.7s ease-in-out;
+  transform-style: preserve-3d;
+}
+
+.card-front,
+.card-back {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.card-back {
+  transform: rotateY(180deg);
+}
+
+/* Animación suave para cuando se voltea la tarjeta */
+.card.flipped {
+  transform: rotateY(180deg);
+}
+
+/* Ajustes responsivos 
+@media (max-width: 768px) {
+  .card-container {
+    width: 100%;
+    max-width: 320px;
+    height: 160px;
+  }
+}
+*/

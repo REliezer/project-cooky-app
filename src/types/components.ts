@@ -113,5 +113,7 @@ export interface CardInfo {
     number?: string;
     expiry?: string;
     name?: string;
+    cvv?: string;
   };
+}
 }

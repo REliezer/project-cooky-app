@@ -23,6 +23,7 @@ function CardInput({ planSelect }: CardInputProps) {
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [showBack, setShowBack] = useState(false);
 
   const navigate = useNavigate();
   // Configuración de campos para el formulario dinámico
@@ -101,6 +102,7 @@ function CardInput({ planSelect }: CardInputProps) {
                 cardNumber={CardProps.cardNumber}
                 expiryDate={CardProps.expiryDate}
                 cvv={CardProps.cvv}
+                showBack={showBack}
               />
               {/* Información de seguridad */}
               <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
@@ -144,10 +146,21 @@ function CardInput({ planSelect }: CardInputProps) {
                       placeholder={field.placeholder}
                       value={CardProps[field.name as keyof CardProps]}
                       onChange={(e) => handleFormChange(field.name, e.target.value)}
-                      className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:border-transparent transition-all duration-200 ${errors[field.name]
-                        ? 'border-[#A1390B] focus:ring-[#A1390B]'
-                        : 'border-[#461604]/30 focus:ring-[#FE6700]'
-                        }`}
+                      onFocus={() => {
+                        if (field.name === 'cvv') {
+                          setShowBack(true);
+                        }
+                      }}
+                      onBlur={() => {
+                        if (field.name === 'cvv') {
+                          setShowBack(false);
+                        }
+                      }}
+                      className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:border-transparent transition-all duration-200 ${
+                        errors[field.name] 
+                          ? 'border-red-500 focus:ring-red-500' 
+                          : 'border-[#461604]/30 focus:ring-[#FE6700]'
+                      }`}
                       required={field.required}
                       maxLength={field.name === 'cardNumber' ? 23 : field.name === 'expiryDate' ? 5 : field.name === 'cvv' ? 3 : undefined}
                     />
