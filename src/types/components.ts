@@ -89,7 +89,7 @@ export interface ListCardProps {
 //Modal
 export interface ModalProps {
     isOpen: boolean;
-    type?: 'signout' | 'form';
+    type?: 'signout' | 'form' | 'info';
     title: string;
     children: React.ReactNode;
     onConfirm: () => void;

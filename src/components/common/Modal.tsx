@@ -36,6 +36,19 @@ function Modal({ isOpen, type, title, children, onConfirm, onCancel }: ModalProp
                             </div>
                         )
                     }
+                    {
+                        type === 'info' && (
+                            <div className='flex gap-4'>
+                                <Button
+                                    label="Cerrar"
+                                    variant="outline"
+                                    size='medium'
+                                    onClick={onCancel}
+                                    className="mt-4"
+                                />
+                            </div>
+                        )
+                    }
                 </div>
             </div>
         </div>

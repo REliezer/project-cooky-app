@@ -25,4 +25,4 @@ dist-ssr
 
 src/components/common/DynamicForm.md
 src/components/examples/DynamicFormExample.tsx
-src/pages/test.tsx
+tests

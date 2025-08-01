@@ -1,7 +1,19 @@
+import { useLocation } from "react-router-dom";
+
 import Graphics from "../components/common/Graphics";
 import CardInput from "../components/pay/CardInput";
 
 function PaymentInformation() {
+    const location = useLocation();
+    const { planTitle, planSubtitle } = location.state || {};
+
+    const planSelect = `${planTitle} - ${planSubtitle}`
+    {/*
+    const handlePayment = () => {
+        // Simular procesamiento de pago
+        setIsModalOpen(true);
+    };
+    */}
 
     return (
         <>
@@ -10,7 +22,8 @@ function PaymentInformation() {
                 title="Información de Pago"
                 subtitle="Ingresa los datos de tu tarjeta para proceder con el pago de forma segura"
             />
-            <CardInput />
+            <CardInput planSelect={planSelect} />
+
         </>
     )
 }
