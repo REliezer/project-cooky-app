@@ -1,6 +1,6 @@
-import DynamicForm from "../components/common/DynamicForm";
-import Graphics from "../components/common/Graphics";
-import type { FormFieldConfig } from '../types/components';
+import DynamicForm from "../../components/common/DynamicForm";
+import Graphics from "../../components/common/Graphics";
+import type { FormFieldConfig } from '../../types/components';
 import { useState } from 'react';
 
 function Register() {

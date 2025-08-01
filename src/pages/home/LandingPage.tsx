@@ -1,7 +1,7 @@
-import cookyLogo from '../assets/cooky.svg'
-import Button from '../components/common/Button'
-import Graphics from '../components/common/Graphics'
-import FeatureSection from '../components/LandingPage/FeatureSection'
+import cookyLogo from '../../assets/cooky.svg'
+import Button from '../../components/common/Button'
+import Graphics from '../../components/common/Graphics'
+import FeatureSection from '../../components/LandingPage/FeatureSection'
 
 function LandingPage() {
   return (

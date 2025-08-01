@@ -1,7 +1,7 @@
-import DynamicForm from "../components/common/DynamicForm";
-import Graphics from "../components/common/Graphics";
-import type { FormFieldConfig } from '../types/components';
-import Button from "../components/common/Button";
+import DynamicForm from "../../components/common/DynamicForm";
+import Graphics from "../../components/common/Graphics";
+import type { FormFieldConfig } from '../../types/components';
+import Button from "../../components/common/Button";
 
 function Login() {
     // Configuración de campos para un formulario de login

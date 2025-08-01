@@ -15,7 +15,7 @@ type CardInputProps = {
 
 function CardInput({ planSelect }: CardInputProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
-    const [CardProps, setCardData] = useState<CardProps>({
+  const [CardProps, setCardData] = useState<CardProps>({
     cardNumber: '',
     expiryDate: '',
     cardholderName: '',
@@ -24,7 +24,7 @@ function CardInput({ planSelect }: CardInputProps) {
 
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  const navigate = useNavigate();  
+  const navigate = useNavigate();
   // Configuración de campos para el formulario dinámico
   const formFields = cardFormFields;
   // Función para cerrar el modal
@@ -73,7 +73,9 @@ function CardInput({ planSelect }: CardInputProps) {
         return;
       }
 
-      // Limpiar errores si la validación es exitosa
+      // Simular cobro si la validación es exitosa
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      // Limpiar errores
       setErrors({});
 
       console.log('Datos de la tarjeta enviados:', CardProps);
@@ -143,8 +145,8 @@ function CardInput({ planSelect }: CardInputProps) {
                       value={CardProps[field.name as keyof CardProps]}
                       onChange={(e) => handleFormChange(field.name, e.target.value)}
                       className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:border-transparent transition-all duration-200 ${errors[field.name]
-                          ? 'border-[#A1390B] focus:ring-[#A1390B]'
-                          : 'border-[#461604]/30 focus:ring-[#FE6700]'
+                        ? 'border-[#A1390B] focus:ring-[#A1390B]'
+                        : 'border-[#461604]/30 focus:ring-[#FE6700]'
                         }`}
                       required={field.required}
                       maxLength={field.name === 'cardNumber' ? 23 : field.name === 'expiryDate' ? 5 : field.name === 'cvv' ? 3 : undefined}
@@ -179,9 +181,9 @@ function CardInput({ planSelect }: CardInputProps) {
           onCancel={() => closeModal()}
         >
           <div className="grid content-center justify-center w-full mb-2">
-            
-            <img src={imageCheck} alt='verificacion' className='mx-auto mb-4'/>
-            <p className='text-center'>¡Gracias por unirte al<br/>
+
+            <img src={imageCheck} alt='verificacion' className='mx-auto mb-4' />
+            <p className='text-center'>¡Gracias por unirte al<br />
               <strong className='text-center'>{planSelect}</strong>
               !
             </p>
