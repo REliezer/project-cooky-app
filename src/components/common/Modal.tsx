@@ -32,7 +32,6 @@ function Modal({ isOpen, type, title, children, onConfirm, onCancel }: ModalProp
                                     onClick={onConfirm}
                                     className="mt-4"
                                 />
-
                             </div>
                         )
                     }
@@ -44,6 +43,26 @@ function Modal({ isOpen, type, title, children, onConfirm, onCancel }: ModalProp
                                     variant="outline"
                                     size='medium'
                                     onClick={onCancel}
+                                    className="mt-4"
+                                />
+                            </div>
+                        )
+                    }
+                    {
+                        type === 'delete' && (
+                            <div className='flex gap-4'>
+                                <Button
+                                    label="Cancelar"
+                                    variant="outline"
+                                    size='medium'
+                                    onClick={onCancel}
+                                    className="mt-4"
+                                />
+                                <Button
+                                    label="Eliminar"
+                                    variant="secondary"
+                                    size='medium'
+                                    onClick={onConfirm}
                                     className="mt-4"
                                 />
                             </div>

@@ -1,4 +1,5 @@
 import { StrictMode } from 'react'
+import { Toaster } from 'sonner';
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import MainLayout from './components/layout/MainLayout'
@@ -8,9 +9,12 @@ import Register from './pages/auth/Register'
 import Test from '../tests/pages/test'
 import PaymentInformation from './pages/payment/PaymentInformation'
 import Plans from './pages/subscription/Plans'
+import MyList from './pages/lists/MyLists'
+import MyListDetail from './pages/lists/MyListDetail'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
+    <Toaster position="bottom-center" richColors />
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<MainLayout />}>
@@ -19,6 +23,8 @@ createRoot(document.getElementById('root')!).render(
           <Route path='/register' element={<Register />} />
           <Route path='/payment' element={<PaymentInformation />} />
           <Route path='/plan' element={<Plans title='Registrarse' />} />
+          <Route path='/list' element={<MyList />} />
+          <Route path='/list/:id' element={<MyListDetail />} />
           <Route path='/test' element={<Test />} />
         </Route>
       </Routes>

@@ -5,14 +5,13 @@ function ListCard({ nameList, description, date, itemsList, onDelete, onClick }:
     const handleDelete = (e: React.MouseEvent) => {
         e.stopPropagation();
         if (onDelete) {
-            onDelete();
-            alert('Deleted list');
+            onDelete();            
         }
     };
 
     return (
         <div 
-            className="flex flex-row justify-between items-start bg-bg-secondary w-[80%] h-fit border-1 rounded-lg shadow-lg p-4 mx-auto cursor-pointer hover:shadow-xl transition-shadow duration-200"
+            className="flex flex-row justify-between items-start bg-bg-secondary w-full h-fit border-1 rounded-lg shadow-lg p-4 mx-auto cursor-pointer hover:shadow-xl transition-shadow duration-200"
             onClick={onClick}
         >
             <div className="flex flex-col gap-1">
@@ -26,8 +25,8 @@ function ListCard({ nameList, description, date, itemsList, onDelete, onClick }:
             <div className="flex items-start content-center h-full ml-auto">
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    width="32"
-                    height="32"
+                    width="24"
+                    height="24"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"

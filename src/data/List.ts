@@ -1,7 +1,8 @@
 
 export const list = [
     {
-        nameList: "Lista de Compras",
+        id: "1",
+        nameList: "Lista de Compras #1",
         description: "Lista de compras para la receta",
         date: "2025-07-14",
         itemsList: [
@@ -33,7 +34,8 @@ export const list = [
 
     },
     {
-        nameList: "Lista de Compras",
+        id: "2",
+        nameList: "Lista de Compras #2",
         description: "Lista de compras para la receta",
         date: "2025-07-14",
         itemsList: [
@@ -65,7 +67,8 @@ export const list = [
 
     },
     {
-        nameList: "Lista de Compras",
+        id: "3",
+        nameList: "Lista de Compras #3",
         description: "Lista de compras para la cena",
         date: "2025-07-14",
         itemsList: [
@@ -91,7 +94,8 @@ export const list = [
 
     },
     {
-        nameList: "Lista de Compras",
+        id: "4",
+        nameList: "Lista de Compras #4",
         description: "Lista de compras para la receta",
         date: "2025-07-14",
         itemsList: [
@@ -122,5 +126,4 @@ export const list = [
         ]
 
     },
-
 ]

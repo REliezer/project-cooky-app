@@ -62,26 +62,25 @@ export interface PlanCardProps {
   onPlanSelect?: (plan: PlanCardProps['plan']) => void;
 }
 
-export interface ItemListProps {
-  item: {
-    name: string;
-    quantity?: string;
-    imageUrl: string;
-    isSelected?: boolean;
-  };
+export interface ItemType {
+  id: string;
+  name: string;
+  quantity?: string;
+  imageUrl: string;
+  isSelected?: boolean;
+}
+
+export interface ItemListType {
+  item: ItemType;
   onToggle?: () => void;
 }
 
 export interface ListCardProps {
+  id: string;
   nameList: string;
   description?: string;
   date: string;
-  itemsList: {
-    name: string;
-    quantity?: string;
-    imageUrl: string;
-    isSelected?: boolean;
-  }[];
+  itemsList: ItemListType[];
   onDelete?: () => void;
   onClick?: () => void;
 }
@@ -89,11 +88,11 @@ export interface ListCardProps {
 //Modal
 export interface ModalProps {
     isOpen: boolean;
-    type?: 'signout' | 'form' | 'info';
+    type?: 'signout' | 'form' | 'info' | 'delete';
     title: string;
     children: React.ReactNode;
-    onConfirm: () => void;
-    onCancel: () => void;
+    onConfirm?: () => void;
+    onCancel?: () => void;
 }
 
 //Card
@@ -115,5 +114,4 @@ export interface CardInfo {
     name?: string;
     cvv?: string;
   };
-}
 }
