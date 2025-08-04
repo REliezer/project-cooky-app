@@ -95,6 +95,15 @@ export interface ModalProps {
     onCancel?: () => void;
 }
 
+//CategoryCard
+export interface CategoryCardProps {
+    id: string;
+    name: string;
+    icon: string;
+    onClick?: (categoryId: string) => void;
+    className?: string;
+}
+
 //Card
 export interface CardProps {
   cardholderName: string;

@@ -11,6 +11,8 @@ import PaymentInformation from './pages/payment/PaymentInformation'
 import Plans from './pages/subscription/Plans'
 import MyList from './pages/lists/MyLists'
 import MyListDetail from './pages/lists/MyListDetail'
+import Categories from './pages/Categories/Categories';
+import CategoryProducts from './pages/Categories/CategoryProducts';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -25,6 +27,8 @@ createRoot(document.getElementById('root')!).render(
           <Route path='/plan' element={<Plans title='Registrarse' />} />
           <Route path='/list' element={<MyList />} />
           <Route path='/list/:id' element={<MyListDetail />} />
+          <Route path="/categories" element={<Categories />} />
+          <Route path="/category/:categoryId" element={<CategoryProducts />} />
           <Route path='/test' element={<Test />} />
         </Route>
       </Routes>
