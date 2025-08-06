@@ -16,10 +16,12 @@ module.exports = {
         text: {
           primary: '#461604',
           secondary: '#FFF8EC',
+          tertiary: '#852F1C',
         },
         bg: {
           primary: '#FFF8EC',
           secondary: '#FFC36D',
+          tertiary: '#FFA552',
         },
         btn: {
           primary: '#FE6700',
@@ -34,6 +36,10 @@ module.exports = {
           warning: '#f59e0b',
           error: '#A1390B',
         },
+        gd: {
+          red: '#CF1111',
+          pink: '#FF5E7E',
+        }
       },
       // Espaciado
       spacing: {

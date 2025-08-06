@@ -13,9 +13,10 @@ import MyList from './pages/lists/MyLists'
 import MyListDetail from './pages/lists/MyListDetail'
 import Categories from './pages/Categories/Categories';
 import CategoryProducts from './pages/Categories/CategoryProducts';
+import Recipes from './pages/recipes/Recipes';
 
 createRoot(document.getElementById('root')!).render(
-  <StrictMode>
+  <StrictMode>    
     <Toaster position="bottom-center" richColors />
     <BrowserRouter>
       <Routes>
@@ -30,6 +31,7 @@ createRoot(document.getElementById('root')!).render(
           <Route path="/categories" element={<Categories />} />
           <Route path="/category/:categoryId" element={<CategoryProducts />} />
           <Route path='/test' element={<Test />} />
+          <Route path='/recipes' element={<Recipes />} />
         </Route>
       </Routes>
     </BrowserRouter>
