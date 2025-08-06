@@ -73,6 +73,7 @@ export interface ItemType {
 export interface ItemListType {
   item: ItemType;
   onToggle?: () => void;
+  onDelete?: (id: string) => void;
 }
 
 export interface ListCardProps {

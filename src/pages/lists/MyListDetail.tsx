@@ -1,9 +1,9 @@
 import { useState, useEffect, useCallback } from "react";
-import { useLocation, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 import ItemList from "../../components/common/ItemList";
 
-import type { ListCardProps } from "../../types";
+import type { ListCardProps, ItemType } from "../../types";
 import Loading from "../../components/common/Loading";
 import Alert from "../../components/common/Alert";
 import Button from "../../components/common/Button";
@@ -14,6 +14,7 @@ const LOCAL_STORAGE_KEY = 'cooky-my-lists';
 function MyListDetail() {
     const location = useLocation();
     const { listId } = useParams();
+    const navigate = useNavigate();
 
     // Acceder a los datos pasados via state
     const listData = location.state?.listData as ListCardProps;
@@ -32,7 +33,7 @@ function MyListDetail() {
                 const savedLists = localStorage.getItem(LOCAL_STORAGE_KEY);
                 if (savedLists) {
                     const parsedLists = JSON.parse(savedLists);
-                    const foundList = parsedLists.find(list => list.id === listId);
+                    const foundList = parsedLists.find((list: ListCardProps) => list.id === listId);
                     if (foundList) {
                         setProductsList(foundList.itemsList);
                         setCurrentListData(foundList);
@@ -66,8 +67,8 @@ function MyListDetail() {
 
     // Función para alternar el estado de selección de un ingrediente
     const handleToggleIngredient = (index: number) => {
-        setProductsList((prevProductsList) => {
-            const updatedList = prevProductsList.map((product, i) =>
+        setProductsList((prevProductsList: ItemType[]) => {
+            const updatedList = prevProductsList.map((product: ItemType, i: number) =>
                 i === index
                     ? { ...product, isSelected: !product.isSelected }
                     : product
@@ -79,6 +80,22 @@ function MyListDetail() {
         });
         toast.info('Actualizado')
     };
+
+    // Función para eliminar un item de la lista
+    const onDeleteItem = (id: string) => {
+        setProductsList((prevProductsList: ItemType[]) => {
+            // Filtrar el item que se quiere eliminar
+            const updatedList = prevProductsList.filter((item: ItemType) => item.id !== id);
+            
+            // Guardar cambios en localStorage
+            saveChangesToStorage(updatedList);
+            
+            // Mostrar notificación de confirmación
+            toast.success('Item eliminado de la lista');
+            
+            return updatedList;
+        });
+    }
 
     // Estado de carga
     if (isLoading) {
@@ -112,11 +129,12 @@ function MyListDetail() {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                 {
-                    productsList?.map((item, index) => (
+                    productsList?.map((item: ItemType, index: number) => (
                         <ItemList
                             key={`${item.name}-${index}`}
                             item={item}
                             onToggle={() => handleToggleIngredient(index)}
+                            onDelete={() => onDeleteItem(item.id)}
                         />
                     ))
                 }
@@ -126,6 +144,7 @@ function MyListDetail() {
                 variant='secondary'
                 size='medium'
                 className="mt-4 w-full"
+                onClick={() => navigate('/categories')}
             />
 
             {productsList?.length === 0 && (
