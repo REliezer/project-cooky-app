@@ -7,24 +7,28 @@ export const list = [
         date: "2025-07-14",
         itemsList: [
             {
+                id: "1",
                 name: "Pan",
                 quantity: "1 unidad",
                 imageUrl: "https://img.icons8.com/plasticine/100/bread.png",
                 isSelected: true
             },
             {
+                id: "2",
                 name: "Tomate",
                 quantity: "2 unidad",
                 imageUrl: "https://img.icons8.com/plasticine/100/tomato.png",
                 isSelected: false
             },
             {
+                id: "3",
                 name: "Cebolla",
                 quantity: "1 unidad",
                 imageUrl: "https://img.icons8.com/plasticine/100/onion.png",
                 isSelected: true
             },
             {
+                id: "4",
                 name: "Lechuga",
                 quantity: "1 cabeza",
                 imageUrl: "https://img.icons8.com/plasticine/100/lettuce.png",
@@ -40,24 +44,28 @@ export const list = [
         date: "2025-07-14",
         itemsList: [
             {
+                id: "1",
                 name: "Pan",
                 quantity: "1 unidad",
                 imageUrl: "https://img.icons8.com/plasticine/100/bread.png",
                 isSelected: true
             },
             {
+                id: "2",
                 name: "Tomate",
                 quantity: "2 unidad",
                 imageUrl: "https://img.icons8.com/plasticine/100/tomato.png",
                 isSelected: false
             },
             {
+                id: "3",
                 name: "Cebolla",
                 quantity: "1 unidad",
                 imageUrl: "https://img.icons8.com/plasticine/100/onion.png",
                 isSelected: true
             },
             {
+                id: "4",
                 name: "Lechuga",
                 quantity: "1 cabeza",
                 imageUrl: "https://img.icons8.com/plasticine/100/lettuce.png",
@@ -73,18 +81,21 @@ export const list = [
         date: "2025-07-14",
         itemsList: [
             {
+                id: "1",
                 name: "Pan",
                 quantity: "1 unidad",
                 imageUrl: "https://img.icons8.com/plasticine/100/bread.png",
                 isSelected: true
             },
             {
+                id: "2",
                 name: "Cebolla",
                 quantity: "1 unidad",
                 imageUrl: "https://img.icons8.com/plasticine/100/onion.png",
                 isSelected: true
             },
             {
+                id: "3",
                 name: "Lechuga",
                 quantity: "1 cabeza",
                 imageUrl: "https://img.icons8.com/plasticine/100/lettuce.png",
@@ -100,24 +111,28 @@ export const list = [
         date: "2025-07-14",
         itemsList: [
             {
+                id: "1",
                 name: "Pan",
                 quantity: "1 unidad",
                 imageUrl: "https://img.icons8.com/plasticine/100/bread.png",
                 isSelected: true
             },
             {
+                id: "2",
                 name: "Tomate",
                 quantity: "2 unidad",
                 imageUrl: "https://img.icons8.com/plasticine/100/tomato.png",
                 isSelected: false
             },
             {
+                id: "3",
                 name: "Cebolla",
                 quantity: "1 unidad",
                 imageUrl: "https://img.icons8.com/plasticine/100/onion.png",
                 isSelected: true
             },
             {
+                id: "4",
                 name: "Lechuga",
                 quantity: "1 cabeza",
                 imageUrl: "https://img.icons8.com/plasticine/100/lettuce.png",
