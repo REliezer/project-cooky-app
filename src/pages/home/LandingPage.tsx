@@ -1,9 +1,12 @@
+import { useNavigate } from 'react-router-dom'
 import cookyLogo from '../../assets/cooky.svg'
 import Button from '../../components/common/Button'
 import Graphics from '../../components/common/Graphics'
 import FeatureSection from '../../components/LandingPage/FeatureSection'
 
 function LandingPage() {
+  const navigate = useNavigate()
+
   return (
     <div className="min-h-screen">
       {/* Header */}
@@ -21,6 +24,7 @@ function LandingPage() {
             className="w-64 md:w-80 mx-auto mb-8 drop-shadow-lg" 
             alt="Cooky logo" 
           />
+          {/*
           <p>
             Descubre, comparte y guarda tus recetas favoritas. 
             Una plataforma donde la cocina se convierte en una experiencia única.
@@ -29,6 +33,7 @@ function LandingPage() {
             Desde recetas tradicionales hasta creaciones innovadoras, 
             encuentra inspiración para cada ocasión y nivel de experiencia culinaria.
           </p>
+          */}
           <p className='text-center'>
             Registrate ahora y obtén <span>7 días</span> premiun gratis!.
           </p>
@@ -38,11 +43,13 @@ function LandingPage() {
               label="Registrarse"
               variant="primary"
               size="medium"
+              onClick={() => navigate('/register')}
             />
             <Button
               label="Iniciar Sesión"
               variant="outline"
               size="medium"
+              onClick={() => navigate('/login')}
             />
           </div>
         </div>

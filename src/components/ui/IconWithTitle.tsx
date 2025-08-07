@@ -1,16 +1,17 @@
 import { useNavigate } from "react-router-dom";
 
 interface IconWithTitleProps {
-    title: string
+    title: string;
+    url: string
 }
 
-function IconWithTitle({ title }: IconWithTitleProps) {
+function IconWithTitle({ title, url }: IconWithTitleProps) {
     const navigate = useNavigate();
 
     return (
         <div className="flex items-center gap-3 mb-2">
                     <button 
-                        onClick={() => navigate('/list')}
+                        onClick={() => navigate(url)}
                         className="w-10 h-10 bg-accent hover:bg-bg-primary/80 border border-[#461604] rounded-full flex items-center justify-center transition-colors duration-200 shadow-md shadow-[#461604]/50 flex-shrink-0 cursor-pointer"
                         aria-label="Volver a la lista de listas"
                     >

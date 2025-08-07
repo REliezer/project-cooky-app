@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import type { CardProps } from '../../types';
 import CardComponent from './CardComponent';
 import Modal from '../common/Modal';
@@ -6,7 +7,8 @@ import { cardFormFields, formatCardNumber, formatExpiryDate, validateCardData } 
 
 import Button from '../common/Button';
 import PaymentMethods from './PaymentMethods';
-import { useNavigate } from 'react-router-dom';
+import { useRegistration } from '../../hooks/useRegistration';
+import type { PaymentData } from '../../types/registration';
 import imageCheck from '../../assets/images/check.svg';
 
 type CardInputProps = {
@@ -24,26 +26,25 @@ function CardInput({ planSelect }: CardInputProps) {
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [showBack, setShowBack] = useState(false);
-
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
+
+  const { setPaymentData, submitRegistration, clearRegistration, state } = useRegistration();
   // Configuración de campos para el formulario dinámico
   const formFields = cardFormFields;
+
   // Función para cerrar el modal
   const closeModal = () => {
-    navigate('/login')
     setIsModalOpen(false);
-
-    // Resetear el formulario
-    setCardData({
-      cardNumber: '',
-      expiryDate: '',
-      cardholderName: '',
-      cvv: ''
-    });
-
-    // Limpiar errores
-    setErrors({});
+    // Navegar a login después del registro exitoso
+    navigate('/login');
+    // Limpiar después de navegar
+    setTimeout(() => {
+      clearRegistration();
+    }, 100);
   }
+
+
   // Manejar cambios en tiempo real para actualizar la vista previa
   const handleFormChange = (name: string, value: string) => {
     let formattedValue = value;
@@ -64,6 +65,7 @@ function CardInput({ planSelect }: CardInputProps) {
   // Manejar envío del formulario
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault(); // Prevenir recarga de página
+    setIsSubmitting(true);
 
     try {
       // Validar los datos antes de enviar
@@ -71,22 +73,43 @@ function CardInput({ planSelect }: CardInputProps) {
 
       if (!validation.isValid) {
         setErrors(validation.errors);
+        setIsSubmitting(false);
         return;
       }
 
-      // Simular cobro si la validación es exitosa
+      // Guardar los datos de pago en el contexto ANTES de submitRegistration
+      const paymentData: PaymentData = {
+        cardholderName: CardProps.cardholderName,
+        cardNumber: CardProps.cardNumber,
+        expiryDate: CardProps.expiryDate,
+        cvv: CardProps.cvv
+      };
+      
+      console.log('Procesando pago...');
+
+      // Simular procesamiento de pago
       await new Promise(resolve => setTimeout(resolve, 1500));
+      
+      // Enviar todos los datos del registro directamente con paymentData
+      const success = await submitRegistration(paymentData);
+      if (success) {
+        console.log('Registro completado exitosamente');
+      } else {
+        alert('Error al completar el registro. Intenta nuevamente.');
+        setIsSubmitting(false);
+        return;
+      }
+
       // Limpiar errores
       setErrors({});
-
-      console.log('Datos de la tarjeta enviados:', CardProps);
-      // Aquí puedes agregar la lógica para procesar el pago
-      // Por ejemplo, enviar a una API de procesamiento de pagos
+      console.log('Datos de la tarjeta procesados:', CardProps);
       setIsModalOpen(true);
 
     } catch (error) {
       console.error('Error al procesar los datos:', error);
       alert('Error al procesar los datos de la tarjeta');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -156,11 +179,10 @@ function CardInput({ planSelect }: CardInputProps) {
                           setShowBack(false);
                         }
                       }}
-                      className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:border-transparent transition-all duration-200 ${
-                        errors[field.name] 
-                          ? 'border-red-500 focus:ring-red-500' 
-                          : 'border-[#461604]/30 focus:ring-[#FE6700]'
-                      }`}
+                      className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:border-transparent transition-all duration-200 ${errors[field.name]
+                        ? 'border-red-500 focus:ring-red-500'
+                        : 'border-[#461604]/30 focus:ring-[#FE6700]'
+                        }`}
                       required={field.required}
                       maxLength={field.name === 'cardNumber' ? 23 : field.name === 'expiryDate' ? 5 : field.name === 'cvv' ? 3 : undefined}
                     />
@@ -172,10 +194,11 @@ function CardInput({ planSelect }: CardInputProps) {
                   </div>
                 ))}
                 <Button
-                  label='Procesar Pago'
+                  label={isSubmitting ? 'Procesando...' : 'Procesar Pago'}
                   size='medium'
                   className='w-full'
                   type='submit'
+                  disabled={isSubmitting}
                 />
               </form>
             </div>
@@ -189,17 +212,24 @@ function CardInput({ planSelect }: CardInputProps) {
         <Modal
           isOpen={isModalOpen}
           type="info"
-          title="Confirmación de Cobro"
+          title="Tu cuenta ha sido creada exitosamente"
           onConfirm={() => closeModal()}
           onCancel={() => closeModal()}
         >
           <div className="grid content-center justify-center w-full mb-2">
-
             <img src={imageCheck} alt='verificacion' className='mx-auto mb-4' />
             <p className='text-center'>¡Gracias por unirte al<br />
               <strong className='text-center'>{planSelect}</strong>
               !
             </p>
+            {/* Información adicional */}
+            <div className="p-4 text-center">
+              <p>Ya puedes iniciar sesión con tu email{' '}</p>
+              <span className="font-mono px-2 py-1 rounded">
+                {state.personalData?.email}
+              </span>{' '}
+              y comenzar a explorar todas las funcionalidades de Cooky.
+            </div>
           </div>
         </Modal>
       )}

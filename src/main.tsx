@@ -2,6 +2,7 @@ import { StrictMode } from 'react'
 import { Toaster } from 'sonner';
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { RegistrationProvider } from './contexts/RegistrationContext'
 import MainLayout from './components/layout/MainLayout'
 import LandingPage from './pages/home/LandingPage'
 import Login from './pages/auth/Login'
@@ -19,7 +20,8 @@ createRoot(document.getElementById('root')!).render(
   <StrictMode>    
     <Toaster position="bottom-center" richColors />
     <BrowserRouter>
-      <Routes>
+      <RegistrationProvider>
+        <Routes>
         <Route path="/" element={<MainLayout />}>
           <Route index element={<LandingPage />} />
           <Route path='/login' element={<Login />} />
@@ -30,10 +32,10 @@ createRoot(document.getElementById('root')!).render(
           <Route path='/list/:id' element={<MyListDetail />} />
           <Route path="/categories" element={<Categories />} />
           <Route path="/category/:categoryId" element={<CategoryProducts />} />
-          <Route path='/test' element={<Test />} />
           <Route path='/recipes' element={<Recipes />} />
         </Route>
-      </Routes>
+        </Routes>
+      </RegistrationProvider>
     </BrowserRouter>
   </StrictMode>
 )

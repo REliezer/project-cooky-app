@@ -123,7 +123,7 @@ function MyListDetail() {
         <div className="container mx-auto px-4 py-6">
             <div className="mb-6">
                 {/* Botón de regreso + Título */}
-                <IconWithTitle title={displayListData?.nameList} />
+                <IconWithTitle title={displayListData?.nameList} url={'/list'} />
                 {displayListData?.description && (
                     <p className="text-text-primary">{displayListData.description}</p>
                 )}

@@ -10,6 +10,7 @@ import CategoryCard from '../../components/common/CategoryCard';
 import Modal from '../../components/common/Modal';
 import DynamicForm from '../../components/common/DynamicForm';
 import Alert from '../../components/common/Alert';
+import IconWithTitle from "../../components/ui/IconWithTitle";
 
 function CategoryProducts() {
     const { categoryId } = useParams<{ categoryId: string }>();
@@ -83,26 +84,17 @@ function CategoryProducts() {
                 </div>
             </div>
         );
-    }    
+    }
 
     return (
-        <div className="min-h-screen py-6">
+        <div className="min-h-screen px-4 py-6">
             <div className="max-w-6xl mx-auto px-4">
                 {/* Header */}
                 <div className="mb-8">
-                    <Button
-                        label="← Volver"
-                        onClick={handleGoBack}
-                        variant="outline"
-                        className="mb-4"
-                    />
-                    <div className="mb-4">
-                        <h1 className="text-3xl font-bold text-text-primary">
-                            Listas de compras
-                        </h1>
-                        <p className="text-text-primary">
-                            {category.name}
-                        </p>
+                    <div className="mb-6">
+                        {/* Botón de regreso + Título */}
+                        <IconWithTitle title={'Listas de compras'} url={'/categories'} />
+                        <p className="text-text-primary">{category.name}</p>
                     </div>
                 </div>
 

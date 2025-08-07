@@ -2,8 +2,12 @@ import DynamicForm from "../../components/common/DynamicForm";
 import Graphics from "../../components/common/Graphics";
 import type { FormFieldConfig } from '../../types/components';
 import { useState } from 'react';
+import { useRegistration } from '../../hooks/useRegistration';
+import type { PersonalData } from '../../types/registration';
+import ProgressIndicator from '../../components/common/ProgressIndicator';
 
 function Register() {
+    const { setPersonalData, state, goToStep } = useRegistration();
     const [customErrors, setCustomErrors] = useState<Record<string, string>>({});
 
     // Configuración de campos para un formulario de registro
@@ -63,7 +67,7 @@ function Register() {
     ];
 
     // Validación personalizada para contraseñas
-    const validatePasswords = (formData: Record<string, string>): boolean => {
+    const validatePasswords = (formData: Record<string, string | number | boolean>): boolean => {
         const { password, repetPassword } = formData;
 
         if (password !== repetPassword) {
@@ -78,7 +82,7 @@ function Register() {
     };
 
     // Manejador para el formulario de registro
-    const handleRegisterSubmit = async (formData: Record<string, string>) => {
+    const handleRegisterSubmit = async (formData: Record<string, string | number | boolean>) => {
         // Validar que las contraseñas coincidan
         if (!validatePasswords(formData)) {
             return;
@@ -86,14 +90,24 @@ function Register() {
 
         console.log('Datos del formulario de registro:', formData);
 
-        // Aquí iría la lógica para enviar los datos al servidor
         try {
-            // Simulamos una llamada a la API
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            alert('¡Registro exitoso!');
+            // Guardar datos en el contexto (sin el repetPassword)
+            const personalData: PersonalData = {
+                firstName: String(formData.firstName),
+                lastName: String(formData.lastName),
+                email: String(formData.email),
+                password: String(formData.password),
+            };
+
+            // Guardar en el contexto
+            setPersonalData(personalData);
+            
+            // Establecer que estamos completando el paso 1
+            goToStep(2); // Ir directamente al paso de selección de plan
+
         } catch (error) {
             console.error('Error en el registro:', error);
-            alert('Error al registrar usuario. Intenta nuevamente.');
+            alert('Error al procesar los datos. Intenta nuevamente.');
         }
     };
 
@@ -104,12 +118,15 @@ function Register() {
                 title="Registrarse"
                 subtitle="Ingresa tus datos personales para crear una cuenta."
             />
+            
+            <ProgressIndicator />
             <DynamicForm
                 fields={registerFormFields}
                 onSubmit={handleRegisterSubmit}
                 submitButtonText="Continuar"
                 submitButtonVariant="secondary"
-                resetOnSubmit={true}
+                resetOnSubmit={false}
+                isLoading={state.isLoading}
             >
                 {/* Mostrar error personalizado para contraseñas no coincidentes */}
                 {customErrors.repetPassword && (

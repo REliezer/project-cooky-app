@@ -2,6 +2,8 @@ import DynamicForm from "../../components/common/DynamicForm";
 import Graphics from "../../components/common/Graphics";
 import type { FormFieldConfig } from '../../types/components';
 import Button from "../../components/common/Button";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 function Login() {
     // Configuración de campos para un formulario de login
@@ -24,6 +26,7 @@ function Login() {
             }
         }
     ];
+    const navigate = useNavigate();
 
     // Manejador para el formulario de login
     const handleLoginSubmit = async (formData: Record<string, any>) => {
@@ -31,8 +34,9 @@ function Login() {
 
         // Simular autenticación
         await new Promise(resolve => setTimeout(resolve, 1500));
+        navigate('/list')
 
-        alert('¡Login exitoso!');
+        toast.success('¡Login exitoso!');
     };
 
     return (
