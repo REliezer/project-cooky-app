@@ -86,13 +86,13 @@ function MyListDetail() {
         setProductsList((prevProductsList: ItemType[]) => {
             // Filtrar el item que se quiere eliminar
             const updatedList = prevProductsList.filter((item: ItemType) => item.id !== id);
-            
+
             // Guardar cambios en localStorage
             saveChangesToStorage(updatedList);
-            
+
             // Mostrar notificación de confirmación
             toast.success('Item eliminado de la lista');
-            
+
             return updatedList;
         });
     }
@@ -121,31 +121,56 @@ function MyListDetail() {
     return (
         <div className="container mx-auto px-4 py-6">
             <div className="mb-6">
-                <h1 className="text-3xl font-bold mb-2">{displayListData?.nameList}</h1>
+                {/* Botón de regreso + Título */}
+                <div className="flex items-center gap-3 mb-2">
+                    <button 
+                        onClick={() => navigate('/list')}
+                        className="w-10 h-10 bg-accent hover:bg-bg-primary/80 border border-[#461604] rounded-full flex items-center justify-center transition-colors duration-200 shadow-md shadow-[#461604]/50 flex-shrink-0 cursor-pointer"
+                        aria-label="Volver a la lista de listas"
+                    >
+                        <svg 
+                            xmlns="http://www.w3.org/2000/svg" 
+                            fill="none" 
+                            viewBox="0 0 24 24" 
+                            strokeWidth={2} 
+                            stroke="#461604" 
+                            className="w-5 h-5"
+                        >
+                            <path 
+                                strokeLinecap="round" 
+                                strokeLinejoin="round" 
+                                d="M15.75 19.5 8.25 12l7.5-7.5" 
+                            />
+                        </svg>
+                    </button>
+                    <h1 className="text-3xl font-bold mb-0">{displayListData?.nameList}</h1>
+                </div>
                 {displayListData?.description && (
                     <p className="text-text-primary">{displayListData.description}</p>
                 )}
                 <p className="text-sm text-text-primary">Fecha: {displayListData?.date}</p>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                {
-                    productsList?.map((item: ItemType, index: number) => (
-                        <ItemList
-                            key={`${item.name}-${index}`}
-                            item={item}
-                            onToggle={() => handleToggleIngredient(index)}
-                            onDelete={() => onDeleteItem(item.id)}
-                        />
-                    ))
-                }
+            <div className="border-2 border-[#461604] rounded-lg p-4 mb-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                    {
+                        productsList?.map((item: ItemType, index: number) => (
+                            <ItemList
+                                key={`${item.name}-${index}`}
+                                item={item}
+                                onToggle={() => handleToggleIngredient(index)}
+                                onDelete={() => onDeleteItem(item.id)}
+                            />
+                        ))
+                    }
+                </div>
+                <Button
+                    label='+ Añadir item a la lista'
+                    variant='secondary'
+                    size='medium'
+                    className="mt-4 w-full"
+                    onClick={() => navigate('/categories')}
+                />
             </div>
-            <Button
-                label='+ Añadir item a la lista'
-                variant='secondary'
-                size='medium'
-                className="mt-4 w-full"
-                onClick={() => navigate('/categories')}
-            />
 
             {productsList?.length === 0 && (
                 <Alert

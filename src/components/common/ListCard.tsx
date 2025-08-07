@@ -11,7 +11,7 @@ function ListCard({ nameList, description, date, itemsList, onDelete, onClick }:
 
     return (
         <div 
-            className="flex flex-row justify-between items-start bg-bg-secondary w-full h-fit border-1 rounded-lg shadow-lg p-4 mx-auto cursor-pointer hover:shadow-xl transition-shadow duration-200"
+            className="flex flex-row justify-between items-start gradient-bg w-full h-fit p-4 mx-auto cursor-pointer transition-shadow duration-200"
             onClick={onClick}
         >
             <div className="flex flex-col gap-1">

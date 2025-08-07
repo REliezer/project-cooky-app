@@ -19,7 +19,7 @@ export const categories: Category[] = [
             {
                 id: "1",
                 name: "Sandia",
-                icon: "https://img.icons8.com/plasticine/100/watermelo.png"
+                icon: "https://img.icons8.com/plasticine/100/watermelon.png"
             },
             {
                 id: "2",

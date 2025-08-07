@@ -1,0 +1,15 @@
+@layer components {
+    .gradient-bg {
+        background: #ffc36d;
+        background: -webkit-linear-gradient(218deg, #ffc36d 0%, #ffdda5 100%);
+        background: linear-gradient(218deg, #ffc36d 0%, #ffdda5 100%);
+        @apply border-1 rounded-lg shadow-lg;
+    }
+
+    .gradient-bg:hover {
+        @apply hover:shadow-xl;
+        background: #ffc36d;
+        background: -webkit-linear-gradient(-218deg, #ffc36d 0%, #ffdda5 100%);
+        background: linear-gradient(-218deg, #ffc36d 0%, #ffdda5 100%);
+    }
+}
