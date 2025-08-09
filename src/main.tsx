@@ -3,7 +3,12 @@ import { Toaster } from 'sonner';
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { RegistrationProvider } from './contexts/RegistrationContext'
-import MainLayout from './components/layout/MainLayout'
+
+// Layouts
+import AppLayout from './components/layout/MainLayout'    // Para páginas con Navigation responsiva
+import CleanLayout from './components/layout/CleanLayout' // Para páginas limpias (sin navegación)
+
+// Pages
 import LandingPage from './pages/home/LandingPage'
 import Login from './pages/auth/Login'
 import Register from './pages/auth/Register'
@@ -18,22 +23,32 @@ import Recipes from './pages/recipes/Recipes';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>    
-    <Toaster position="bottom-center" richColors />
+    <Toaster position="top-center" richColors />
     <BrowserRouter>
       <RegistrationProvider>
         <Routes>
-        <Route path="/" element={<MainLayout />}>
-          <Route index element={<LandingPage />} />
-          <Route path='/login' element={<Login />} />
-          <Route path='/register' element={<Register />} />
-          <Route path='/payment' element={<PaymentInformation />} />
-          <Route path='/plan' element={<Plans title='Registrarse' />} />
-          <Route path='/list' element={<MyList />} />
-          <Route path='/list/:id' element={<MyListDetail />} />
-          <Route path="/categories" element={<Categories />} />
-          <Route path="/category/:categoryId" element={<CategoryProducts />} />
-          <Route path='/recipes' element={<Recipes />} />
-        </Route>
+          {/* Páginas completamente limpias (sin navegación) */}
+          <Route path="/" element={<CleanLayout />}>
+            <Route index element={<LandingPage />} />
+            <Route path="login" element={<Login />} />
+            <Route path="register" element={<Register />} />
+            <Route path="payment" element={<PaymentInformation />} />
+            <Route path="plans" element={<Plans title='Registrarse' />} />
+          </Route>
+          
+          {/* Páginas autenticadas (con Navigation responsiva) */}
+          <Route path="/app" element={<AppLayout />}>
+            <Route path="home" element={<div>App Home</div>} />
+            <Route path="cocina" element={<div>Cocina</div>} />
+            <Route path="list" element={<MyList />} />
+            <Route path="list/:id" element={<MyListDetail />} />
+            <Route path="profile" element={<div>Perfil</div>} />
+            <Route path="categories" element={<Categories />} />
+            <Route path="category/:categoryId" element={<CategoryProducts />} />
+            <Route path="recipes" element={<Recipes />} />
+          </Route>
+          
+          <Route path="/test" element={<Test />} />
         </Routes>
       </RegistrationProvider>
     </BrowserRouter>

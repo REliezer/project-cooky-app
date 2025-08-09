@@ -11,7 +11,7 @@ function Categories() {
 
     const handleCategoryClick = useCallback((categoryId: string) => {
         // Navegar a la página de productos de la categoría
-        navigate(`/category/${categoryId}`);
+        navigate(`/app/category/${categoryId}`);
     }, [navigate]);
 
     return (
@@ -20,7 +20,7 @@ function Categories() {
                 {/* Header */}
                 <div className="mb-8">
                     {/* Botón de regreso + Título */}
-                    <IconWithTitle title={'Listas de compras'} url={`/list`} />
+                    <IconWithTitle title={'Listas de compras'} url={`/app/list`} />
                     <p className="text-text-primary">Categorías</p>
                 </div>
                 {/* Grid de categorías */}

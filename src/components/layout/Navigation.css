@@ -1,0 +1,108 @@
+/* ==== Desktop Navigation Styles ==== */
+.desktop-navigation {
+  /* Los estilos de Tailwind ya se aplican en el JSX */
+}
+
+.desktop-navigation button {
+  font-size: 1rem;
+  padding: 0.25rem 0.5rem;
+}
+
+/* ==== Mobile Navigation Styles ==== */
+.mobile-navigation {
+  /* Container ya tiene las clases de Tailwind aplicadas */
+}
+
+/* Mobile Navigation Container */
+.mobile-nav-container {
+  display: flex;
+  background-color: var(--color-2); /* Naranja #FFC36D */
+  width: 100%;
+  height: 70px;
+  align-items: center;
+  justify-content: space-around;
+  border-radius: 25px 25px 0 0;
+  box-shadow: var(--shadow-lg);
+  padding: 0 20px;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+/* Navigation Button */
+.nav-button {
+  outline: 0 !important;
+  border: 0 !important;
+  background-color: transparent;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-secondary);
+  transition: all ease-in-out 0.2s;
+  cursor: pointer;
+  padding: 6px 8px;
+  border-radius: 12px;
+  min-width: 55px;
+  flex: 1;
+  max-width: 80px;
+}
+
+.nav-button:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  transform: translateY(-2px);
+}
+
+.nav-button:active {
+  transform: translateY(0);
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Navigation Icon */
+.nav-icon {
+  width: 24px;
+  height: 24px;
+  margin-bottom: 4px;
+}
+
+.nav-icon svg {
+  width: 100%;
+  height: 100%;
+  stroke-width: 2.5;
+}
+
+/* Navigation Text */
+.nav-text {
+  font-size: 12px;
+  font-weight: var(--font-medium);
+  font-family: var(--font-body);
+  text-align: center;
+  line-height: 1;
+}
+
+/* Active state for navigation buttons */
+.nav-button.active {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: #fff;
+}
+
+.nav-button.active .nav-icon svg {
+  stroke-width: 3;
+}
+
+.nav-button.active .nav-text {
+  font-weight: var(--font-semibold);
+}
+
+/* ==== Responsive Adjustments ==== */
+@media (max-width: 1023px) {
+  body {
+    padding-bottom: 70px; /* Evita que el contenido se oculte detrás de la navbar */
+  }
+}
+
+.activeButton {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: var(--color-text-primary);
+  font-weight: var(--font-semibold);
+
+}

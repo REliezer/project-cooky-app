@@ -5,12 +5,14 @@ import { Button } from "../../components/recipe/Button.tsx"
 import { Card, CardContent } from "../../components/recipe/Card.tsx"
 import { Badge } from "../../components/recipe/Badge.tsx"
 import { recetasGratuitas } from "../../data/Recipes.ts"
+import { useNavigate } from 'react-router-dom'
 
 interface RecetasFreeProps {
   searchQuery: string
 }
 
 export default function RecetasFree({ searchQuery }: RecetasFreeProps) {
+  const navigate = useNavigate();
 
   return (
     <>
@@ -21,7 +23,7 @@ export default function RecetasFree({ searchQuery }: RecetasFreeProps) {
           <span className="text-white">¡Mejora tu experiencia!</span>
         </div>
         <p className="text-sm mb-3 text-white">Usa IA para ver recetas exactas con lo que tienes</p>
-        <Button size="sm" className="bg-white text-gd-red hover:bg-gray-100 font-bold">
+        <Button size="sm" className="bg-white text-gd-red hover:bg-gray-100 font-bold hover:cursor-pointer" onClick={() => navigate('/plans')}>
           Probar Premium
         </Button>
       </div>

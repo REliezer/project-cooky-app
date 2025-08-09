@@ -125,7 +125,7 @@ function MyList() {
             const selectedList = lists.find(list => list.id === listId);
 
             if (selectedList) {
-                navigate(`/list/${listId}`, {
+                navigate(`/app/list/${listId}`, {
                     state: {
                         listData: selectedList,
                         itemsList: selectedList.itemsList
@@ -133,7 +133,7 @@ function MyList() {
                 });
             } else {
                 // Fallback si no encuentra la lista
-                navigate(`/list/${listId}`);
+                navigate(`/app/list/${listId}`);
             }
         } catch (err) {
             console.error('Navigation error:', err);

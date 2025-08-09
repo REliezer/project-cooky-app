@@ -50,7 +50,7 @@ function CategoryProducts() {
     ]
 
     const handleGoBack = () => {
-        navigate('/categories');
+        navigate('/app/categories');
     };
 
     const handleAddProduct = (formData: Record<string, string | number | boolean>) => {
@@ -93,7 +93,7 @@ function CategoryProducts() {
                 <div className="mb-8">
                     <div className="mb-6">
                         {/* Botón de regreso + Título */}
-                        <IconWithTitle title={'Listas de compras'} url={'/categories'} />
+                        <IconWithTitle title={'Listas de compras'} url={'/app/categories'} />
                         <p className="text-text-primary">{category.name}</p>
                     </div>
                 </div>

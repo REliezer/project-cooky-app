@@ -20,7 +20,7 @@ function PaymentInformation() {
         
         // Si el plan es gratuito, no debería estar en esta página
         if (state.selectedPlan.planPrice === '$0' || state.selectedPlan.planTitle === 'Plan Free') {
-            navigate('/plan');
+            navigate('/plans');
             return;
         }
     }, [state.personalData, state.selectedPlan, navigate]);

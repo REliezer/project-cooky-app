@@ -123,7 +123,7 @@ function MyListDetail() {
         <div className="container mx-auto px-4 py-6">
             <div className="mb-6">
                 {/* Botón de regreso + Título */}
-                <IconWithTitle title={displayListData?.nameList} url={'/list'} />
+                <IconWithTitle title={displayListData?.nameList} url={'/app/list'} />
                 {displayListData?.description && (
                     <p className="text-text-primary">{displayListData.description}</p>
                 )}
@@ -147,7 +147,7 @@ function MyListDetail() {
                     variant='secondary'
                     size='medium'
                     className="mt-4 w-full"
-                    onClick={() => navigate('/categories')}
+                    onClick={() => navigate('/app/categories')}
                 />
             </div>
 

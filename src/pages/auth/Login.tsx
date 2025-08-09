@@ -34,7 +34,7 @@ function Login() {
 
         // Simular autenticación
         await new Promise(resolve => setTimeout(resolve, 1500));
-        navigate('/list')
+        navigate('/app/home')
 
         toast.success('¡Login exitoso!');
     };

@@ -1,15 +1,16 @@
 import { Outlet } from "react-router-dom";
-import Header from './header';
+import Navigation from './Navigation';
 //import Footer from './Footer';
 
-const MainLayout = () => {
+// Layout para páginas autenticadas (con Navigation responsiva)
+const AppLayout = () => {
   return (
     <>
-      <Header />
+      <Navigation />
       <Outlet />
       {/*<Footer />*/}
     </>
   );
 };
 
-export default MainLayout;
+export default AppLayout;

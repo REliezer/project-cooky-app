@@ -150,8 +150,8 @@ export const RegistrationProvider: React.FC<RegistrationProviderProps> = ({ chil
         navigate('/register');
         break;
       case REGISTRATION_STEPS.PLAN_SELECTION:
-        console.log('Navigating to /plan');
-        navigate('/plan');
+        console.log('Navigating to /plans');
+        navigate('/plans');
         break;
       case REGISTRATION_STEPS.PAYMENT:
         console.log('Navigating to /payment');
