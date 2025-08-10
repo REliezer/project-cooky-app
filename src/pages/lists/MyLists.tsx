@@ -235,6 +235,7 @@ function MyList() {
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                         {lists.map((item) => (
                             <ListCard
+                                key={item.id}
                                 id={item.id}
                                 nameList={item.nameList}
                                 description={item.description}

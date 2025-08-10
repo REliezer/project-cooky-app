@@ -1,18 +1,32 @@
 import { useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
 import CategoryCard from '../../components/common/CategoryCard';
 import IconWithTitle from "../../components/ui/IconWithTitle";
 
 import { categories } from '../../data/Categories';
 
-function Categories() {
+interface CategoriesProps {
+    title?: string;
+    backUrl?: string;
+    subtitle?: string;
+}
+
+function Categories({ title: propTitle, backUrl: propBackUrl, subtitle: propSubtitle }: CategoriesProps) {
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
+    
+    // Obtener valores de URL params o usar props como fallback
+    const title = searchParams.get('title') || propTitle || 'Listas de compras';
+    const backUrl = searchParams.get('backUrl') || propBackUrl || '/app/list';
+    const subtitle = searchParams.get('subtitle') || propSubtitle || 'Categorías';
 
     const handleCategoryClick = useCallback((categoryId: string) => {
-        // Navegar a la página de productos de la categoría
-        navigate(`/app/category/${categoryId}`);
-    }, [navigate]);
+        // Navegar a la página de productos de la categoría, segun el contexto (listas o recetas)
+        const isForRecipes = backUrl === '/app/cocina';
+        const basePath = isForRecipes ? '/app/category/recipes/' : '/app/category/';
+        navigate(`${basePath}${categoryId}`);
+    }, [navigate, backUrl]);
 
     return (
         <div className="min-h-screen px-4 py-6">
@@ -20,8 +34,8 @@ function Categories() {
                 {/* Header */}
                 <div className="mb-8">
                     {/* Botón de regreso + Título */}
-                    <IconWithTitle title={'Listas de compras'} url={`/app/list`} />
-                    <p className="text-text-primary">Categorías</p>
+                    <IconWithTitle title={title} url={backUrl} />
+                    <p className="text-text-primary">{subtitle}</p>
                 </div>
                 {/* Grid de categorías */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">

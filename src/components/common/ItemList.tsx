@@ -30,9 +30,9 @@ function ItemList({ item, onToggle, onDelete }: ItemListType): JSX.Element {
                         viewBox="0 0 24 24"
                         fill="none"
                         stroke="#FFF8EC"
-                        stroke-width="2"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
                         className="lucide lucide-trash2-icon lucide-trash-2">
                         <path d="M10 11v6" />
                         <path d="M14 11v6" />

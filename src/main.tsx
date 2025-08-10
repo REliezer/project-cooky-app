@@ -24,8 +24,11 @@ import ProfileMenu from './pages/profile/ProfileMenu';
 import ProfileForm from './pages/profile/ProfileForm';
 import FavoriteIngredients from './pages/profile/FavoriteIngredients';
 import DislikeIngredients from './pages/profile/DislikeIngredients';
+import Home from './pages/recipes/Home';
+import IngredientsSelect from './pages/recipes/IngredientsSelect';
+
 createRoot(document.getElementById('root')!).render(
-  <StrictMode>    
+  <StrictMode>
     <Toaster position="top-center" richColors />
     <BrowserRouter>
       <RegistrationProvider>
@@ -38,22 +41,27 @@ createRoot(document.getElementById('root')!).render(
             <Route path="payment" element={<PaymentInformation />} />
             <Route path="plans" element={<Plans title='Registrarse' />} />
           </Route>
-          
+
           {/* Páginas autenticadas (con Navigation responsiva) */}
           <Route path="/app" element={<AppLayout />}>
             <Route path="home" element={<div>App Home</div>} />
-            <Route path="cocina" element={<div>Cocina</div>} />
+            <Route path="cocina" element={<Home />} />
             <Route path="list" element={<MyList />} />
             <Route path="list/:id" element={<MyListDetail />} />
-            <Route path="profile" element={<ProfileMenu/>} />
-            <Route path="categories" element={<Categories />} />
-            <Route path="category/:categoryId" element={<CategoryProducts />} />
+            <Route path="profile" element={<ProfileMenu />} />
+            {/* Categorias para las listas */}
+            <Route path="categories" element={<Categories title="Listas de compras" backUrl="/app/list" />} />
+            <Route path="category/:categoryId" element={<CategoryProducts title="Listas de compras" backUrl="/app/list" />} />
+            {/* Categorias para las recetas */}
+            <Route path="categories/recipes" element={<Categories title="Mis ingredientes" backUrl="/app/cocina" />} />
+            <Route path="category/recipes/:categoryId" element={<CategoryProducts title="Mis ingredientes" backUrl="/app/cocina" />} />
+            <Route path='recipes/select' element={<IngredientsSelect />} />
             <Route path="recipes" element={<Recipes />} />
-            <Route path="details" element={<ProfileForm />}/>
-            <Route path="favorites" element={<FavoriteIngredients />}/>
-            <Route path="dislikes" element={<DislikeIngredients />}/>
+            <Route path="details" element={<ProfileForm />} />
+            <Route path="favorites" element={<FavoriteIngredients />} />
+            <Route path="dislikes" element={<DislikeIngredients />} />
           </Route>
-          
+
           <Route path="/test" element={<Test />} />
         </Routes>
       </RegistrationProvider>
