@@ -23,9 +23,9 @@ import Recipes from './pages/recipes/Recipes';
 import RecipesDetails from './pages/recipes/RecipesDetails';
 import ProfileMenu from './pages/profile/ProfileMenu';
 import ProfileForm from './pages/profile/ProfileForm';
-import FavoriteIngredients from './pages/profile/FavoriteIngredients';
-import DislikeIngredients from './pages/profile/DislikeIngredients';
-import Home from './pages/recipes/Home';
+import IngredientesFavoritos from './pages/profile/FavoriteIngredients';
+import IngredientesNoMeGustan from './pages/profile/DislikeIngredients';
+import HomeRecipe from './pages/recipes/HomeRecipe';
 import IngredientsSelect from './pages/recipes/IngredientsSelect';
 
 createRoot(document.getElementById('root')!).render(
@@ -46,25 +46,26 @@ createRoot(document.getElementById('root')!).render(
           {/* Páginas autenticadas (con Navigation responsiva) */}
           <Route path="/app" element={<AppLayout />}>
             <Route path="home" element={<div>App Home</div>} />
-            <Route path="cocina" element={<Home />} />
+            {/* Rutas para recetas*/}
+            <Route path="recipe" element={<HomeRecipe />} />
+            <Route path='recipes/select' element={<IngredientsSelect />} />
+            <Route path="recipes" element={<Recipes />} />
+            <Route path="recipes/details/:id" element={<RecipesDetails />} />
+            {/* Rutas para listas*/}
             <Route path="list" element={<MyList />} />
             <Route path="list/:id" element={<MyListDetail />} />
+            {/* Rutas para el perfil*/}
             <Route path="profile" element={<ProfileMenu />} />
+            <Route path="details" element={<ProfileForm />} />
+            <Route path="favorites" element={<IngredientesFavoritos />} />
+            <Route path="dislikes" element={<IngredientesNoMeGustan />} />
             {/* Categorias para las listas */}
             <Route path="categories" element={<Categories title="Listas de compras" backUrl="/app/list" />} />
             <Route path="category/:categoryId" element={<CategoryProducts title="Listas de compras" backUrl="/app/list" />} />
             {/* Categorias para las recetas */}
-            <Route path="categories/recipes" element={<Categories title="Mis ingredientes" backUrl="/app/cocina" />} />
-            <Route path="category/recipes/:categoryId" element={<CategoryProducts title="Mis ingredientes" backUrl="/app/cocina" />} />
-            <Route path='recipes/select' element={<IngredientsSelect />} />
-            <Route path="recipes" element={<Recipes />} />
-            <Route path="details" element={<ProfileForm />} />
-            <Route path="favorites" element={<FavoriteIngredients />} />
-            <Route path="dislikes" element={<DislikeIngredients />} />
-            <Route path="recipes/details/:id" element={<RecipesDetails />} />
-            <Route path="details" element={<ProfileForm />}/>
-            <Route path="favorites" element={<FavoriteIngredients />}/>
-            <Route path="dislikes" element={<DislikeIngredients />}/>
+            <Route path="categories/recipes" element={<Categories title="Mis ingredientes" backUrl="/app/recipes" />} />
+            <Route path="category/recipes/:categoryId" element={<CategoryProducts title="Mis ingredientes" backUrl="/app/recipes" />} />
+            
           </Route>
 
           <Route path="/test" element={<Test />} />

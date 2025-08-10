@@ -2,9 +2,12 @@ import { useState } from "react";
 import DynamicForm from "../../components/common/DynamicForm";
 import Graphics from "../../components/common/Graphics";
 import type { FormFieldConfig } from '../../types/components';
+import Button from "../../components/common/Button";
+import { useNavigate } from "react-router-dom";
 
 function ProfileForm() {
     const [profileImage, setProfileImage] = useState<string>('/user-placeholder.png'); // usa tu avatar por defecto
+    const navigate = useNavigate();
 
     // Manejar carga de imagen localmente
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -91,7 +94,15 @@ function ProfileForm() {
                 submitButtonText="Guardar"
                 submitButtonVariant="primary"
                 resetOnSubmit={false}
-            />
+            >
+                <Button
+                    label="Cancelar"
+                    variant="outline"
+                    size="medium"
+                    onClick={() => navigate('/app/profile')}
+                />
+            </DynamicForm>
+
         </section>
     );
 }

@@ -104,7 +104,7 @@ function IngredientsSelect() {
                 <div className="mb-8">
                     <div className="mb-6">
                         {/* Botón de regreso + Título */}
-                        <IconWithTitle title={'Mis ingredientes'} url={'/app/cocina'} />
+                        <IconWithTitle title={'Mis ingredientes'} url={'/app/recipes'} />
                         <div className="flex items-center justify-between">
                             <p className="text-text-primary">Ingredientes seleccionados</p>
                             <p className="text-sm text-gray-500">
@@ -176,16 +176,14 @@ function IngredientsSelect() {
                             onClick={() => navigate('/app/categories/recipes')}
                             className="w-full"
                         />
-
                     )
-
                     }
+                </div>
                     {selectedIngredientsData.length > 0 && (
                         <p className="text-xs text-gray-500 mt-2 text-center">
                             Ingredientes: {selectedIngredientsData.map(ing => ing.name).join(', ')}
                         </p>
                     )}
-                </div>
             </div>
         </div>
     );

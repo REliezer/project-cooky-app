@@ -3,7 +3,7 @@ import "../../styles/components/DislikeIngredientes.css";
 
 type Item = { id: string; name: string; emoji: string };
 
-export default function IngredientesNoMeGustan() {
+function DislikeIngredients() {
   const [items, setItems] = useState<Item[]>([
     { id: "cilantro",  name: "Cilantro",  emoji: "🌿" },
     { id: "aceituna",  name: "Aceituna",  emoji: "🫒" },
@@ -161,3 +161,5 @@ function SwipeRow({ item, onDelete }: { item: Item; onDelete: () => void }) {
     </div>
   );
 }
+
+export default DislikeIngredients;

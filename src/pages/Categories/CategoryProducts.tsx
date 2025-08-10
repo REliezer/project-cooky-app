@@ -32,7 +32,7 @@ function CategoryProducts({ title: propTitle, backUrl: propBackUrl, subtitle: pr
     
     // Estados para selección de ingredientes (para recetas)
     const [selectedIngredients, setSelectedIngredients] = useState<string[]>([]);
-    const isForRecipes = backUrl === '/app/cocina';
+    const isForRecipes = backUrl === '/app/recipes';
     const userType = 'free'; // TODO: obtener del contexto/estado global
     const maxIngredients = userType === 'free' ? 3 : 4;
 

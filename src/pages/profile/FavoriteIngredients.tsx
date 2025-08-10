@@ -3,7 +3,7 @@ import "../../styles/components/FavoriteIngredients.css";
 
 type Item = { id: string; name: string; emoji: string };
 
-export default function IngredientesFavoritos() {
+function FavoriteIngredients() {
   const [items, setItems] = useState<Item[]>([
     { id: "cebolla", name: "Cebolla", emoji: "🧅" },
     { id: "tomate", name: "Tomate", emoji: "🍅" },
@@ -150,3 +150,5 @@ function SwipeRow({ item, onDelete }: { item: Item; onDelete: () => void }) {
     </div>
   );
 }
+
+export default FavoriteIngredients;

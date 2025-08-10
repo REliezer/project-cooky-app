@@ -3,7 +3,7 @@ import cookyLogo from '../../assets/cooky.svg'
 import Button from '../../components/common/Button'
 import Graphics from '../../components/common/Graphics'
 
-function Home() {
+function HomeRecipe() {
   const userType = 'free'
   const navigate = useNavigate()
 
@@ -39,4 +39,4 @@ function Home() {
   )
 }
 
-export default Home
+export default HomeRecipe
