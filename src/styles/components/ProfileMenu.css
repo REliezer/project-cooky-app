@@ -1,0 +1,103 @@
+/* Paleta */
+:root{
+  --bg-warm: #FFF6ED;
+  --text-main:#381C08;
+  --border:#E5E5E5;
+  --brand:#fe6700;
+}
+
+/* Página */
+.profile-section{
+  min-height: 100vh;
+  padding-bottom: 4rem;            
+  background: var(--bg-warm);
+}
+
+/* Header + avatar */
+.profile-header{
+  display:flex; flex-direction:column; align-items:center;
+  margin-top:-5rem;                 
+  margin-bottom:1rem;               
+}
+@media (min-width: 768px){
+  .profile-header{ margin-top:-5.5rem; } 
+}
+
+.profile-avatar{
+  position:relative;
+}
+.profile-avatar img{
+  width: 9rem; height: 9rem;        
+  border-radius:9999px;
+  border:4px solid #f48f1d;
+  object-fit:cover;
+  box-shadow:0 4px 16px rgba(0,0,0,.15);
+}
+.profile-avatar-badge{
+  position:absolute; right:.25rem; bottom:.25rem;
+  background:#fe6700; padding:.25rem; border-radius:9999px;
+  box-shadow:0 2px 8px rgba(0,0,0,.12);
+}
+
+.profile-name{
+  margin-top:.75rem;
+  color:var(--text-main);
+  text-align:center;
+  font-weight:600;
+  font-size:1rem;
+}
+.profile-email{
+  color:var(--text-main);
+  opacity:.7;
+  text-align:center;
+  font-size:.875rem;
+}
+
+.profile-container{
+  padding-left:1.5rem; padding-right:1.5rem; 
+}
+.profile-stack{ display:grid; gap:1.5rem; }  
+
+.section-title{
+  color:var(--text-main);
+  font-weight:600;
+  font-size:.875rem;
+  margin-bottom:.5rem;
+}
+.section-items{ display:grid; gap:.75rem; }  
+.card-item{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:.75rem 1rem;              
+  background:#fff;
+  color:var(--text-main);
+  border:1px solid var(--border);
+  border-radius: .75rem;            
+  transition: box-shadow .2s ease, border-color .2s ease, transform .15s ease;
+  text-decoration:none;
+  outline: none;
+}
+.card-item:hover{
+  border-color: #ff8a3d;            
+  box-shadow: 0 10px 25px rgba(254,103,0,.22);
+  transform: translateY(-1px);
+}
+.card-item:focus-visible{
+  box-shadow: 0 0 0 3px rgba(254,103,0,.35);
+  border-color:#ff8a3d;
+}
+
+.card-icon{
+  display:grid; place-items:center;
+  width:2rem; height:2rem;
+  border-radius:9999px;
+  background:#FFE1C7;              
+  margin-right:.75rem;
+}
+
+.card-chevron{
+  width:1rem; height:1rem; opacity:.6;
+}
+
+.logout-row{
+  display:flex; justify-content:center;
+}
