@@ -5,26 +5,30 @@ import { Clock, ChefHat, Sparkles, Filter, Crown } from 'lucide-react'
 import { Button } from "../../components/recipe/Button.tsx"
 import { Card, CardContent } from "../../components/recipe/Card.tsx"
 import { Badge } from "../../components/recipe/Badge.tsx"
-import { recetasPremium } from "../../data/Recipes.ts"
+import { recetas } from "../../data/Recipes.ts"
+import { useNavigate } from 'react-router-dom'
 
 interface RecetasPremiumProps {
   searchQuery: string
 }
 
 export default function RecetasPremium({ searchQuery }: RecetasPremiumProps) {
-  const [showFilters, setShowFilters] = useState(false)
+  const [showFilters, setShowFilters] = useState(true)
+  const navigate = useNavigate();
+
+  const premium = recetas.filter(r => r.premium);
 
   return (
     <>
       {/* Premium Filters */}
-      <div className="p-4 bg-gradient-to-r from-purple-50 to-blue-50 border-b">
+      <div className="p-4 pt-0 bg-gradient-to-r from-purple-50 to-blue-50 border-b">
         <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 ml-2 -mb-4">
             <Crown className="h-4 w-4 text-purple-600" />
             <span className="text-sm font-medium text-gd-red">Filtros IA</span>
           </div>
           <Button variant="ghost" size="sm" onClick={() => setShowFilters(!showFilters)}>
-            <Filter className="h-4 w-4" />
+            <Filter className="h-4 w-4 mt-4" />
           </Button>
         </div>
 
@@ -44,9 +48,6 @@ export default function RecetasPremium({ searchQuery }: RecetasPremiumProps) {
                 Vegetariano
               </Badge>
             </div>
-            <div className="text-xs text-gray-600">
-              <p>✨ Filtros inteligentes basados en tus preferencias</p>
-            </div>
           </div>
         )}
       </div>
@@ -55,22 +56,23 @@ export default function RecetasPremium({ searchQuery }: RecetasPremiumProps) {
       <div className="px-4 py-2 bg-gradient-to-r from-purple-100 to-blue-100">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Sparkles className="h-4 w-4 text-purple-600" />
-            <span className="text-sm text-gd-red font-medium">Recetas personalizadas</span>
+            <span className="text-sm text-black font-medium">Recetas personalizadas</span>
           </div>
-          <span className="text-sm font-medium text-gd-red">
-            {recetasPremium.length} resultados IA
+          <span className="text-sm font-medium text-text-tertiary">
+            {premium.length} resultados IA
           </span>
         </div>
-        <p className="text-xs text-gd-red mt-1">
+        <p className="text-xs text-black mt-1">
           Optimizadas con IA para tus ingredientes exactos
         </p>
       </div>
 
       {/* Recipe Cards */}
       <div className="p-4 space-y-4">
-        {recetasPremium.map((receta) => (
-          <Card key={receta.id} className="overflow-hidden border-purple-200 hover:shadow-lg transition-shadow">
+        {premium.map((receta) => (
+          <Card key={receta.id}
+            className="overflow-hidden border-purple-200 hover:shadow-lg transition-shadow cursor-pointer"
+            onClick={() => navigate(`/app/recipes/details/${receta.id}`)}>
             <CardContent className="p-0">
               <div className="flex">
                 <div className="relative">
@@ -96,11 +98,11 @@ export default function RecetasPremium({ searchQuery }: RecetasPremiumProps) {
 
                   <div className="flex items-center gap-3 text-xs text-gray-500 mb-2">
                     <div className="flex items-center gap-1">
-                      <Clock className="h-3 w-3" />
+                      <Clock className="h-3 w-3"/>
                       {receta.tiempo}
                     </div>
                     <div className="flex items-center gap-1">
-                      <ChefHat className="h-3 w-3" />
+                      <ChefHat className="h-3 w-3"/>
                       {receta.dificultad}
                     </div>
                   </div>
@@ -109,17 +111,13 @@ export default function RecetasPremium({ searchQuery }: RecetasPremiumProps) {
                   <div className="space-y-1 mb-2">
                     <div className="bg-blue-50 p-2 rounded text-xs">
                       <div className="flex items-center gap-1 mb-1">
-                        <Sparkles className="h-3 w-3 text-blue-600" />
-                        <span className="text-gd-red text-[14px]">Sustitución IA</span>
+                        ✨
+                        <span className="text-gd-red text-[13px] font-medium">Sustitución IA</span>
                       </div>
-                      <p className="text-gd-red text-[14px]">{receta.sustitucion}</p>
+                      <p className="text-gd-red text-[13px]">{receta.sustitucion}</p>
                     </div>
                     <div className="bg-purple-50 p-2 rounded text-xs">
-                      <div className="flex items-center gap-1 mb-1">
-                        <Crown className="h-3 w-3 text-purple-600" />
-                        <span className="text-gd-red text-[14px]">Personalización</span>
-                      </div>
-                      <p className="text-gd-red text-[14px]">{receta.personalizacion}</p>
+                      <p className="text-gd-red text-[13px]">{receta.personalizacion}</p>
                     </div>
                   </div>
 

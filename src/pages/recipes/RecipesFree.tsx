@@ -4,7 +4,7 @@ import { Clock, ChefHat, Sparkles } from 'lucide-react'
 import { Button } from "../../components/recipe/Button.tsx"
 import { Card, CardContent } from "../../components/recipe/Card.tsx"
 import { Badge } from "../../components/recipe/Badge.tsx"
-import { recetasGratuitas } from "../../data/Recipes.ts"
+import { recetas } from "../../data/Recipes.ts"
 import { useNavigate } from 'react-router-dom'
 
 interface RecetasFreeProps {
@@ -14,16 +14,18 @@ interface RecetasFreeProps {
 export default function RecetasFree({ searchQuery }: RecetasFreeProps) {
   const navigate = useNavigate();
 
+  const gratis = recetas.filter(r => !r.premium);
+
   return (
     <>
       {/* Banner Promocional */}
       <div className="m-4 p-4 bg-gradient-to-r from-gd-red to-gd-pink text-white rounded-lg">
         <div className="flex items-center gap-2 mb-2">
-          <Sparkles className="h-5 w-5 text-white" />
+          <Sparkles className="h-5 w-5 text-white" color='#FFFFFF'/>
           <span className="text-white">¡Mejora tu experiencia!</span>
         </div>
         <p className="text-sm mb-3 text-white">Usa IA para ver recetas exactas con lo que tienes</p>
-        <Button size="sm" className="bg-white text-gd-red hover:bg-gray-100 font-bold hover:cursor-pointer" onClick={() => navigate('/plans')}>
+        <Button size="sm" className="bg-white text-gd-red hover:bg-gray-100 font-semibold hover:cursor-pointer" onClick={() => navigate('/plans')}>
           Probar Premium
         </Button>
       </div>
@@ -32,7 +34,7 @@ export default function RecetasFree({ searchQuery }: RecetasFreeProps) {
       <div className="px-4 py-2 bg-gray-50">
         <div className="flex items-center justify-between">
           <span className="text-sm text-gray-600">Recetas encontradas</span>
-          <span className="text-sm font-medium">{recetasGratuitas.length} resultados</span>
+          <span className="text-sm font-medium">{gratis.length} resultados</span>
         </div>
         <p className="text-xs text-gray-500 mt-1">
           Ordenadas por coincidencia básica de ingredientes
@@ -41,8 +43,10 @@ export default function RecetasFree({ searchQuery }: RecetasFreeProps) {
 
       {/* Recipe Cards */}
       <div className="p-4 space-y-4">
-        {recetasGratuitas.map((receta) => (
-          <Card key={receta.id} className="overflow-hidden hover:shadow-md border-purple-200 transition-shadow">
+        {gratis.map((receta) => (
+          <Card key={receta.id}
+            className="overflow-hidden hover:shadow-md border-purple-200 transition-shadow cursor-pointer"
+            onClick={() => navigate(`/app/recipes/details/${receta.id}`)}>
             <CardContent className="p-0">
               <div className="flex">
                 <img
@@ -55,13 +59,12 @@ export default function RecetasFree({ searchQuery }: RecetasFreeProps) {
                     <p className="font-semibold text-text-tertiary leading-tight">{receta.nombre}</p>
                     <div className="flex items-center gap-1 ml-2">
                       <div
-                        className={`w-2 h-2 rounded-full ${
-                          receta.coincidencia >= 90
-                            ? "bg-green-500"
-                            : receta.coincidencia >= 70
-                              ? "bg-yellow-500"
-                              : "bg-orange-500"
-                        }`}
+                        className={`w-2 h-2 rounded-full ${receta.coincidencia >= 90
+                          ? "bg-green-500"
+                          : receta.coincidencia >= 70
+                            ? "bg-yellow-500"
+                            : "bg-orange-500"
+                          }`}
                       />
                       <span className="text-xs text-gray-500">{receta.coincidencia}%</span>
                     </div>
@@ -81,12 +84,12 @@ export default function RecetasFree({ searchQuery }: RecetasFreeProps) {
                   {/* Ingredients */}
                   <div className="flex flex-wrap gap-1 mt-2">
                     {receta.ingredientes.slice(0, 3).map((ingrediente, index) => (
-                      <Badge key={index} variant="outline" className="text-xs px-1 py-0">
+                      <Badge key={index} variant="outline" className="text-xs px-1 py-0 border-purple-200">
                         {ingrediente}
                       </Badge>
                     ))}
                     {receta.ingredientes.length > 3 && (
-                      <Badge variant="outline" className="text-xs px-1 py-0">
+                      <Badge variant="outline" className="text-xs px-1 py-0 border-purple-200">
                         +{receta.ingredientes.length - 3}
                       </Badge>
                     )}

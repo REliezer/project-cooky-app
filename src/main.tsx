@@ -20,6 +20,7 @@ import MyListDetail from './pages/lists/MyListDetail'
 import Categories from './pages/Categories/Categories';
 import CategoryProducts from './pages/Categories/CategoryProducts';
 import Recipes from './pages/recipes/Recipes';
+import RecipesDetails from './pages/recipes/RecipesDetails';
 import ProfileMenu from './pages/profile/ProfileMenu';
 import ProfileForm from './pages/profile/ProfileForm';
 import FavoriteIngredients from './pages/profile/FavoriteIngredients';
@@ -49,6 +50,7 @@ createRoot(document.getElementById('root')!).render(
             <Route path="categories" element={<Categories />} />
             <Route path="category/:categoryId" element={<CategoryProducts />} />
             <Route path="recipes" element={<Recipes />} />
+            <Route path="recipes/details/:id" element={<RecipesDetails />} />
             <Route path="details" element={<ProfileForm />}/>
             <Route path="favorites" element={<FavoriteIngredients />}/>
             <Route path="dislikes" element={<DislikeIngredients />}/>
@@ -60,3 +62,5 @@ createRoot(document.getElementById('root')!).render(
     </BrowserRouter>
   </StrictMode>
 )
+
+
