@@ -24,7 +24,7 @@ export default function RecetasPremium({ searchQuery }: RecetasPremiumProps) {
       <div className="p-4 pt-0 bg-gradient-to-r from-purple-50 to-blue-50 border-b">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2 ml-2 -mb-4">
-            <Crown className="h-4 w-4 text-purple-600" />
+            <Crown className="h-4 w-4 text-purple-600" color="#CF1111"/>
             <span className="text-sm font-medium text-gd-red">Filtros IA</span>
           </div>
           <Button variant="ghost" size="sm" onClick={() => setShowFilters(!showFilters)}>

@@ -1,20 +1,44 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { ArrowLeft, Clock, ChefHat, Bookmark, Apple } from "lucide-react"
 import { Button } from "../../components/recipe/Button"
 import { Card, CardContent } from "../../components/recipe/Card"
 import { useParams, useNavigate } from "react-router-dom"
 import { recetas } from "../../data/Recipes.ts"
+import { toast } from "sonner";
 
 export default function DetalleReceta() {
     const [activeTab, setActiveTab] = useState<"ingredientes" | "pasos">("ingredientes")
+    const [isSaved, setIsSaved] = useState(false);
     const { id } = useParams();
     const navigate = useNavigate();
 
     const receta = recetas.find(r => r.id.toString() === id);
-    
 
+    useEffect(() => {
+        if (id) {
+            const savedRecipes = JSON.parse(localStorage.getItem("savedRecipes") || "[]");
+            setIsSaved(savedRecipes.includes(id));
+        }
+    }, [id]);
+
+    const toggleSave = () => {
+        const savedRecipes = JSON.parse(localStorage.getItem("savedRecipes") || "[]");
+
+        let updated;
+        if (isSaved) {
+            updated = savedRecipes.filter((rid: string) => rid !== id);
+        } else {
+            // Si no estaba guardada, la añadimos
+            updated = [...savedRecipes, id];
+            toast.success('Receta guardada');
+        }
+
+        localStorage.setItem("savedRecipes", JSON.stringify(updated));
+        setIsSaved(!isSaved);
+    };
+    
     if (!receta) {
         return (
             <div className="p-4 text-center text-gray-500">
@@ -70,12 +94,19 @@ export default function DetalleReceta() {
                         <div className="font-semibold text-amber-700">{receta.tiempo}</div>
                     </div>
 
-                    <div className="text-center">
-                        <div className="flex justify-center mb-1">
-                            <Bookmark className="h-5 w-5 text-amber-700 fill-current" />
+                    <button
+                            onClick={toggleSave}
+                        className="text-center focus:outline-none mb-6"
+                    >
+                        <div className="flex justify-center">
+                            <Bookmark
+                                className={`h-5 w-5 transition-all duration-300 ${isSaved ? "fill-amber-700 scale-110" : "text-amber-700"}`}
+                            />
                         </div>
-                        <div className="text-sm text-gray-600">Guardar</div>
-                    </div>
+                        <div className="text-sm text-gray-600 mt-1">
+                            {isSaved ? "Guardado" : "¿Guardar?"}
+                        </div>
+                    </button>
                 </div>
             </div>
 

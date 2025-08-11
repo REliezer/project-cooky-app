@@ -67,8 +67,8 @@ createRoot(document.getElementById('root')!).render(
             <Route path="category/recipes/:categoryId" element={<CategoryProducts title="Mis ingredientes" backUrl="/app/recipes" />} />
             
           </Route>
-
-          <Route path="/test" element={<Test />} />
+          
+          <Route path="/test" element={<Test />} />       
         </Routes>
       </RegistrationProvider>
     </BrowserRouter>

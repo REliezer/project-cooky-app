@@ -70,8 +70,8 @@ export default function RecetasFree({ searchQuery }: RecetasFreeProps) {
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-3 text-xs text-gray-500 mb-2">
-                    <div className="flex items-center gap-1">
+                  <div className="flex items-center gap-3 text-xs mb-2">
+                    <div className="flex items-center gap-1 text-black">
                       <Clock className="h-3 w-3" />
                       {receta.tiempo}
                     </div>
