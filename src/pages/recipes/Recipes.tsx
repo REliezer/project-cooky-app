@@ -7,13 +7,17 @@ import { Switch } from "../../components/recipe/Switch"
 import { Label } from "../../components/recipe/Label"
 import { ScrollArea } from "../../components/recipe/Scroll-area"
 import RecetasFree from "./RecipesFree"
-import RecetasPremium from './RecipesPremium'
+
+import { useIngredients } from "../../hooks/recipes/useIngredients"
+import { useAuthStore } from '../../store/useAuthStore.ts';
 
 export default function RecetasApp() {
-  const [isPremium, setIsPremium] = useState(false)
-  const [searchQuery, setSearchQuery] = useState("tomate, cebolla, pollo")
+  const { ingredients } = useIngredients();
+  const { user } = useAuthStore();
+  const isPremium = user?.premium || false;
+  const [searchQuery, setSearchQuery] = useState(ingredients.join(', '))
 
- return (
+  return (
     <div className="container mx-auto bg-white min-h-screen">
       {/* Header */}
       <div className="bg-bg-tertiary text-white p-4 pb-6">
@@ -23,7 +27,7 @@ export default function RecetasApp() {
             <Label htmlFor="premium-toggle" className="text-white">
               Premium
             </Label>
-            <Switch id="premium-toggle" checked={isPremium} onCheckedChange={setIsPremium} />
+            <Switch id="premium-toggle" checked={isPremium}/>
           </div>
         </div>
 
@@ -34,17 +38,13 @@ export default function RecetasApp() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Ingredientes que tienes..."
-            className="pl-10 bg-white text-black"
+            className="pl-10 bg-bg-primary text-text-primary"
           />
         </div>
       </div>
 
       <ScrollArea className="flex-1">
-        {isPremium ? (
-          <RecetasPremium searchQuery={searchQuery} />
-        ) : (
-          <RecetasFree searchQuery={searchQuery} />
-        )}
+        <RecetasFree searchQuery={searchQuery} />
       </ScrollArea>
     </div>
   )

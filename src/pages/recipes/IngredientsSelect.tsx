@@ -1,5 +1,7 @@
 
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 
 import CategoryCard from '../../components/common/CategoryCard';
 import Button from '../../components/common/Button';
@@ -7,90 +9,68 @@ import Alert from '../../components/common/Alert';
 import IconWithTitle from "../../components/ui/IconWithTitle";
 
 import { categories } from '../../data/Categories';
-import { useNavigate } from 'react-router-dom';
-import { toast } from 'sonner';
+
+import { useRecipesManager } from '../../hooks/recipes/useRecipesManager';
+
+interface product {
+    id: string;
+    name: string;
+    icon: string;
+}
 
 function IngredientsSelect() {
+    const { ingredients, recipes, searchRecipesWithSelectedIngredients, } = useRecipesManager();
     const navigate = useNavigate();
-    const [selectedIngredientsData, setSelectedIngredientsData] = useState<any[]>([]);
+    const [selectedIngredientsData, setSelectedIngredientsData] = useState<product[]>([]);
     const [isLoading, setIsLoading] = useState(false);
+
     const userType = 'free'; // TODO: obtener del contexto/estado global
     const maxIngredients = userType === 'free' ? 3 : 4;
 
-    // Cargar ingredientes seleccionados del localStorage
+    // Cargar datos completos de los ingredientes seleccionados
     useEffect(() => {
-        const savedIngredients = localStorage.getItem('selectedIngredients');
-        if (savedIngredients) {
-            const ingredientNames = JSON.parse(savedIngredients);
+        const ingredientNames = ingredients.getIngredients();
+        console.log('Ingredientes seleccionados:', ingredientNames);
 
-            // Buscar los datos completos de los ingredientes seleccionados
-            const ingredientsData: any[] = [];
-            categories.forEach(category => {
-                category.products?.forEach(product => {
-                    if (ingredientNames.includes(product.name)) {
-                        ingredientsData.push(product);
-                    }
-                });
+        // Buscar los datos completos de los ingredientes seleccionados
+        const ingredientsData: product[] = [];
+        categories.forEach(category => {
+            category.products?.forEach(product => {
+                if (ingredientNames.includes(product.name)) {
+                    ingredientsData.push(product);
+                }
             });
-            setSelectedIngredientsData(ingredientsData);
-        }
-    }, []);
+        });
+        setSelectedIngredientsData(ingredientsData);
+    }, [ingredients.ingredients]); // Se actualiza cuando cambian los ingredientes
 
-    const handleProductClick = (product: any) => {
+    const handleProductClick = (product: product) => {
         // Remover ingrediente de la selección
-        const savedIngredients = localStorage.getItem('selectedIngredients');
-        if (savedIngredients) {
-            const ingredientNames = JSON.parse(savedIngredients);
-            const updatedNames = ingredientNames.filter((name: string) => name !== product.name);
-            localStorage.setItem('selectedIngredients', JSON.stringify(updatedNames));
+        ingredients.removeIngredient(product.name);
+        toast.success(`${product.name} removido de tus ingredientes`);
+    }
 
-            // Actualizar el estado local
-            setSelectedIngredientsData(prev => prev.filter(ing => ing.name !== product.name));
-            toast.success(`${product.name} removido de tus ingredientes`);
-        }
-    };
-
-    // Función para llamar a la API antes de navegar
+    // Función para buscar recetas
     const handleSearchRecipes = async () => {
-        if (selectedIngredientsData.length === 0) {
+        if (ingredients.isEmpty()) {
             toast.error('No tienes ingredientes seleccionados');
             return;
         }
 
         setIsLoading(true);
         try {
-            // Obtener los nombres de los ingredientes seleccionados
-            const ingredientNames = selectedIngredientsData.map(ingredient => ingredient.name);
+            await searchRecipesWithSelectedIngredients();
 
-            // TODO: Reemplazar con tu endpoint real
-            const response = await fetch('/api/recipes/search', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    ingredients: ingredientNames,
-                    userType: userType,
-                    maxResults: userType === 'free' ? 10 : 20
-                })
+            // Navegar a la página de recetas
+            navigate('/app/recipes', {
+                state: {
+                    ingredients: ingredients.getIngredients()
+                }
             });
-
-            if (response.ok) {
-                const recipesData = await response.json();
-                // Navegar a la página de recetas con los datos
-                navigate('/app/recipes', {
-                    state: {
-                        recipes: recipesData,
-                        ingredients: ingredientNames
-                    }
-                });
-            } else {
-                throw new Error('Error al buscar recetas');
-            }
         } catch (error) {
             console.error('Error:', error);
             toast.error('Error al buscar recetas. Intenta de nuevo.');
-            // Por ahora, navegar de todas formas (fallback para desarrollo)
+            // Fallback para desarrollo
             navigate('/app/recipes');
         } finally {
             setIsLoading(false);
@@ -108,7 +88,7 @@ function IngredientsSelect() {
                         <div className="flex items-center justify-between">
                             <p className="text-text-primary">Ingredientes seleccionados</p>
                             <p className="text-sm text-gray-500">
-                                {selectedIngredientsData.length}/{maxIngredients} seleccionados
+                                {ingredients.getIngredientsCount()}/{maxIngredients} seleccionados
                             </p>
                         </div>
                     </div>
@@ -165,7 +145,7 @@ function IngredientsSelect() {
                         variant="secondary"
                         size="medium"
                         onClick={handleSearchRecipes}
-                        disabled={selectedIngredientsData.length === 0 || isLoading}
+                        disabled={ingredients.isEmpty() || isLoading || recipes.isLoading}
                         className="w-full"
                     />
                     {selectedIngredientsData.length < maxIngredients && (
@@ -179,11 +159,11 @@ function IngredientsSelect() {
                     )
                     }
                 </div>
-                    {selectedIngredientsData.length > 0 && (
-                        <p className="text-xs text-gray-500 mt-2 text-center">
-                            Ingredientes: {selectedIngredientsData.map(ing => ing.name).join(', ')}
-                        </p>
-                    )}
+                {selectedIngredientsData.length > 0 && (
+                    <p className="text-xs text-gray-500 mt-2 text-center">
+                        Ingredientes: {selectedIngredientsData.map(ing => ing.name).join(', ')}
+                    </p>
+                )}
             </div>
         </div>
     );

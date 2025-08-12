@@ -1,3 +1,5 @@
+import { recetas } from "../../data/Recipes";
+
 interface Recipe {
   id: string;
   title: string;
@@ -6,6 +8,8 @@ interface Recipe {
   preparationTime?: number;
   difficulty?: 'easy' | 'medium' | 'hard';
   image?: string;
+  sustitucion?: string;
+  personalizacion?: string;
   [key: string]: any;
 }
 
@@ -42,39 +46,25 @@ export async function getRecipes(ingredients: string[]): Promise<Recipe[]> {
 }
 
 // Función para datos mock durante desarrollo
-function getMockRecipes(ingredients: string[]): Recipe[] {
-  const mockRecipes: Recipe[] = [
-    {
-      id: '1',
-      title: `Receta con ${ingredients[0]}`,
-      ingredients: [...ingredients, 'sal', 'pimienta', 'aceite'],
-      instructions: [
-        'Preparar los ingredientes',
-        'Cocinar a fuego medio',
-        'Servir caliente'
-      ],
-      preparationTime: 30,
-      difficulty: 'easy',
-      image: 'https://via.placeholder.com/300x200'
-    },
-    {
-      id: '2',
-      title: `Plato especial con ${ingredients.join(' y ')}`,
-      ingredients: [...ingredients, 'cebolla', 'ajo', 'tomate'],
-      instructions: [
-        'Picar los vegetales',
-        'Saltear en sartén',
-        'Agregar condimentos',
-        'Cocinar por 15 minutos'
-      ],
-      preparationTime: 45,
-      difficulty: 'medium',
-      image: 'https://via.placeholder.com/300x200'
-    }
-  ];
+function getMockRecipes(ingredients: string[]): Promise<Recipe[]> {
+  // Adaptar las recetas al formato esperado
+  const adaptedRecipes: Recipe[] = recetas.map(receta => ({
+    id: receta.id.toString(),
+    title: receta.recipetitle,
+    ingredients: receta.ingredientes,
+    instructions: receta.instructions.map(inst => inst.description),
+    preparationTime: parseInt(receta.preparationTime) || 30,
+    difficulty: receta.difficulty.toLowerCase() as 'easy' | 'medium' | 'hard',
+    image: receta.image,
+    // Propiedades adicionales del formato original
+    premium: receta.premium,
+    coincidencia: receta.coincidencia,
+    sustitucion: receta.sustitucion,
+    personalizacion: receta.personalizacion,
+  }));
 
   // Simular delay de API
   return new Promise(resolve => {
-    setTimeout(() => resolve(mockRecipes), 1000);
-  }) as any;
+    setTimeout(() => resolve(adaptedRecipes), 1000);
+  });
 }

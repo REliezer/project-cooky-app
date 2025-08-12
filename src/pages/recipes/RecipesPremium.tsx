@@ -24,7 +24,7 @@ export default function RecetasPremium({ searchQuery }: RecetasPremiumProps) {
       <div className="p-4 pt-0 bg-gradient-to-r from-purple-50 to-blue-50 border-b">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2 ml-2 -mb-4">
-            <Crown className="h-4 w-4 text-purple-600" color="#CF1111"/>
+            <Crown className="h-4 w-4 text-purple-600" color="#CF1111" />
             <span className="text-sm font-medium text-gd-red">Filtros IA</span>
           </div>
           <Button variant="ghost" size="sm" onClick={() => setShowFilters(!showFilters)}>
@@ -98,11 +98,11 @@ export default function RecetasPremium({ searchQuery }: RecetasPremiumProps) {
 
                   <div className="flex items-center gap-3 text-xs text-gray-500 mb-2">
                     <div className="flex items-center gap-1">
-                      <Clock className="h-3 w-3"/>
+                      <Clock className="h-3 w-3" />
                       {receta.tiempo}
                     </div>
                     <div className="flex items-center gap-1">
-                      <ChefHat className="h-3 w-3"/>
+                      <ChefHat className="h-3 w-3" />
                       {receta.dificultad}
                     </div>
                   </div>

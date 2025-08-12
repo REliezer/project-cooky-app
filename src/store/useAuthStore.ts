@@ -6,6 +6,7 @@ interface User {
   id?: string
   email?: string
   name?: string
+  premium?: boolean
   [key: string]: any
 }
 
@@ -50,7 +51,11 @@ export const useAuthStore = create<AuthState>()(
           const { fakeLogin } = await import('../services/auth/login')
           const response = await fakeLogin(email, password)
           set({ 
-            user: { email, name: response.user }, 
+            user: { 
+              email, 
+              name: response.user,
+              premium: response.premium || false // Usar el valor del servicio
+            }, 
             token: response.token, 
             isAuthenticated: true, 
             isLoading: false,
@@ -89,6 +94,11 @@ export const useAuthStore = create<AuthState>()(
     }),
     {
       name: 'auth-storage', // clave en localStorage
+            partialize: (state) => ({
+                user: state.user,
+                token: state.token,
+                isAuthenticated: state.isAuthenticated
+            })
     }
   )
 )

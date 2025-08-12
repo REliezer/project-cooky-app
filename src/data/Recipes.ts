@@ -8,27 +8,27 @@ import ensalada from "../assets/images/recipes/ensalada.png"
 
 export interface IngredienteDetalle {
   id: number;
-  nombre: string;
-  cantidad: string;
-  icono: string;
+  ingredientName: string;
+  amount: string;
+  icon: string;
 }
 
-export interface Paso {
+export interface instruction {
   numero: number;
-  descripcion: string;
+  description: string;
 }
 
 export interface Receta {
   id: number;
-  nombre: string;
-  imagen: string;
-  tiempo: string;
-  dificultad: string;
+  recipetitle: string;
+  image: string;
+  preparationTime: string;
+  difficulty: string;
   coincidencia: number;
   ingredientesNumero: number;
   ingredientes: string[];
   ingredientesList: IngredienteDetalle[];
-  pasos: Paso[];
+  instructions: instruction[];
   premium: boolean;
   sustitucion: string;
   personalizacion: string;
@@ -38,26 +38,26 @@ export interface Receta {
 export const recetas: Receta[] = [
   {
     id: 1,
-    nombre: "Pollo con Tomate",
-    imagen: chickentomatoe,
-    tiempo: "30 min",
-    dificultad: "Fácil",
+    recipetitle: "Pollo con Tomate",
+    image: chickentomatoe,
+    preparationTime: "30 min",
+    difficulty: "Fácil",
     coincidencia: 85,
     ingredientesNumero: 5,
     ingredientes: ["pollo", "tomate", "cebolla", "ajo", "aceite"],
     ingredientesList: [
-      { id: 1, nombre: "Pollo", cantidad: "500g", icono: "🍗" },
-      { id: 2, nombre: "Tomate", cantidad: "2 Unidades", icono: "🍅" },
-      { id: 3, nombre: "Cebolla", cantidad: "1 Unidad", icono: "🧅" },
-      { id: 4, nombre: "Ajo", cantidad: "2 Dientes", icono: "🧄" },
-      { id: 5, nombre: "Aceite", cantidad: "2 Cucharadas", icono: "🛢️" }
+      { id: 1, ingredientName: "Pollo", amount: "500g", icon: "🍗" },
+      { id: 2, ingredientName: "Tomate", amount: "2 Unidades", icon: "🍅" },
+      { id: 3, ingredientName: "Cebolla", amount: "1 Unidad", icon: "🧅" },
+      { id: 4, ingredientName: "Ajo", amount: "2 Dientes", icon: "🧄" },
+      { id: 5, ingredientName: "Aceite", amount: "2 Cucharadas", icon: "🛢️" }
     ],
-    pasos: [
-      { numero: 1, descripcion: "Cortar el pollo en trozos y salpimentar." },
-      { numero: 2, descripcion: "Picar cebolla, ajo y tomate." },
-      { numero: 3, descripcion: "Sofreír ajo y cebolla con aceite." },
-      { numero: 4, descripcion: "Añadir pollo y cocinar hasta dorar." },
-      { numero: 5, descripcion: "Incorporar el tomate y cocinar 10 minutos más." }
+    instructions: [
+      { numero: 1, description: "Cortar el pollo en trozos y salpimentar." },
+      { numero: 2, description: "Picar cebolla, ajo y tomate." },
+      { numero: 3, description: "Sofreír ajo y cebolla con aceite." },
+      { numero: 4, description: "Añadir pollo y cocinar hasta dorar." },
+      { numero: 5, description: "Incorporar el tomate y cocinar 10 minutos más." }
     ],
     premium: false,
     sustitucion: "",
@@ -66,24 +66,24 @@ export const recetas: Receta[] = [
   },
   {
     id: 2,
-    nombre: "Salteado de Pollo",
-    imagen: salteado,
-    tiempo: "20 min",
-    dificultad: "Fácil",
+    recipetitle: "Salteado de Pollo",
+    image: salteado,
+    preparationTime: "20 min",
+    difficulty: "Fácil",
     coincidencia: 70,
     ingredientesNumero: 4,
     ingredientes: ["pollo", "cebolla", "pimiento", "salsa soja"],
     ingredientesList: [
-      { id: 1, nombre: "Pollo", cantidad: "300g", icono: "🍗" },
-      { id: 2, nombre: "Cebolla", cantidad: "1 Unidad", icono: "🧅" },
-      { id: 3, nombre: "Pimiento", cantidad: "1 Unidad", icono: "🌶️" },
-      { id: 4, nombre: "Salsa de soja", cantidad: "2 Cucharadas", icono: "🥢" }
+      { id: 1, ingredientName: "Pollo", amount: "300g", icon: "🍗" },
+      { id: 2, ingredientName: "Cebolla", amount: "1 Unidad", icon: "🧅" },
+      { id: 3, ingredientName: "Pimiento", amount: "1 Unidad", icon: "🌶️" },
+      { id: 4, ingredientName: "Salsa de soja", amount: "2 Cucharadas", icon: "🥢" }
     ],
-    pasos: [
-      { numero: 1, descripcion: "Cortar pollo, cebolla y pimiento en tiras." },
-      { numero: 2, descripcion: "Calentar aceite en sartén y saltear pollo." },
-      { numero: 3, descripcion: "Añadir verduras y cocinar 5 min." },
-      { numero: 4, descripcion: "Incorporar salsa de soja y remover bien." }
+    instructions: [
+      { numero: 1, description: "Cortar pollo, cebolla y pimiento en tiras." },
+      { numero: 2, description: "Calentar aceite en sartén y saltear pollo." },
+      { numero: 3, description: "Añadir verduras y cocinar 5 min." },
+      { numero: 4, description: "Incorporar salsa de soja y remover bien." }
     ],
     premium: false,
     sustitucion: "",
@@ -92,23 +92,23 @@ export const recetas: Receta[] = [
   },
   {
     id: 3,
-    nombre: "Ensalada de Tomate",
-    imagen: ensalada,
-    tiempo: "10 min",
-    dificultad: "Muy Fácil",
+    recipetitle: "Ensalada de Tomate",
+    image: ensalada,
+    preparationTime: "10 min",
+    difficulty: "Muy Fácil",
     coincidencia: 60,
     ingredientesNumero: 4,
     ingredientes: ["tomate", "cebolla", "aceite", "vinagre"],
     ingredientesList: [
-      { id: 1, nombre: "Tomate", cantidad: "2 Unidades", icono: "🍅" },
-      { id: 2, nombre: "Cebolla", cantidad: "1/2 Unidad", icono: "🧅" },
-      { id: 3, nombre: "Aceite", cantidad: "2 Cucharadas", icono: "🛢️" },
-      { id: 4, nombre: "Vinagre", cantidad: "1 Cucharada", icono: "🍶" }
+      { id: 1, ingredientName: "Tomate", amount: "2 Unidades", icon: "🍅" },
+      { id: 2, ingredientName: "Cebolla", amount: "1/2 Unidad", icon: "🧅" },
+      { id: 3, ingredientName: "Aceite", amount: "2 Cucharadas", icon: "🛢️" },
+      { id: 4, ingredientName: "Vinagre", amount: "1 Cucharada", icon: "🍶" }
     ],
-    pasos: [
-      { numero: 1, descripcion: "Lavar y cortar tomates en rodajas." },
-      { numero: 2, descripcion: "Picar cebolla en julianas finas." },
-      { numero: 3, descripcion: "Aliñar con aceite y vinagre." }
+    instructions: [
+      { numero: 1, description: "Lavar y cortar tomates en rodajas." },
+      { numero: 2, description: "Picar cebolla en julianas finas." },
+      { numero: 3, description: "Aliñar con aceite y vinagre." }
     ],
     premium: false,
     sustitucion: "",
@@ -117,23 +117,23 @@ export const recetas: Receta[] = [
   },
   {
     id: 4,
-    nombre: "Pollo al Tomate Personalizado",
-    imagen: perso,
-    tiempo: "25 min",
-    dificultad: "Fácil",
+    recipetitle: "Pollo al Tomate Personalizado",
+    image: perso,
+    preparationTime: "25 min",
+    difficulty: "Fácil",
     coincidencia: 98,
     ingredientesNumero: 3,
     ingredientes: ["pollo", "tomate", "cebolla"],
     ingredientesList: [
-      { id: 1, nombre: "Pollo", cantidad: "500g", icono: "🍗" },
-      { id: 2, nombre: "Tomate", cantidad: "2 Unidades", icono: "🍅" },
-      { id: 3, nombre: "Cebolla", cantidad: "1 Unidad", icono: "🧅" }
+      { id: 1, ingredientName: "Pollo", amount: "500g", icon: "🍗" },
+      { id: 2, ingredientName: "Tomate", amount: "2 Unidades", icon: "🍅" },
+      { id: 3, ingredientName: "Cebolla", amount: "1 Unidad", icon: "🧅" }
     ],
-    pasos: [
-      { numero: 1, descripcion: "Cortar pollo, tomate y cebolla." },
-      { numero: 2, descripcion: "Sofreír la cebolla en aceite." },
-      { numero: 3, descripcion: "Añadir pollo y cocinar hasta dorar." },
-      { numero: 4, descripcion: "Agregar tomate y cocinar 10 minutos." }
+    instructions: [
+      { numero: 1, description: "Cortar pollo, tomate y cebolla." },
+      { numero: 2, description: "Sofreír la cebolla en aceite." },
+      { numero: 3, description: "Añadir pollo y cocinar hasta dorar." },
+      { numero: 4, description: "Agregar tomate y cocinar 10 minutos." }
     ],
     premium: true,
     sustitucion: "Sin ajo? Usa cebolla en polvo (1/2 cdta)",
@@ -142,22 +142,22 @@ export const recetas: Receta[] = [
   },
   {
     id: 5,
-    nombre: "Pollo Mediterráneo Express",
-    imagen: mediterraneo,
-    tiempo: "20 min",
-    dificultad: "Fácil",
+    recipetitle: "Pollo Mediterráneo Express",
+    image: mediterraneo,
+    preparationTime: "20 min",
+    difficulty: "Fácil",
     coincidencia: 95,
     ingredientesNumero: 3,
     ingredientes: ["pollo", "tomate", "cebolla"],
     ingredientesList: [
-      { id: 1, nombre: "Pollo", cantidad: "400g", icono: "🍗" },
-      { id: 2, nombre: "Tomate", cantidad: "1 Unidad", icono: "🍅" },
-      { id: 3, nombre: "Cebolla", cantidad: "1 Unidad", icono: "🧅" }
+      { id: 1, ingredientName: "Pollo", amount: "400g", icon: "🍗" },
+      { id: 2, ingredientName: "Tomate", amount: "1 Unidad", icon: "🍅" },
+      { id: 3, ingredientName: "Cebolla", amount: "1 Unidad", icon: "🧅" }
     ],
-    pasos: [
-      { numero: 1, descripcion: "Cortar ingredientes en trozos pequeños." },
-      { numero: 2, descripcion: "Saltear pollo con aceite de oliva." },
-      { numero: 3, descripcion: "Añadir tomate y cebolla, cocinar 8 minutos." }
+    instructions: [
+      { numero: 1, description: "Cortar ingredientes en trozos pequeños." },
+      { numero: 2, description: "Saltear pollo con aceite de oliva." },
+      { numero: 3, description: "Añadir tomate y cebolla, cocinar 8 minutos." }
     ],
     premium: true,
     sustitucion: "Puedes agregar: orégano seco si tienes",
@@ -166,22 +166,22 @@ export const recetas: Receta[] = [
   },
   {
     id: 6,
-    nombre: "Guiso Rápido de Pollo",
-    imagen: guiso,
-    tiempo: "35 min",
-    dificultad: "Fácil",
+    recipetitle: "Guiso Rápido de Pollo",
+    image: guiso,
+    preparationTime: "35 min",
+    difficulty: "Fácil",
     coincidencia: 92,
     ingredientesNumero: 3,
     ingredientes: ["pollo", "tomate", "cebolla"],
     ingredientesList: [
-      { id: 1, nombre: "Pollo", cantidad: "500g", icono: "🍗" },
-      { id: 2, nombre: "Tomate", cantidad: "2 Unidades", icono: "🍅" },
-      { id: 3, nombre: "Cebolla", cantidad: "1 Unidad", icono: "🧅" }
+      { id: 1, ingredientName: "Pollo", amount: "500g", icon: "🍗" },
+      { id: 2, ingredientName: "Tomate", amount: "2 Unidades", icon: "🍅" },
+      { id: 3, ingredientName: "Cebolla", amount: "1 Unidad", icon: "🧅" }
     ],
-    pasos: [
-      { numero: 1, descripcion: "Trocear pollo, tomate y cebolla." },
-      { numero: 2, descripcion: "Cocinar pollo en sartén." },
-      { numero: 3, descripcion: "Añadir tomate y cebolla, cocinar 15 minutos." }
+    instructions: [
+      { numero: 1, description: "Trocear pollo, tomate y cebolla." },
+      { numero: 2, description: "Cocinar pollo en sartén." },
+      { numero: 3, description: "Añadir tomate y cebolla, cocinar 15 minutos." }
     ],
     premium: true,
     sustitucion: "Sin caldo? Usa agua + sal",

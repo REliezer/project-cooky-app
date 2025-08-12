@@ -3,6 +3,7 @@ export interface LoginResponse {
   email: string
   user: string
   token: string
+  premium: boolean
   message?: string
 }
 
@@ -40,8 +41,10 @@ export async function fakeLogin(email: string, password: string): Promise<LoginR
 
   // Usuarios "válidos" para testing
   const VALID_USERS = [
-    { email: 'admin@test.com', password: '123456' },
-    { email: 'user@test.com', password: 'password*123' }
+    { email: 'admin@test.com', password: '123456-p789012', premium: true },
+    { email: 'user@test.com', password: 'password*123', premium: false },
+    { email: 'premium@test.com', password: 'premium123456', premium: true },
+    { email: 'free@test.com', password: 'freeuser12345', premium: false }
   ];
 
   // Verificar credenciales
@@ -69,7 +72,7 @@ export async function fakeLogin(email: string, password: string): Promise<LoginR
     btoa(JSON.stringify({ alg: "HS256", typ: "JWT" })),
     btoa(JSON.stringify({
       sub: email,
-      exp: Math.floor(Date.now() / 1000) + 600,
+      exp: Math.floor(Date.now() / 1000) + 600000,
       iat: Math.floor(Date.now() / 1000)
     })),
     "signature"
@@ -79,6 +82,7 @@ export async function fakeLogin(email: string, password: string): Promise<LoginR
     email: email,
     user: 'Testeo Usuario',
     token,
+    premium: validUser.premium,
     message: 'Login exitoso'
   }
 }

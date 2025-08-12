@@ -9,6 +9,8 @@ interface Recipe {
     preparationTime?: number;
     difficulty?: 'easy' | 'medium' | 'hard';
     image?: string;
+    sustitucion?: string;
+    personalizacion?: string;
     [key: string]: any;
 }
 
@@ -24,7 +26,7 @@ interface RecipesState {
     removeIngredient: (ingredientName: string) => void;
     clearIngredients: () => void;
     clearError: () => void;
-    hasIngredient: (ingredientName: string) => boolean; //verificar si un ingrediente está seleccionado
+    hasIngredient: (ingredientName: string) => boolean;
     getIngredientsCount: () => number;
 }
 
@@ -99,11 +101,12 @@ export const useRecipesStore = create<RecipesState>()(
                 return get().ingredients.length;
             }
         }),
-        { 
+        {
             name: 'recipes-storage',
-            partialize: (state) => ({ 
+            partialize: (state) => ({
                 ingredients: state.ingredients,
-                lastSearchedIngredients: state.lastSearchedIngredients 
+                lastSearchedIngredients: state.lastSearchedIngredients,
+                recipes: state.recipes
             })
         }
     )
