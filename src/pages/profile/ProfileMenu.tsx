@@ -7,6 +7,9 @@ import "../../styles/components/ProfileMenu.css"
 import CardSection from "../../components/profile/CardSection";
 import ProfileAvatar from "../../components/ui/ProfileAvatar";
 
+import { useAuthStore } from '../../store/useAuthStore';
+import { useNavigate } from "react-router-dom";
+
 function ProfileMenu() {
   const navigationItems = {
     section: [
@@ -52,6 +55,14 @@ function ProfileMenu() {
       }
     ]
   };
+  const navigate = useNavigate();
+  const { logout, user } = useAuthStore();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/')
+  };
+
   return (
     <section className="pb-16 bg-[#FFF6ED] min-h-screen">
       <div className="relative">
@@ -61,7 +72,7 @@ function ProfileMenu() {
         <div className="-mt-16 md:-mt-12 relative z-10">
           <ProfileAvatar
             src="https://randomuser.me/api/portraits/men/75.jpg"
-            name="Albert Stevano Bajefski"
+            name={`Albert Stevano Bajefski `}
             email="Albertstevano@gmail.com"
             size="lg"
           />
@@ -88,6 +99,7 @@ function ProfileMenu() {
               variant="outline"
               size="medium"
               className="border-[#381C08] text-[#381C08]"
+              onClick={handleLogout}
             />
           </div>
         </div>

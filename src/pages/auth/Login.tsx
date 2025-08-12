@@ -4,7 +4,6 @@ import { useEffect } from "react";
 
 import DynamicForm from "../../components/common/DynamicForm";
 import Graphics from "../../components/common/Graphics";
-import Button from "../../components/common/Button";
 
 import type { FormFieldConfig } from '../../types/components';
 import { useAuthStore } from '../../store/useAuthStore';
@@ -69,7 +68,6 @@ function Login() {
             navigate('/app/home')
         } catch (error) {
             console.error('Error en login:', error)
-            // No mostramos toast aquí porque el error ya está en el estado
         }
     };
 
@@ -111,13 +109,15 @@ function Login() {
                 resetOnSubmit={false}
                 isLoading={isLoading}
             >
+                {/*
                 <Button
                     label="Continuar con Google"
                     variant="outline"
                     size="medium"
                 />
+                */}
                 {/* Enlace para ir al registrp */}
-                <div className="text-center text-sm text-gray-600">
+                <div className="text-center text-sm">
                     <p>
                         ¿No tienes una cuenta?{' '}
                         <a href="/register" className="text-[#FE6700] hover:text-[#e55a00] font-medium">
