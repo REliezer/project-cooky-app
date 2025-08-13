@@ -64,10 +64,10 @@ createRoot(document.getElementById('root')!).render(
               <Route path="dislikes" element={<IngredientesNoMeGustan />} />
               {/* Categorias para las listas */}
               <Route path="categories" element={<Categories title="Listas de compras" backUrl="/app/list" />} />
-              <Route path="category/:categoryId" element={<CategoryProducts title="Listas de compras" backUrl="/app/list" />} />
+              <Route path="category/:categoryId" element={<CategoryProducts title="Listas de compras" backUrl="/app/categories" />} />
               {/* Categorias para las recetas */}
-              <Route path="categories/recipes" element={<Categories title="Mis ingredientes" backUrl="/app/recipes" />} />
-              <Route path="category/recipes/:categoryId" element={<CategoryProducts title="Mis ingredientes" backUrl="/app/recipes" />} />
+              <Route path="categories/recipes" element={<Categories title="Mis ingredientes" backUrl="/app/recipe" />} />
+              <Route path="category/recipes/:categoryId" element={<CategoryProducts title="Mis ingredientes" backUrl="/app/categories/recipes" />} />
             </Route>
 
 

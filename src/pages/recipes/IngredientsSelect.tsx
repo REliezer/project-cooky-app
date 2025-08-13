@@ -67,6 +67,10 @@ function IngredientsSelect() {
                     ingredients: ingredients.getIngredients()
                 }
             });
+
+            // Limpiar ingredientes después de búsqueda exitosa
+            ingredients.clearIngredients();
+            toast.success('Búsqueda completada. Ingredientes limpiados para nueva búsqueda.');
         } catch (error) {
             console.error('Error:', error);
             toast.error('Error al buscar recetas. Intenta de nuevo.');
@@ -84,7 +88,7 @@ function IngredientsSelect() {
                 <div className="mb-8">
                     <div className="mb-6">
                         {/* Botón de regreso + Título */}
-                        <IconWithTitle title={'Mis ingredientes'} url={'/app/recipes'} />
+                        <IconWithTitle title={'Mis ingredientes'} url={'/app/categories/recipes'} />
                         <div className="flex items-center justify-between">
                             <p className="text-text-primary">Ingredientes seleccionados</p>
                             <p className="text-sm text-gray-500">
@@ -119,17 +123,10 @@ function IngredientsSelect() {
                             </p>
                         </>
                     ) : (
-                        <div className="text-center">
+                        <div className="text-center m-0">
                             <Alert
                                 message='No has seleccionado ningún ingrediente.'
                                 type='info'
-                            />
-                            <Button
-                                label="Seleccionar ingredientes"
-                                variant="outline"
-                                size="medium"
-                                onClick={() => navigate('/app/categories/recipes')}
-                                className="mt-0"
                             />
                         </div>
                     )}

@@ -44,10 +44,11 @@ function CategoryProducts({ title: propTitle, backUrl: propBackUrl, subtitle: pr
     const [isLoading, setIsLoading] = useState(false);
 
     // Estados para selección de ingredientes (para recetas)
-    const isForRecipes = backUrl === '/app/recipes';
+    const isForRecipes = backUrl === '/app/categories/recipes' || backUrl.includes('/recipe');
     const userType = 'free'; // TODO: obtener del contexto/estado global
     const maxIngredients = userType === 'free' ? 3 : 4;
 
+    console.log('backUrl:', backUrl, 'isForRecipes:', isForRecipes);
     const category = categories.find(cat => cat.id === categoryId);
 
     const addProductFormFields: FormFieldConfig[] = [
@@ -146,6 +147,10 @@ function CategoryProducts({ title: propTitle, backUrl: propBackUrl, subtitle: pr
                     ingredients: ingredients.getIngredients()
                 }
             });
+
+            // Limpiar ingredientes después de búsqueda exitosa
+            ingredients.clearIngredients();
+            toast.success('Búsqueda completada. Ingredientes limpiados para nueva búsqueda.');
         } catch (error) {
             console.error('Error:', error);
             toast.error('Error al buscar recetas. Intenta de nuevo.');
