@@ -142,15 +142,9 @@ function CategoryProducts({ title: propTitle, backUrl: propBackUrl, subtitle: pr
         setIsLoading(true);
         try {
             await searchRecipesWithSelectedIngredients();
-            // Guardar ingredientes antes de limpiar
-            const currentIngredients = ingredients.getIngredients();
 
-            // Navegar a la página de recetas
-            navigate('/app/recipes', {
-                state: {
-                    ingredients: currentIngredients
-                }
-            });
+            // Navegar a la página de recetas (los ingredientes ya están guardados en lastSearchedIngredients)
+            navigate('/app/recipes');
 
             // Limpiar ingredientes después de búsqueda exitosa
             ingredients.clearIngredients();

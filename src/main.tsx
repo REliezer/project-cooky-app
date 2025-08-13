@@ -53,7 +53,7 @@ createRoot(document.getElementById('root')!).render(
               <Route path="recipe" element={<HomeRecipe />} />
               <Route path='recipes/select' element={<IngredientsSelect />} />
               <Route path="recipes" element={<Recipes />} />
-              <Route path="recipes/details/:id" element={<RecipesDetails />} />
+              <Route path="recipes/details/:idRecipe" element={<RecipesDetails />} />
               {/* Rutas para listas*/}
               <Route path="list" element={<MyList />} />
               <Route path="list/:id" element={<MyListDetail />} />

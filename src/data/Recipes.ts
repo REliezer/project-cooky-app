@@ -16,6 +16,7 @@ export interface IngredienteDetalle {
 export interface instruction {
   numero: number;
   description: string;
+  time?: string;
 }
 
 export interface Receta {
@@ -53,11 +54,11 @@ export const recetas: Receta[] = [
       { id: 5, ingredientName: "Aceite", amount: "2 Cucharadas", icon: "🛢️" }
     ],
     instructions: [
-      { numero: 1, description: "Cortar el pollo en trozos y salpimentar." },
-      { numero: 2, description: "Picar cebolla, ajo y tomate." },
-      { numero: 3, description: "Sofreír ajo y cebolla con aceite." },
-      { numero: 4, description: "Añadir pollo y cocinar hasta dorar." },
-      { numero: 5, description: "Incorporar el tomate y cocinar 10 minutos más." }
+      { numero: 1, description: "Cortar el pollo en trozos y salpimentar.", time: "5 min" },
+      { numero: 2, description: "Picar cebolla, ajo y tomate.", time: "5 min" },
+      { numero: 3, description: "Sofreír ajo y cebolla con aceite.", time: "5 min" },
+      { numero: 4, description: "Añadir pollo y cocinar hasta dorar.", time: "5 min" },
+      { numero: 5, description: "Incorporar el tomate y cocinar 10 minutos más.", time: "5 min" }
     ],
     premium: false,
     sustitucion: "",

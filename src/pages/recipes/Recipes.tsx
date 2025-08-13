@@ -10,27 +10,31 @@ import { ScrollArea } from "../../components/recipe/Scroll-area"
 import RecetasFree from "./RecipesFree"
 
 import { useIngredients } from "../../hooks/recipes/useIngredients"
+import { useRecipes } from "../../hooks/recipes/useRecipes"
 import { useAuthStore } from '../../store/useAuthStore.ts';
 
 export default function RecetasApp() {
   const { ingredients } = useIngredients();
+  const { lastSearchedIngredients } = useRecipes();
   const { user } = useAuthStore();
   const location = useLocation();
   const isPremium = user?.premium || false;
   
-  // Usar useMemo para calcular los ingredientes sin causar re-renders infinitos
-  const currentIngredients = useMemo(() => {
-    return location.state?.ingredients || ingredients;
-  }, [location.state?.ingredients, ingredients.length]);
-  
-  const [searchQuery, setSearchQuery] = useState(() => currentIngredients.join(', '))
-  
-  // Solo actualizar cuando la navegación cambie (nueva búsqueda)
-  useEffect(() => {
-    if (location.state?.ingredients) {
-      setSearchQuery(location.state.ingredients.join(', '));
+  // Priorizar ingredientes de la búsqueda reciente, luego location.state, luego ingredientes actuales
+  const displayIngredients = useMemo(() => {
+    if (lastSearchedIngredients.length > 0) {
+      return lastSearchedIngredients;
     }
-  }, [location.state?.ingredients]);
+    return location.state?.ingredients || ingredients;
+  }, [lastSearchedIngredients, location.state?.ingredients, ingredients.length]);
+  
+  const [searchQuery, setSearchQuery] = useState(() => displayIngredients.join(', '))
+  
+  // Actualizar cuando cambien los ingredientes mostrados
+  useEffect(() => {
+    const newQuery = displayIngredients.join(', ');
+    setSearchQuery(newQuery);
+  }, [displayIngredients]);
 
   return (
     <div className="container mx-auto bg-white min-h-screen">

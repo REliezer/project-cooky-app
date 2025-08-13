@@ -43,11 +43,9 @@ export const useRecipesManager = () => {
 
   return {
     // Ingredientes
-    ingredients,
-    
+    ingredients,    
     // Recetas
-    recipes,
-    
+    recipes,    
     // Funciones combinadas
     searchRecipesWithSelectedIngredients,
     canSearchRecipes,

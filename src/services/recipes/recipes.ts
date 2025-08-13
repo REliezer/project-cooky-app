@@ -1,28 +1,42 @@
 import { recetas } from "../../data/Recipes";
 
+// Usar las interfaces del store para ser consistentes
+interface Ingredient {
+  id: number;
+  ingredientName: string;
+  amount: string;
+  icon: string;
+}
+
+interface instruction {
+  number: number;
+  description: string;
+  time?: string;
+}
+
 interface Recipe {
   id: string;
   title: string;
-  ingredients: string[];
-  instructions: string[];
+  ingredients: Ingredient[];
+  instructions: instruction[];
   preparationTime?: number;
   difficulty?: 'easy' | 'medium' | 'hard';
   image?: string;
   sustitucion?: string;
   personalizacion?: string;
-  [key: string]: any;
+  aiTag?: string;
 }
-
 interface RecipesResponse {
   recipes: Recipe[];
   totalRecipes: number;
 }
 
 export async function getRecipes(ingredients: string[]): Promise<Recipe[]> {
+  console.log('Ingredients to search:', ingredients);
   try {
     // En desarrollo usamos datos mock
     if (import.meta.env.DEV) {
-      return getMockRecipes(ingredients);
+      return getMockRecipes();
     }
 
     const response = await fetch('url', {
@@ -46,13 +60,17 @@ export async function getRecipes(ingredients: string[]): Promise<Recipe[]> {
 }
 
 // Función para datos mock durante desarrollo
-function getMockRecipes(ingredients: string[]): Promise<Recipe[]> {
+function getMockRecipes(): Promise<Recipe[]> {
   // Adaptar las recetas al formato esperado
   const adaptedRecipes: Recipe[] = recetas.map(receta => ({
     id: receta.id.toString(),
     title: receta.recipetitle,
-    ingredients: receta.ingredientes,
-    instructions: receta.instructions.map(inst => inst.description),
+    ingredients: receta.ingredientesList,
+    instructions: receta.instructions.map(inst => ({
+      number: inst.numero,
+      description: inst.description,
+      time: inst.time,
+    })),
     preparationTime: parseInt(receta.preparationTime) || 30,
     difficulty: receta.difficulty.toLowerCase() as 'easy' | 'medium' | 'hard',
     image: receta.image,

@@ -11,6 +11,8 @@ import { useEffect } from 'react'
 import { useRecipesManager } from '../../hooks/recipes/useRecipesManager';
 import { useAuthStore } from '../../store/useAuthStore.ts';
 
+import type { Receta } from '../../data/Recipes.ts';
+
 interface RecetasFreeProps {
   searchQuery?: string
 }
@@ -41,6 +43,12 @@ export default function RecetasFree({ searchQuery }: RecetasFreeProps) {
       return userTypeFilter;
     });
   }, [recetas, isPremium]);
+
+  const handleRecipeClick = ( recipe : Receta ) => {
+    console.log('Recipe clicked:', recipe);
+    // Navegar a la página de detalles de la receta
+    navigate(`/app/recipes/details/${recipe.id}`)
+  }
 
   return (
     <>
@@ -128,7 +136,7 @@ export default function RecetasFree({ searchQuery }: RecetasFreeProps) {
         ) : filteredRecipes.length > 0 ? filteredRecipes.map((receta) => (
           <Card key={receta.id}
             className="overflow-hidden hover:shadow-md border-purple-200 transition-shadow cursor-pointer"
-            onClick={() => navigate(`/app/recipes/details/${receta.id}`)}>
+            onClick={() => handleRecipeClick(receta)}>
             <CardContent className="p-0">
               <div className="flex">
                 <img
@@ -183,8 +191,8 @@ export default function RecetasFree({ searchQuery }: RecetasFreeProps) {
                   {/* Ingredients */}
                   <div className="flex flex-wrap gap-1 mt-2">
                     {(receta.ingredients || []).slice(0, 3).map((ingrediente, index) => (
-                      <Badge key={index} variant="outline" className="text-xs px-1 py-0 border-purple-200">
-                        {ingrediente}
+                      <Badge key={ingrediente.id || index} variant="outline" className="text-xs px-1 py-0 border-purple-200">
+                        {ingrediente.ingredientName}
                       </Badge>
                     ))}
                     {(receta.ingredients || []).length > 3 && (

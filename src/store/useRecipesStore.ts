@@ -1,18 +1,32 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
+interface Ingredient {
+  id: number;
+  ingredientName: string;
+  amount: string;
+  icon: string;
+}
+
+export interface instruction {
+  number: number;
+  description: string;
+  time?: string;
+}
+
 interface Recipe {
     id: string;
     title: string;
-    ingredients: string[];
-    instructions: string[];
+    ingredients: Ingredient[];
+    instructions: instruction[];
     preparationTime?: number;
     difficulty?: 'easy' | 'medium' | 'hard';
     image?: string;
     sustitucion?: string;
     personalizacion?: string;
     aiTag?: string;
-    [key: string]: any;
+    premium?: boolean;
+    coincidencia?: number;
 }
 
 interface RecipesState {
