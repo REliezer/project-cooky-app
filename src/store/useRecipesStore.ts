@@ -11,6 +11,7 @@ interface Recipe {
     image?: string;
     sustitucion?: string;
     personalizacion?: string;
+    aiTag?: string;
     [key: string]: any;
 }
 

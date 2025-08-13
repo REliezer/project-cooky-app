@@ -136,6 +136,7 @@ export default function RecetasFree({ searchQuery }: RecetasFreeProps) {
                   alt={receta.title}
                   className="w-24 h-24 object-cover"
                 />
+                
                 <div className="flex-1 p-3">
                   <div className="flex items-start justify-between mb-2">
                     <p className="font-semibold text-text-tertiary leading-tight">{receta.title}</p>

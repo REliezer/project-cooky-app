@@ -61,6 +61,7 @@ function getMockRecipes(ingredients: string[]): Promise<Recipe[]> {
     coincidencia: receta.coincidencia,
     sustitucion: receta.sustitucion,
     personalizacion: receta.personalizacion,
+    aiTag: receta.aiTag || 'AI Optimized',
   }));
 
   // Simular delay de API
