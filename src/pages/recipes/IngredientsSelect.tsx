@@ -11,6 +11,7 @@ import IconWithTitle from "../../components/ui/IconWithTitle";
 import { categories } from '../../data/Categories';
 
 import { useRecipesManager } from '../../hooks/recipes/useRecipesManager';
+import { useAuthStore } from '../../store/useAuthStore.ts';
 
 interface product {
     id: string;
@@ -20,12 +21,13 @@ interface product {
 
 function IngredientsSelect() {
     const { ingredients, recipes, searchRecipesWithSelectedIngredients, } = useRecipesManager();
+    const { user } = useAuthStore();
+  const isPremium = user?.premium || false; // Verificar si el usuario es premium
     const navigate = useNavigate();
     const [selectedIngredientsData, setSelectedIngredientsData] = useState<product[]>([]);
     const [isLoading, setIsLoading] = useState(false);
 
-    const userType = 'free'; // TODO: obtener del contexto/estado global
-    const maxIngredients = userType === 'free' ? 3 : 4;
+    const maxIngredients = isPremium ? 5 : 4;
 
     // Cargar datos completos de los ingredientes seleccionados
     useEffect(() => {
@@ -60,17 +62,18 @@ function IngredientsSelect() {
         setIsLoading(true);
         try {
             await searchRecipesWithSelectedIngredients();
-
+            // Guardar ingredientes antes de limpiar
+            const currentIngredients = ingredients.getIngredients();
             // Navegar a la página de recetas
             navigate('/app/recipes', {
                 state: {
-                    ingredients: ingredients.getIngredients()
+                    ingredients: currentIngredients
                 }
             });
-
             // Limpiar ingredientes después de búsqueda exitosa
             ingredients.clearIngredients();
             toast.success('Búsqueda completada. Ingredientes limpiados para nueva búsqueda.');
+
         } catch (error) {
             console.error('Error:', error);
             toast.error('Error al buscar recetas. Intenta de nuevo.');
@@ -134,10 +137,10 @@ function IngredientsSelect() {
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
                     <Button
                         label={isLoading
-                            ? 'Buscando recetas...'
+                            ? 'Generando recetas...'
                             : selectedIngredientsData.length === 0
                                 ? 'Selecciona al menos 1 ingrediente'
-                                : `Buscar Recetas`
+                                : `Generar Recetas`
                         }
                         variant="secondary"
                         size="medium"

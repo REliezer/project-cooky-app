@@ -3,8 +3,11 @@ import cookyLogo from '../../assets/cooky.svg'
 import Button from '../../components/common/Button'
 import Graphics from '../../components/common/Graphics'
 
+import { useAuthStore } from '../../store/useAuthStore.ts';
+
 function HomeRecipe() {
-  const userType = 'free'
+  const { user } = useAuthStore();
+  const isPremium = user?.premium || false; // Verificar si el usuario es premium
   const navigate = useNavigate()
 
   return (
@@ -19,7 +22,7 @@ function HomeRecipe() {
             ¿Qué cocinamos hoy?
           </h1>
           <p>
-            {`Selecciona hasta ${userType === 'free' ? 3 : 4} ingredientes que tengas en casa y descubre recetas deliciosas y fáciles de preparar.`}
+            {`Selecciona hasta ${isPremium ? 5 : 4} ingredientes que tengas en casa y descubre recetas deliciosas y fáciles de preparar.`}
           </p>
           <img
             src={cookyLogo}

@@ -14,6 +14,7 @@ import IconWithTitle from "../../components/ui/IconWithTitle";
 
 import { useIngredients } from '../../hooks/recipes/useIngredients';
 import { useRecipesManager } from '../../hooks/recipes/useRecipesManager';
+import { useAuthStore } from '../../store/useAuthStore.ts';
 
 interface CategoryProductsProps {
     title?: string;
@@ -30,6 +31,8 @@ interface product {
 function CategoryProducts({ title: propTitle, backUrl: propBackUrl, subtitle: propSubtitle }: CategoryProductsProps) {
     const { hasIngredient, toggleIngredient, getIngredientsCount, canAddMore, isFull } = useIngredients();
     const { ingredients, recipes, searchRecipesWithSelectedIngredients, } = useRecipesManager();
+    const { user } = useAuthStore();
+    const isPremium = user?.premium || false; // Verificar si el usuario es premium
     const { categoryId } = useParams<{ categoryId: string }>();
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
@@ -46,9 +49,8 @@ function CategoryProducts({ title: propTitle, backUrl: propBackUrl, subtitle: pr
     // Estados para selección de ingredientes (para recetas)
     const isForRecipes = backUrl === '/app/categories/recipes' || backUrl.includes('/recipe');
     const userType = 'free'; // TODO: obtener del contexto/estado global
-    const maxIngredients = userType === 'free' ? 3 : 4;
+    const maxIngredients = isPremium ? 5 : 4;
 
-    console.log('backUrl:', backUrl, 'isForRecipes:', isForRecipes);
     const category = categories.find(cat => cat.id === categoryId);
 
     const addProductFormFields: FormFieldConfig[] = [
@@ -140,11 +142,13 @@ function CategoryProducts({ title: propTitle, backUrl: propBackUrl, subtitle: pr
         setIsLoading(true);
         try {
             await searchRecipesWithSelectedIngredients();
+            // Guardar ingredientes antes de limpiar
+            const currentIngredients = ingredients.getIngredients();
 
             // Navegar a la página de recetas
             navigate('/app/recipes', {
                 state: {
-                    ingredients: ingredients.getIngredients()
+                    ingredients: currentIngredients
                 }
             });
 
@@ -259,7 +263,7 @@ function CategoryProducts({ title: propTitle, backUrl: propBackUrl, subtitle: pr
             {isForRecipes && getIngredientsCount() > 0 && (
                 <>
                     <Button
-                        label='Buscar Recetas'
+                        label='Generar Recetas'
                         variant="secondary"
                         size="medium"
                         onClick={handleSearchRecipes}

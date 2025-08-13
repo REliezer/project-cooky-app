@@ -24,12 +24,10 @@ function Categories({ title: propTitle, backUrl: propBackUrl, subtitle: propSubt
     const handleCategoryClick = useCallback((categoryId: string) => {
         // Navegar a la página de productos de la categoría, segun el contexto (listas o recetas)
         const isForRecipes = backUrl === '/app/recipe' || backUrl.includes('/recipe');
-        console.log('Navigating to category:', categoryId, 'isForRecipes:', isForRecipes, 'backUrl:', backUrl);
         const basePath = isForRecipes ? '/app/category/recipes/' : '/app/category/';
         navigate(`${basePath}${categoryId}`);
     }, [navigate, backUrl]);
 
-    console.log('CategoryProducts backUrl:', backUrl);
     return (
         <div className="min-h-screen px-4 py-6">
             <div className="max-w-6xl mx-auto px-4">

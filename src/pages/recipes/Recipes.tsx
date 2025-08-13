@@ -1,6 +1,7 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState, useMemo } from "react"
+import { useLocation } from 'react-router-dom'
 import { Search } from 'lucide-react'
 import { Input } from "../../components/recipe/Input"
 import { Switch } from "../../components/recipe/Switch"
@@ -14,8 +15,22 @@ import { useAuthStore } from '../../store/useAuthStore.ts';
 export default function RecetasApp() {
   const { ingredients } = useIngredients();
   const { user } = useAuthStore();
+  const location = useLocation();
   const isPremium = user?.premium || false;
-  const [searchQuery, setSearchQuery] = useState(ingredients.join(', '))
+  
+  // Usar useMemo para calcular los ingredientes sin causar re-renders infinitos
+  const currentIngredients = useMemo(() => {
+    return location.state?.ingredients || ingredients;
+  }, [location.state?.ingredients, ingredients.length]);
+  
+  const [searchQuery, setSearchQuery] = useState(() => currentIngredients.join(', '))
+  
+  // Solo actualizar cuando la navegación cambie (nueva búsqueda)
+  useEffect(() => {
+    if (location.state?.ingredients) {
+      setSearchQuery(location.state.ingredients.join(', '));
+    }
+  }, [location.state?.ingredients]);
 
   return (
     <div className="container mx-auto bg-white min-h-screen">
@@ -27,7 +42,7 @@ export default function RecetasApp() {
             <Label htmlFor="premium-toggle" className="text-white">
               Premium
             </Label>
-            <Switch id="premium-toggle" checked={isPremium}/>
+            <Switch id="premium-toggle" checked={isPremium} />
           </div>
         </div>
 
