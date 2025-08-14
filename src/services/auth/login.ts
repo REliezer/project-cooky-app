@@ -1,93 +1,174 @@
-// Simulación de login
+
+// API Configuration
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+const API_AUTH_PATH = import.meta.env.VITE_API_AUTH_URL;
+
+if (!API_BASE_URL || !API_AUTH_PATH) {
+  throw new Error('API configuration is missing. Please check your environment variables.');
+}
+
+const LOGIN_ENDPOINT = `${API_BASE_URL}${API_AUTH_PATH}/login`;
+
+export interface LoginRequest {
+  email: string;
+  password: string;
+}
+
+export interface User {
+  user_id: string;
+  email: string;
+  name: string;
+  dietary_restrictions: string[];
+  banned_ingredients: string[];
+  subscription_status: 'free' | 'premium' | 'trial';
+  trial_end_date: string | null;
+  subscription_end_date: string | null;
+  created_at: string;
+}
+
 export interface LoginResponse {
-  email: string
-  user: string
-  token: string
-  premium: boolean
-  message?: string
+  success: boolean;
+  message?: string;
+  data?: {
+    user: User;
+    token: string;
+    expires_in?: number;
+    premium: boolean;
+  };
 }
 
-export interface LoginError extends Error {
-  status?: number
-  code?: string
+export interface LoginErrorResponse {
+  success: false;
+  message: string;
+  code?: string;
+  details?: Record<string, unknown>;
 }
 
-export async function fakeLogin(email: string, password: string): Promise<LoginResponse> {
-  // Simular delay de red
-  await new Promise(resolve => setTimeout(resolve, 800))
+// Validation functions
+function validateEmail(email: string): boolean {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+}
 
-  // Simular validaciones básicas
-  if (!email || !password) {
-    const error = new Error('Email y contraseña son requeridos') as LoginError
-    error.status = 400
-    error.code = 'MISSING_CREDENTIALS'
-    throw error
+function validateLoginData(data: LoginRequest): void {
+  if (!data.email?.trim()) {
+    throw new Error('Email is required');
   }
-
-  if (password.length < 12) {
-    const error = new Error('La contraseña debe tener al menos 12 caracteres') as LoginError
-    error.status = 400
-    error.code = 'WEAK_PASSWORD'
-    throw error
+  
+  if (!data.password?.trim()) {
+    throw new Error('Password is required');
   }
-
-  // Simular credenciales incorrectas (para testing)
-  if (email === 'test@error.com') {
-    const error = new Error('Credenciales incorrectas') as LoginError
-    error.status = 401
-    error.code = 'INVALID_CREDENTIALS'
-    throw error
+  
+  if (!validateEmail(data.email)) {
+    throw new Error('Please enter a valid email address');
   }
-
-  // Usuarios "válidos" para testing
-  const VALID_USERS = [
-    { name: 'Premium User', email: 'admin@test.com', password: '123456-p789012', premium: true },
-    { name: 'Free User', email: 'user@test.com', password: 'password*123', premium: false },
-    { name: 'Premium User', email: 'premium@test.com', password: 'premium123456', premium: true },
-    { name: 'Free User', email: 'free@test.com', password: 'freeuser12345', premium: false }
-  ];
-
-  // Verificar credenciales
-  const validUser = VALID_USERS.find(u =>
-    u.email === email && u.password === password
-  );
-
-  const nameUser = VALID_USERS.find(u => 
-    u.email === email
-  )?.name || 'Usuario';
-
-  if (!validUser) {
-    const error = new Error('Credenciales incorrectas') as LoginError;
-    error.status = 401;
-    throw error;
-  }
-
-  // Aquí iría tu fetch real a la API
-  // const response = await fetch('/api/auth/login', {
-  //   method: 'POST',
-  //   headers: { 'Content-Type': 'application/json' },
-  //   body: JSON.stringify({ email, password })
-  // })
-  // if (!response.ok) throw new Error('Login failed')
-  // return await response.json()
-
-  // El token que devuelvo aquí es solo de ejemplo (expira en 1 minuto)
-  const token = [
-    btoa(JSON.stringify({ alg: "HS256", typ: "JWT" })),
-    btoa(JSON.stringify({
-      sub: email,
-      exp: Math.floor(Date.now() / 1000) + 600000,
-      iat: Math.floor(Date.now() / 1000)
-    })),
-    "signature"
-  ].join('.')
-
-  return {
-    email: email,
-    user: nameUser,
-    token,
-    premium: validUser.premium,
-    message: 'Login exitoso'
+  
+  if (data.password.length < 12) {
+    throw new Error('Password must be at least 12 characters long');
   }
 }
 
+export async function postLogin(credentials: LoginRequest): Promise<LoginResponse> {
+  try {
+    // Validate input data
+    validateLoginData(credentials);    
+    console.log('Attempting login for user:', credentials.email);
+    
+    const response = await fetch(LOGIN_ENDPOINT, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+      body: JSON.stringify({
+        email: credentials.email,
+        password: credentials.password
+      })
+    });
+    
+    const responseData = await response.json().catch(() => {
+      throw new Error('Invalid response format from server');
+    });
+    console.log('Login response status:', response.status);
+    
+    // Handle HTTP errors
+    if (!response.ok) {
+      const errorMessage = responseData?.message || getErrorMessage(response.status);
+      throw new Error(errorMessage);
+    }
+    
+    // Handle API errors
+    if (!responseData.success) {
+      throw new Error(responseData.message || 'Login failed');
+    }
+    
+    // Validate response structure
+    if (!responseData.data?.user || !responseData.data?.token) {
+      throw new Error('Invalid response structure from server');
+    }
+    
+    // Transform and return successful response
+    const loginResponse: LoginResponse = {
+      success: true,
+      data: {
+        user: responseData.data.user,
+        token: responseData.data.token,
+        expires_in: responseData.data.expires_in,
+        premium: responseData.data.user.subscription_status !== 'free'
+      }
+    };
+    
+    console.log('Login successful for user:', responseData.data.user.email);
+    
+    return loginResponse;
+    
+  } catch (error) {
+    console.error('Login error:', error);
+    
+    // Return structured error response
+    if (error instanceof Error) {
+      return {
+        success: false,
+        message: error.message
+      };
+    }
+    
+    return {
+      success: false,
+      message: 'An unexpected error occurred during login'
+    };
+  }
+}
+
+
+{/* HELPER FUNCTION */}
+// Helper function for HTTP status error messages
+function getErrorMessage(status: number): string {
+  const errorMessages: Record<number, string> = {
+    400: 'Invalid email or password format',
+    401: 'Invalid email or password',
+    403: 'Account is temporarily locked',
+    404: 'Login service not available',
+    422: 'Please check your email and password',
+    429: 'Too many login attempts. Please try again later',
+    500: 'Server error. Please try again later',
+    502: 'Service temporarily unavailable',
+    503: 'Service temporarily unavailable'
+  };
+  
+  return errorMessages[status] || `Login failed with status ${status}`;
+}
+
+// Utility function to check if user has premium access
+export function isPremiumUser(user: User): boolean {
+  if (user.subscription_status === 'premium') {
+    return true;
+  }
+  
+  if (user.subscription_status === 'trial' && user.trial_end_date) {
+    const trialEnd = new Date(user.trial_end_date);
+    return trialEnd > new Date();
+  }
+  
+  return false;
+}

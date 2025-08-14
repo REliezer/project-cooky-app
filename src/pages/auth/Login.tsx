@@ -60,14 +60,25 @@ function Login() {
 
     // Manejador para el formulario de login
     const handleLoginSubmit = async (formData: LoginFormData) => {
-        console.log('Datos del formulario de login:', formData);
+        // Limpiar errores previos antes del nuevo intento
+        clearError();
 
         try {
-            await loginAsync(formData.email, formData.password)
-            toast.success('¡Login exitoso!');
-            navigate('/app/home')
+            await loginAsync(formData.email, formData.password);            
+            // Solo navegar si no hay error (loginAsync ya maneja el estado interno)
+            // Verificar el estado después del login
+            const currentState = useAuthStore.getState();
+            
+            if (currentState.isAuthenticated && !currentState.error) {
+                toast.success('¡Login exitoso!');
+                navigate('/app/recipe');
+            }
+            // Si hay error, el store ya lo maneja y se mostrará en la UI
+            
         } catch (error) {
-            console.error('Error en login:', error)
+            // Este catch ahora solo maneja errores de red o parsing
+            console.error('Error de red en login:', error);
+            toast.error('Error de conexión. Por favor, intenta de nuevo.');
         }
     };
 

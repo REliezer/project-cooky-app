@@ -1,5 +1,6 @@
 import React, { createContext, useReducer, type ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 
 import type { 
   RegistrationState, 
@@ -9,6 +10,8 @@ import type {
   PaymentData
 } from '../types/registration';
 import { REGISTRATION_STEPS } from '../types/registration';
+import { postRegister } from '../services/auth/register';
+import { useAuthStore } from '../store/useAuthStore';
 
 // Estado inicial
 const initialState: RegistrationState = {
@@ -211,6 +214,89 @@ export const RegistrationProvider: React.FC<RegistrationProviderProps> = ({ chil
     return !isPlanFree() && state.selectedPlan !== null;
   };
 
+  // Función auxiliar para registrar solo con datos básicos (plan gratuito)
+  const registerBasicUser = async (): Promise<boolean> => {
+    if (!state.personalData) {
+      toast.error('Datos personales requeridos');
+      return false;
+    }
+
+    const { firstName, lastName, email, password } = state.personalData;
+    
+    // Concatenar firstName y lastName para crear el name completo
+    const fullName = `${firstName.trim()} ${lastName.trim()}`.trim();
+
+    try {
+      console.log('Registrando usuario básico:', email, 'con nombre:', fullName);
+      
+      const response = await postRegister({
+        email,
+        password,
+        name: fullName
+      });
+
+      if (response.success && response.data) {
+        toast.success(`¡Registro exitoso! ${firstName}, ahora puedes iniciar sesión`);
+        return true;
+      } else {
+        toast.error(response.message || 'Error en el registro');
+        return false;
+      }
+    } catch (error) {
+      console.error('Error en registro básico:', error);
+      toast.error('Error de conexión. Intenta de nuevo.');
+      return false;
+    }
+  };
+
+  // Función auxiliar para registrar con plan premium y pago
+  const registerPremiumUser = async (paymentData: PaymentData): Promise<boolean> => {
+    if (!state.personalData) {
+      toast.error('Datos personales requeridos');
+      return false;
+    }
+
+    const { firstName, lastName, email, password } = state.personalData;
+    
+    // Concatenar firstName y lastName para crear el name completo
+    const fullName = `${firstName.trim()} ${lastName.trim()}`.trim();
+
+    try {
+      console.log('Registrando usuario premium:', email, 'con nombre:', fullName);
+      
+      // 1. Crear la cuenta de usuario
+      const registrationResponse = await postRegister({
+        email,
+        password,
+        name: fullName
+      });
+
+      if (!registrationResponse.success || !registrationResponse.data) {
+        toast.error(registrationResponse.message || 'Error en el registro');
+        return false;
+      }
+
+      // 2. Procesar el pago (aquí deberías integrar tu sistema de pagos)
+      // TODO: Implementar procesamiento de pago real
+      console.log('Procesando pago para plan:', state.selectedPlan);
+      console.log('Datos de pago:', paymentData);
+      
+      // Simulación de procesamiento de pago
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      // 3. Actualizar suscripción del usuario (llamada adicional a la API)
+      // TODO: Implementar actualización de suscripción
+      
+      toast.success(`¡Registro y suscripción exitosos! ${firstName}, ahora puedes iniciar sesión`);
+      return true;
+
+    } catch (error) {
+      console.error('Error en registro premium:', error);
+      toast.error('Error en el procesamiento. Intenta de nuevo.');
+      return false;
+    }
+  };
+
   // Envío del registro completo
   const submitRegistration = async (providedPaymentData?: PaymentData): Promise<boolean> => {
     dispatch({ type: 'SET_LOADING', payload: true });
@@ -218,36 +304,47 @@ export const RegistrationProvider: React.FC<RegistrationProviderProps> = ({ chil
     try {
       // Validar que tenemos todos los datos necesarios
       if (!state.personalData || !state.selectedPlan) {
-        throw new Error('Datos incompletos');
+        toast.error('Datos de registro incompletos');
+        dispatch({ type: 'SET_LOADING', payload: false });
+        return false;
       }
 
-      // Para planes que requieren pago, usar los datos proporcionados o los del estado
-      const paymentData = providedPaymentData || state.paymentData;
-      if (needsPayment() && !paymentData) {
-        throw new Error('Datos de pago requeridos');
+      let success = false;
+
+      if (isPlanFree()) {
+        // Registro para plan gratuito
+        success = await registerBasicUser();
+      } else {
+        // Registro para plan premium con pago
+        const paymentData = providedPaymentData || state.paymentData;
+        if (!paymentData) {
+          toast.error('Datos de pago requeridos para plan premium');
+          dispatch({ type: 'SET_LOADING', payload: false });
+          return false;
+        }
+        success = await registerPremiumUser(paymentData);
       }
 
-      // Preparar datos para enviar
-      const registrationData = {
-        personalData: state.personalData,
-        selectedPlan: state.selectedPlan,
-        ...(needsPayment() && { paymentData }),
-      };
-
-      console.log('Enviando datos de registro:', registrationData);
-
-      // Simular llamada a la API
-      await new Promise(resolve => setTimeout(resolve, 2000));
-
-      // Limpiar localStorage después del registro exitoso
-      localStorage.removeItem('registrationPersonalData');
-      localStorage.removeItem('registrationPlan');
+      if (success) {
+        // Limpiar localStorage después del registro exitoso
+        localStorage.removeItem('registrationPersonalData');
+        localStorage.removeItem('registrationPlan');
+        
+        // Limpiar estado del contexto
+        dispatch({ type: 'CLEAR_REGISTRATION' });
+        
+        // Navegar al login para que el usuario inicie sesión
+        setTimeout(() => {
+          navigate('/login');
+        }, 2000);
+      }
 
       dispatch({ type: 'SET_LOADING', payload: false });
-      return true;
+      return success;
 
     } catch (error) {
-      console.error('Error en el registro:', error);
+      console.error('Error en submitRegistration:', error);
+      toast.error('Error inesperado durante el registro');
       dispatch({ type: 'SET_LOADING', payload: false });
       return false;
     }

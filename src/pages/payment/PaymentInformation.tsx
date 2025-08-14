@@ -4,7 +4,7 @@ import { useRegistration } from "../../hooks/useRegistration";
 
 import Graphics from "../../components/common/Graphics";
 import CardInput from "../../components/pay/CardInput";
-import ProgressIndicator from "../../components/common/ProgressIndicator";
+//import ProgressIndicator from "../../components/common/ProgressIndicator";
 
 function PaymentInformation() {
     const navigate = useNavigate();
@@ -37,7 +37,7 @@ function PaymentInformation() {
                 subtitle="Ingresa los datos de tu tarjeta para proceder con el pago de forma segura"
             />
             
-            <ProgressIndicator />
+            {/*<ProgressIndicator />*/}
             
             <CardInput planSelect={planSelect} />
 

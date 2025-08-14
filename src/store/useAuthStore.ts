@@ -2,14 +2,12 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
-interface User {
-  id?: string
-  email?: string
-  name?: string
-  premium?: boolean
-}
+import { postLogin } from '../services/auth/login'
+import type { User } from '../services/auth/login';
 
 interface AuthState {
+  success: boolean
+  message?: string
   user: User | null
   token: string | null
   isAuthenticated: boolean
@@ -30,9 +28,12 @@ function decodeJWT(token: string) {
     return null
   }
 }
+
 export const useAuthStore = create<AuthState>()(
   persist(
     (set, get) => ({
+      success: false,
+      message: '',
       user: null,
       token: null,
       isAuthenticated: false,
@@ -47,34 +48,54 @@ export const useAuthStore = create<AuthState>()(
       loginAsync: async (email: string, password: string) => {
         set({ isLoading: true, error: null })
         try {
-          const { fakeLogin } = await import('../services/auth/login')
-          const response = await fakeLogin(email, password)
-          set({ 
-            user: { 
-              email, 
-              name: response.user,
-              premium: response.premium || false // Usar el valor del servicio
-            }, 
-            token: response.token, 
-            isAuthenticated: true, 
-            isLoading: false,
-            error: null 
-          })
-          get().verifyToken()
+          const response = await postLogin({ email, password })
+          
+          // La nueva API ya maneja errores y devuelve success: false en lugar de lanzar excepciones
+          if (!response.success) {
+            set({
+              isLoading: false,
+              error: response.message || 'Error en el login',
+              isAuthenticated: false
+            })
+            return
+          }
+          
+          // Login exitoso
+          if (response.data) {
+            set({
+              success: response.success,
+              message: response.message,
+              user: response.data.user,
+              token: response.data.token,
+              isAuthenticated: true,
+              isLoading: false,
+              error: null,
+            })
+            get().verifyToken()
+          } else {
+            set({
+              isLoading: false,
+              error: 'Invalid response from server',
+              isAuthenticated: false
+            })
+          }
         } catch (error) {
-          set({ 
-            isLoading: false, 
-            error: error instanceof Error ? error.message : 'Error en el login'
+          // Este catch ahora solo maneja errores de red o parsing
+          set({
+            isLoading: false,
+            error: error instanceof Error ? error.message : 'Network error occurred',
+            isAuthenticated: false
           })
-          throw error
         }
       },
 
-      logout: () => set({ 
-        user: null, 
-        token: null, 
-        isAuthenticated: false, 
-        error: null 
+      logout: () => set({
+        success: false,
+        message: '',
+        user: null,
+        token: null,
+        isAuthenticated: false,
+        error: null
       }),
 
       clearError: () => set({ error: null }),
@@ -93,11 +114,11 @@ export const useAuthStore = create<AuthState>()(
     }),
     {
       name: 'auth-storage', // clave en localStorage
-            partialize: (state) => ({
-                user: state.user,
-                token: state.token,
-                isAuthenticated: state.isAuthenticated
-            })
+      partialize: (state) => ({
+        user: state.user,
+        token: state.token,
+        isAuthenticated: state.isAuthenticated
+      })
     }
   )
 )

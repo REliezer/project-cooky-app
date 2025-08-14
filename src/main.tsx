@@ -14,7 +14,6 @@ import PrivateRoute from './components/auth/PrivateRoute'
 import LandingPage from './pages/home/LandingPage'
 import Login from './pages/auth/Login'
 import Register from './pages/auth/Register'
-import Test from '../tests/pages/test'
 import PaymentInformation from './pages/payment/PaymentInformation'
 import Plans from './pages/subscription/Plans'
 import MyList from './pages/lists/MyLists'
@@ -48,7 +47,6 @@ createRoot(document.getElementById('root')!).render(
           {/* Páginas autenticadas (con Navigation responsiva) */}
           <Route path="/app" element={<PrivateRoute />}>
             <Route element={<AppLayout />}>
-              <Route path="home" element={<div>App Home</div>} />
               {/* Rutas para recetas*/}
               <Route path="recipe" element={<HomeRecipe />} />
               <Route path='recipes/select' element={<IngredientsSelect />} />
@@ -69,11 +67,7 @@ createRoot(document.getElementById('root')!).render(
               <Route path="categories/recipes" element={<Categories title="Mis ingredientes" backUrl="/app/recipe" />} />
               <Route path="category/recipes/:categoryId" element={<CategoryProducts title="Mis ingredientes" backUrl="/app/categories/recipes" />} />
             </Route>
-
-
-          </Route>
-
-          <Route path="/test" element={<Test />} />
+          </Route>          
         </Routes>
       </RegistrationProvider>
     </BrowserRouter>

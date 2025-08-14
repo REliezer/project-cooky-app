@@ -4,7 +4,7 @@ import type { FormFieldConfig } from '../../types/components';
 import { useState } from 'react';
 import { useRegistration } from '../../hooks/useRegistration';
 import type { PersonalData } from '../../types/registration';
-import ProgressIndicator from '../../components/common/ProgressIndicator';
+//import ProgressIndicator from '../../components/common/ProgressIndicator';
 
 function Register() {
     const { setPersonalData, state, goToStep } = useRegistration();
@@ -51,8 +51,9 @@ function Register() {
             placeholder: 'Ingresa la contraseña (mínimo 12 caracteres)',
             required: true,
             validation: {
-                minLength: 12
-            }
+                minLength: 12,
+                pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[a-zA-Z\\d@$!%*?&]{12,}$'
+            },
         },
         {
             name: 'repetPassword',
@@ -61,7 +62,8 @@ function Register() {
             placeholder: 'Repite la contraseña',
             required: true,
             validation: {
-                minLength: 12
+                minLength: 12,
+                pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[a-zA-Z\\d@$!%*?&]{12,}$'
             }
         }
     ];
@@ -101,7 +103,7 @@ function Register() {
 
             // Guardar en el contexto
             setPersonalData(personalData);
-            
+
             // Establecer que estamos completando el paso 1
             goToStep(2); // Ir directamente al paso de selección de plan
 
@@ -118,8 +120,8 @@ function Register() {
                 title="Registrarse"
                 subtitle="Ingresa tus datos personales para crear una cuenta."
             />
-            
-            <ProgressIndicator />
+
+            {/*<ProgressIndicator />*/}
             <DynamicForm
                 fields={registerFormFields}
                 onSubmit={handleRegisterSubmit}

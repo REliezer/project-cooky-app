@@ -8,7 +8,7 @@ import Modal from "../../components/common/Modal";
 import type { PlanCardProps } from "../../types";
 import { useRegistration } from "../../hooks/useRegistration";
 import type { PlanData } from "../../types/registration";
-import ProgressIndicator from "../../components/common/ProgressIndicator";
+//import ProgressIndicator from "../../components/common/ProgressIndicator";
 
 import { plans } from "../../data/Plans";
 
@@ -85,7 +85,7 @@ function Plans({ title = 'Registrarse' }: PlansProps) {
                 subtitle='Selecciona el plan de tu cuenta'
             />
 
-            <ProgressIndicator />
+            {/*<ProgressIndicator />*/}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full mb-2">
                 {
                     plans.map((plan, index) => (
