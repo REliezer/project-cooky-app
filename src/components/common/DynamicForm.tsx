@@ -11,7 +11,8 @@ export default function DynamicForm({
     className = '',
     resetOnSubmit = false,
     size = 'medium',
-    children
+    children,
+    onFieldChange
 }: DynamicFormProps): JSX.Element {
     type valueType = string | number | undefined;
     const [formData, setFormData] = useState<Record<string, valueType>>({});
@@ -47,6 +48,11 @@ export default function DynamicForm({
                 ...prev,
                 [name]: ''
             }));
+        }
+
+        // Call onFieldChange callback if provided
+        if (onFieldChange) {
+            onFieldChange(name, value);
         }
     };
 

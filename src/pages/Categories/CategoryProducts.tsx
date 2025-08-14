@@ -25,7 +25,7 @@ interface CategoryProductsProps {
 interface product {
     id: string;
     name: string;
-    icon: string;
+    svg: string;
 }
 
 function CategoryProducts({ title: propTitle, backUrl: propBackUrl, subtitle: propSubtitle }: CategoryProductsProps) {
@@ -209,7 +209,7 @@ function CategoryProducts({ title: propTitle, backUrl: propBackUrl, subtitle: pr
                                             key={product.id}
                                             id={product.id}
                                             name={product.name}
-                                            icon={product.icon}
+                                            svg={product.svg}
                                             onClick={() => handleProductClick(product)}
                                             className={`aspect-square transition-all ${isSelected
                                                 ? 'ring-2 ring-green-500 bg-green-50'

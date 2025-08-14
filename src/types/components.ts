@@ -49,6 +49,7 @@ export interface DynamicFormProps {
   resetOnSubmit?: boolean;
   size?: 'small' | 'medium' | 'large';
   children?: React.ReactNode;
+  onFieldChange?: (fieldName: string, value: string) => void;
 }
 
 export interface PlanCardProps {
@@ -66,7 +67,7 @@ export interface ItemType {
   id: string;
   name: string;
   quantity?: string;
-  imageUrl: string;
+  svg: string;
   isSelected?: boolean;
 }
 

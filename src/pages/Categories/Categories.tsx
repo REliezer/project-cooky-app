@@ -44,7 +44,7 @@ function Categories({ title: propTitle, backUrl: propBackUrl, subtitle: propSubt
                             key={category.id}
                             id={category.id}
                             name={category.name}
-                            icon={category.icon}
+                            svg={category.svg}
                             onClick={() => handleCategoryClick(category.id)}
                             className="aspect-square"
                         />

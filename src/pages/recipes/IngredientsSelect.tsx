@@ -16,7 +16,7 @@ import { useAuthStore } from '../../store/useAuthStore.ts';
 interface product {
     id: string;
     name: string;
-    icon: string;
+    svg: string;
 }
 
 function IngredientsSelect() {
@@ -106,7 +106,7 @@ function IngredientsSelect() {
                                         <CategoryCard
                                             id={ingredient.id}
                                             name={ingredient.name}
-                                            icon={ingredient.icon}
+                                            svg={ingredient.svg}
                                             onClick={() => handleProductClick(ingredient)}
                                             className="aspect-square ring-2 ring-green-500 bg-green-50"
                                         />

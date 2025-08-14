@@ -31,48 +31,6 @@
   border-radius:12px; padding:10px 12px;
   box-shadow:0 2px 0 var(--ring);
 }
-.fav-avatar{
-  position:relative; display:grid; place-items:center;
-  width:40px; height:40px; border-radius:9999px; background:#fff;
-  box-shadow:inset 0 0 0 1px #ECECEC;
-}
-.fav-avatar::before{
-  content:""; position:absolute; left:-10px; top:50%; transform:translateY(-50%);
-  width:12px; height:48px; border-radius:9999px; background:#F3E8FF; /* píldora pastel */
-  z-index:-1;
-}
-.fav-avatar img{ width:26px; height:26px; object-fit:contain; }
-.emoji{ font-size:20px; }
-.fav-label{ color:var(--ink); font-weight:600; font-size:15px; }
-
-/* Fila editable */
-.fav-edit{ display:flex; align-items:center; }
-.fav-input{
-  height:44px; flex:1; background:#fff; color:var(--ink);
-  border:1px solid var(--border); border-right:none;
-  border-top-left-radius:12px; border-bottom-left-radius:12px;
-  font-weight:600; font-size:15px; padding:0 12px;
-  outline:none; box-shadow:0 2px 0 var(--ring);
-}
-.fav-input:focus{ border-color:#FFC299; }
-.confirm-btn{
-  height:44px; padding:0 14px; border:none; cursor:pointer;
-  background:#fff; color:var(--ink); font-weight:700;
-  border:1px solid var(--border);
-  border-top-right-radius:12px; border-bottom-right-radius:12px;
-}
-
-/* Botón añadir */
-.add-btn{
-  width:100%; margin:14px 0 22px;
-  display:inline-flex; align-items:center; justify-content:center; gap:8px;
-  background:#fff; border:1px solid color-mix(in oklab, var(--ink) 45%, transparent);
-  color:var(--ink); font-weight:700; font-size:16px;
-  padding:12px; border-radius:12px; white-space:nowrap;
-  box-shadow:0 2px 0 var(--ring); cursor:pointer;
-}
-.add-btn:hover{ border-color:var(--brand); background:#FFF7EE; }
-
 /* Sugerencias */
 .quick-list{ display:flex; align-items:center; justify-content:space-between; gap:12px; }
 .quick-item{ background:transparent; border:none; padding:0; cursor:pointer; }
@@ -84,18 +42,6 @@
 }
 .quick-avatar img{ width:28px; height:28px; object-fit:contain; }
 .quick-name{ font-size:11px; line-height:1.1; color:var(--ink70); text-align:center; width:60px; }
-
-/* ----- Swipe to delete ----- */
-.swipe-wrapper{ position:relative; width:100%; overflow:hidden; border-radius:12px; }
-.swipe-delete-btn{
-  position:absolute; right:0; top:0; bottom:0; width:88px;
-  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px;
-  background:var(--danger); color:#fff; border:none; cursor:pointer; font-weight:700;
-}
-.swipe-content{
-  position:relative; transition:transform .2s ease;
-  /* fav-card styles se aplican además */
-}
 
 /* Responsive pequeño */
 @media (max-width:360px){

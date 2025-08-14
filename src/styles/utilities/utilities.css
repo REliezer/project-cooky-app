@@ -58,12 +58,15 @@
         display: flex;
         align-items: center;
         justify-content: center;
+        z-index: 9999;
     }
 
     .modal-content {
         @apply bg-bg-primary border border-[#461604] w-[80%] md:w-[40%]; 
         border-radius: 10px;
         box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
+        z-index: 10000;
+        position: relative;
     }
     
     /* Modal header */
