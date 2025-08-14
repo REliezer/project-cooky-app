@@ -72,8 +72,8 @@ function ProfileMenu() {
         <div className="-mt-16 md:-mt-12 relative z-10">
           <ProfileAvatar
             src="https://randomuser.me/api/portraits/men/75.jpg"
-            name={`Albert Stevano Bajefski `}
-            email="Albertstevano@gmail.com"
+            name={user?.name}
+            email={user?.email}
             size="lg"
           />
         </div>

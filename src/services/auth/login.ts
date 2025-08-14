@@ -41,16 +41,20 @@ export async function fakeLogin(email: string, password: string): Promise<LoginR
 
   // Usuarios "válidos" para testing
   const VALID_USERS = [
-    { email: 'admin@test.com', password: '123456-p789012', premium: true },
-    { email: 'user@test.com', password: 'password*123', premium: false },
-    { email: 'premium@test.com', password: 'premium123456', premium: true },
-    { email: 'free@test.com', password: 'freeuser12345', premium: false }
+    { name: 'Premium User', email: 'admin@test.com', password: '123456-p789012', premium: true },
+    { name: 'Free User', email: 'user@test.com', password: 'password*123', premium: false },
+    { name: 'Premium User', email: 'premium@test.com', password: 'premium123456', premium: true },
+    { name: 'Free User', email: 'free@test.com', password: 'freeuser12345', premium: false }
   ];
 
   // Verificar credenciales
   const validUser = VALID_USERS.find(u =>
     u.email === email && u.password === password
   );
+
+  const nameUser = VALID_USERS.find(u => 
+    u.email === email
+  )?.name || 'Usuario';
 
   if (!validUser) {
     const error = new Error('Credenciales incorrectas') as LoginError;
@@ -80,7 +84,7 @@ export async function fakeLogin(email: string, password: string): Promise<LoginR
 
   return {
     email: email,
-    user: 'Testeo Usuario',
+    user: nameUser,
     token,
     premium: validUser.premium,
     message: 'Login exitoso'

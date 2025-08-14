@@ -7,7 +7,6 @@ interface User {
   email?: string
   name?: string
   premium?: boolean
-  [key: string]: any
 }
 
 interface AuthState {
