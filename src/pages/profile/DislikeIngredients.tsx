@@ -6,6 +6,7 @@ import { quick, dislike as dislikeSeed } from "../../data/DislikeIngredientes";
 import { categories } from "../../data/Categories";
 // import type { Item } from "../../data/DislikeIngredientes";
 import type { FormFieldConfig } from "../../types";
+import { findSvgByName } from "../../utils/ingredientSvg";
 
 import Button from "../../components/common/Button";
 import Modal from "../../components/common/Modal";
@@ -39,21 +40,6 @@ function DislikeIngredients() {
   // Mapear ingredientes del perfil
   useEffect(() => {
     const banned = profile?.banned_ingredients ?? [];
-
-    const findSvgByName = (name: string): string => {
-      // 1) catálogo
-      for (const cat of categories) {
-        for (const p of (cat.products ?? [])) {
-          if (p.name.toLowerCase() === name.toLowerCase()) return p.svg;
-        }
-      }
-      // 2) sugerencias rápidas
-      const q = quick.find(x => x.name.toLowerCase() === name.toLowerCase());
-      if (q) return q.svg;
-
-      // 3) fallback
-      return `<svg viewBox="0 0 24 24" width="24" height="24"><circle cx="12" cy="12" r="8" fill="#FEE2E2"/></svg>`;
-    };
 
     if (banned.length) {
       const mapped: UIItem[] = banned.map(n => ({

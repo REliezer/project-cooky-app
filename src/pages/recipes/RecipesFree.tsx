@@ -29,16 +29,14 @@ export default function RecetasFree({ searchQuery }: RecetasFreeProps) {
   // Usar recetas del store directamente
   const recetas = recipes.recipes || [];
   console.log('Recetas Disponibles: ', recipes.recipes)
-  console.log('Is Loading: ', recipes.isLoading)
-  console.log('Error: ', recipes.error)
 
   // Usar todas las recetas directamente ya que no hay filtro premium
   const filteredRecipes = recetas;
 
   const handleRecipeClick = (recipe: Recipe) => {
     console.log('Recipe clicked:', recipe);
-    // Navegar a la página de detalles usando el idRecipe único
-    navigate(`/app/recipes/details/${recipe.idRecipe}`);
+    // Navegar a la página de detalles usando el recipe_id único
+    navigate(`/app/recipes/details/${recipe.recipe_id}`);
   }
 
   return (
@@ -125,13 +123,13 @@ export default function RecetasFree({ searchQuery }: RecetasFreeProps) {
             <p className="text-text-primary">Buscando recetas...</p>
           </div>
         ) : filteredRecipes.length > 0 ? filteredRecipes.map((receta) => (
-          <Card key={receta.idRecipe}
+          <Card key={receta.recipe_id}
             className="overflow-hidden hover:shadow-md border-purple-200 transition-shadow cursor-pointer"
             onClick={() => handleRecipeClick(receta)}>
             <CardContent className="p-0">
               <div className="flex">
                 <img
-                  src={receta.image || `https://placehold.co/600x256?text=${receta.name}`}
+                  src={receta.image_url || `https://placehold.co/600x256?text=${receta.name}`}
                   alt={receta.name}
                   className="w-24 h-24 object-cover"
                 />
@@ -173,14 +171,14 @@ export default function RecetasFree({ searchQuery }: RecetasFreeProps) {
 
                   {/* Ingredients */}
                   <div className="flex flex-wrap gap-1 mt-2">
-                    {(receta.ingredients || []).slice(0, 3).map((ingrediente, index) => (
+                    {(receta.recipe_ingredients || []).slice(0, 3).map((ingrediente, index) => (
                       <Badge key={ingrediente.name || index} variant="outline" className="text-xs px-1 py-0 border-purple-200">
                         {ingrediente.name}
                       </Badge>
                     ))}
-                    {(receta.ingredients || []).length > 3 && (
+                    {(receta.recipe_ingredients || []).length > 3 && (
                       <Badge variant="outline" className="text-xs px-1 py-0 border-purple-200">
-                        +{(receta.ingredients || []).length - 3}
+                        +{(receta.recipe_ingredients || []).length - 3}
                       </Badge>
                     )}
                   </div>

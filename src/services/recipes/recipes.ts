@@ -10,17 +10,16 @@ const RECIPES_ENDPOINT = `${API_BASE_URL}${API_RECIPE_PATH}/generate`;
 
 import type { Recipe } from "../../store/useRecipesStore";
 import { useAuthStore } from "../../store/useAuthStore";
+import { findSvgByName } from "../../utils/ingredientSvg";
 
 interface RecipesApiResponse {
   success: boolean;
   message?: string;
   data: {
-    recipe: {
-      recipes: Recipe[];
+    recipes: Recipe[];
       total: number;
       generation_time?: number;
     };
-  };
 }
 
 interface RecipesRequest {
@@ -46,8 +45,8 @@ function getAuthToken(): string {
 
 // Función principal para obtener recetas
 export async function getRecipes(ingredients: string[]): Promise<Recipe[]> {
-  if (!ingredients || ingredients.length === 0) {
-    throw new Error('Debe proporcionar al menos un ingrediente');
+  if (!ingredients || ingredients.length < 2) {
+    throw new Error('Debe proporcionar al menos dos ingredientes');
   }
 
   console.log('Buscando recetas con ingredientes:', ingredients);
@@ -101,10 +100,21 @@ export async function getRecipes(ingredients: string[]): Promise<Recipe[]> {
       throw new Error(data.message || 'Error al procesar la solicitud de recetas');
     }
 
-    // Extraer recetas de la estructura conocida
-    const recipes = data.data.recipe.recipes;
+    // Extraer recetas de la API
+    const recipes = data.data.recipes;
+    console.log('Recipes found: ', recipes)
     console.log(`Se encontraron ${recipes.length} recetas`);
-    return recipes;
+    
+    // Asignar SVGs a ingredientes si no los tienen
+    const processedRecipes = recipes.map(recipe => ({
+      ...recipe,
+      recipe_ingredients: recipe.recipe_ingredients.map(ingredient => ({
+        ...ingredient,
+        svg: ingredient.svg || findSvgByName(ingredient.name) // Asignar SVG si no existe
+      }))
+    }));
+    
+    return processedRecipes;
 
   } catch (error) {
     console.error('Error al obtener recetas:', error);
@@ -118,13 +128,12 @@ export async function getRecipes(ingredients: string[]): Promise<Recipe[]> {
 }
 
 // Función para obtener recetas con preferencias adicionales
-
 export async function getRecipesWithPreferences(
   ingredients: string[],
   preferences: RecipesRequest['preferences']
 ): Promise<Recipe[]> {
-  if (!ingredients || ingredients.length === 0) {
-    throw new Error('Debe proporcionar al menos un ingrediente');
+  if (!ingredients || ingredients.length < 2) {
+    throw new Error('Debe proporcionar al menos dos ingredientes');
   }
 
   try {
@@ -158,8 +167,19 @@ export async function getRecipesWithPreferences(
       throw new Error(data.message || 'Error al obtener recetas con preferencias');
     }
 
-    // Usar la misma estructura conocida
-    return data.data.recipe.recipes;
+    // Extraer y procesar recetas
+    const recipes = data.data.recipes;
+    
+    // Asignar SVGs a ingredientes si no los tienen
+    const processedRecipes = recipes.map(recipe => ({
+      ...recipe,
+      recipe_ingredients: recipe.recipe_ingredients.map(ingredient => ({
+        ...ingredient,
+        svg: ingredient.svg || findSvgByName(ingredient.name) // Asignar SVG si no existe
+      }))
+    }));
+    
+    return processedRecipes;
 
   } catch (error) {
     console.error('Error al obtener recetas con preferencias:', error);

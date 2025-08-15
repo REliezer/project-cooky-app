@@ -134,8 +134,8 @@ function CategoryProducts({ title: propTitle, backUrl: propBackUrl, subtitle: pr
 
     // Función para buscar recetas
     const handleSearchRecipes = async () => {
-        if (ingredients.isEmpty()) {
-            toast.error('No tienes ingredientes seleccionados');
+        if (ingredients.getIngredientsCount() < 2) {
+            toast.error('Debes seleccionar al menos dos ingredientes');
             return;
         }
 
@@ -261,7 +261,7 @@ function CategoryProducts({ title: propTitle, backUrl: propBackUrl, subtitle: pr
                         variant="secondary"
                         size="medium"
                         onClick={handleSearchRecipes}
-                        disabled={ingredients.isEmpty() || isLoading || recipes.isLoading}
+                        disabled={ingredients.getIngredientsCount() < 2 || isLoading || recipes.isLoading}
                         className="w-full"
                     />
                     <p className="text-xs text-gray-500 mt-2 text-center">

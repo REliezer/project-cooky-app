@@ -19,11 +19,10 @@ export default function DetalleReceta() {
     const { idRecipe } = useParams();
     const navigate = useNavigate();
 
-    // Obtener receta por idRecipe único
-    const recipe = recipes.recipes.find((r) => r.idRecipe === idRecipe);
+    // Obtener receta por recipe_id único
+    const recipe = recipes.recipes.find((r) => r.recipe_id === idRecipe);
 
     console.log('Recipe Id from params:', idRecipe);
-    console.log('Recipe found:', recipe);
 
     const toggleSave = () => {
         const savedRecipes = JSON.parse(localStorage.getItem("savedRecipes") || "[]");
@@ -57,7 +56,7 @@ export default function DetalleReceta() {
         <div className="container mx-auto min-h-screen">
             {/* Header con imagen */}
             <div className="relative">
-                <img src={recipe.image || `https://placehold.co/600x256?text=${recipe.name}`} alt={recipe.name} className="w-full h-64 object-cover" />
+                <img src={recipe.image_url || `https://placehold.co/600x256?text=${recipe.name}`} alt={recipe.name} className="w-full h-64 object-cover" />
 
                 {/* Botón de regreso */}
                 <button
@@ -76,7 +75,7 @@ export default function DetalleReceta() {
             {/* Stats */}
             <StatsRecipe
                 recipe={{
-                    ingredientsNumber: recipe.ingredients.length,
+                    ingredientsNumber: recipe.recipe_ingredients.length,
                     difficulty: recipe.difficulty || 'easy',
                     preparationTime: `${recipe.cooking_time || 30}`,
                     servings: recipe.servings || 0,
@@ -113,7 +112,7 @@ export default function DetalleReceta() {
                 {activeTab === "ingredientes" ? (
                     <>
                         {/* Lista de ingredientes */}
-                        {recipe.ingredients.map((ingredient, index) => (
+                        {recipe.recipe_ingredients.map((ingredient, index) => (
                             <Card key={ingredient.name || index} className="bg-white shadow-sm">
                                 <CardContent className="p-4">
                                     <div className="flex items-center justify-between">
@@ -136,7 +135,7 @@ export default function DetalleReceta() {
                             size="medium"
                             className="w-full"
                             onClick={() => generateShoppingList(
-                                recipe.ingredients)}
+                                recipe.recipe_ingredients)}
                         />
                     </>
                 ) : (

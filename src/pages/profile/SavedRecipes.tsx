@@ -20,8 +20,8 @@ export default function RecetasGuardadas() {
     const recetas = recipes.recipes || [];
 
     const handleRecipeClick = (recipe: Recipe) => {
-        // Navegar a la página de detalles usando el idRecipe único
-        navigate(`/app/recipes/details/${recipe.idRecipe}`);
+        // Navegar a la página de detalles usando el recipe_id único
+        navigate(`/app/recipes/details/${recipe.recipe_id}`);
     }
 
     useEffect(() => {
@@ -29,13 +29,13 @@ export default function RecetasGuardadas() {
         const savedIds = JSON.parse(localStorage.getItem("savedRecipes") || "[]");
 
         // Filtrar recetas
-        const filtradas = recetas.filter(r => savedIds.includes(r.idRecipe.toString()));
+        const filtradas = recetas.filter(r => savedIds.includes(r.recipe_id.toString()));
         setRecetasGuardadas(filtradas);
     }, []);
 
 
     const eliminarReceta = (id: string) => {
-        setRecetasGuardadas((recetas) => recetas.filter((receta) => receta.idRecipe !== id))
+        setRecetasGuardadas((recetas) => recetas.filter((receta) => receta.recipe_id !== id))
     }
 
     const recetasPremium = recetasGuardadas.filter(
@@ -87,12 +87,12 @@ export default function RecetasGuardadas() {
                             </div>
                             <div className="space-y-3">
                                 {recetasPremium.map((receta) => (
-                                    <Card key={receta.idRecipe} className="overflow-hidden bg-white border-purple-100"
+                                    <Card key={receta.recipe_id} className="overflow-hidden bg-white border-purple-100"
                                         onClick={() => handleRecipeClick(receta)}>
                                         <CardContent className="p-0">
                                             <div className="flex">
                                                 <img
-                                                    src={receta.image || "/placeholder.svg"}
+                                                    src={receta.image_url || "/placeholder.svg"}
                                                     alt={receta.name}
                                                     className="w-20 h-20 object-cover"
                                                 />
@@ -100,7 +100,7 @@ export default function RecetasGuardadas() {
                                                     <div className="flex items-start justify-between mb-1">
                                                         <h3 className="font-semibold text-sm leading-tight pr-2">{receta.name}</h3>
                                                         <button
-                                                            onClick={() => eliminarReceta(receta.idRecipe)}
+                                                            onClick={() => eliminarReceta(receta.recipe_id)}
                                                             className="text-red-500 hover:text-red-700 p-1 hover:bg-red-50 rounded transition-colors"
                                                             title="Eliminar de guardadas"
                                                         >
@@ -121,14 +121,14 @@ export default function RecetasGuardadas() {
 
                                                     <div className="flex items-center justify-between">
                                                         <div className="flex flex-wrap gap-1">
-                                                            {receta.ingredients.slice(0, 2).map((ingrediente, index) => (
+                                                            {receta.recipe_ingredients.slice(0, 2).map((ingrediente, index) => (
                                                                 <Badge key={index} variant="outline" className="text-xs px-1 py-0 border-purple-200">
                                                                     {ingrediente.name}
                                                                 </Badge>
                                                             ))}
-                                                            {receta.ingredients.length > 2 && (
+                                                            {receta.recipe_ingredients.length > 2 && (
                                                                 <Badge variant="outline" className="text-xs px-1 py-0 border-purple-200">
-                                                                    +{receta.ingredients.length - 2}
+                                                                    +{receta.recipe_ingredients.length - 2}
                                                                 </Badge>
                                                             )}
                                                         </div>
@@ -153,12 +153,12 @@ export default function RecetasGuardadas() {
                             </div>
                             <div className="space-y-3">
                                 {recetasFree.map((receta) => (
-                                    <Card key={receta.idRecipe} className="overflow-hidden bg-white"
+                                    <Card key={receta.recipe_id} className="overflow-hidden bg-white"
                                         onClick={() => handleRecipeClick(receta)}>
                                         <CardContent className="p-0">
                                             <div className="flex">
                                                 <img
-                                                    src={receta.image || "/placeholder.svg"}
+                                                    src={receta.image_url || "/placeholder.svg"}
                                                     alt={receta.name}
                                                     className="w-20 h-20 object-cover"
                                                 />
@@ -166,7 +166,7 @@ export default function RecetasGuardadas() {
                                                     <div className="flex items-start justify-between mb-1">
                                                         <h3 className="font-semibold text-sm leading-tight pr-2">{receta.name}</h3>
                                                         <button
-                                                            onClick={() => eliminarReceta(receta.idRecipe)}
+                                                            onClick={() => eliminarReceta(receta.recipe_id)}
                                                             className="text-red-500 hover:text-red-700 p-1 hover:bg-red-50 rounded transition-colors"
                                                             title="Eliminar de guardadas"
                                                         >
@@ -187,14 +187,14 @@ export default function RecetasGuardadas() {
 
                                                     <div className="flex items-center justify-between">
                                                         <div className="flex flex-wrap gap-1">
-                                                            {receta.ingredients.slice(0, 2).map((ingrediente, index) => (
+                                                            {receta.recipe_ingredients.slice(0, 2).map((ingrediente, index) => (
                                                                 <Badge key={index} variant="outline" className="text-xs px-1 py-0">
                                                                     {ingrediente.name}
                                                                 </Badge>
                                                             ))}
-                                                            {receta.ingredients.length > 2 && (
+                                                            {receta.recipe_ingredients.length > 2 && (
                                                                 <Badge variant="outline" className="text-xs px-1 py-0">
-                                                                    +{receta.ingredients.length - 2}
+                                                                    +{receta.recipe_ingredients.length - 2}
                                                                 </Badge>
                                                             )}
                                                         </div>

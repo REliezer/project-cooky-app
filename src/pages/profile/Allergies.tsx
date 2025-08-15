@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { categories } from "../../data/Categories";
 import type { Item } from "../../data/DislikeIngredientes"; 
 import type { FormFieldConfig } from "../../types";
+import { findSvgByName } from "../../utils/ingredientSvg";
 
 import Button from "../../components/common/Button";
 import Modal from "../../components/common/Modal";
@@ -36,23 +37,24 @@ export default function Allergies() {
   useEffect(() => {
     const allergies = profile?.allergies ?? [];
 
-    const findSvgByName = (name: string): string => {
-      for (const cat of categories) {
-        for (const p of (cat.products ?? [])) {
-          if (p.name.toLowerCase() === name.toLowerCase()) return p.svg;
-        }
+    // Función personalizada que incluye ALLERGY_QUICK
+    const findAllergySvg = (name: string): string => {
+      // Primero buscar en la función centralizada
+      const svg = findSvgByName(name);
+      // Si no encuentra, buscar en alergias específicas
+      if (svg.includes('#FFEDD5')) { // Es el SVG por defecto
+        const q = ALLERGY_QUICK.find(x => x.name.toLowerCase() === name.toLowerCase());
+        if (q) return q.svg;
+        return `<svg viewBox="0 0 24 24" width="24" height="24"><circle cx="12" cy="12" r="8" fill="#FFE4E6"/></svg>`;
       }
-      const q = ALLERGY_QUICK.find(x => x.name.toLowerCase() === name.toLowerCase());
-      if (q) return q.svg;
-
-      return `<svg viewBox="0 0 24 24" width="24" height="24"><circle cx="12" cy="12" r="8" fill="#FFE4E6"/></svg>`;
+      return svg;
     };
 
     if (allergies.length) {
       const mapped: Item[] = allergies.map(n => ({
         id: n.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, "-"),
         name: n,
-        svg: findSvgByName(n),
+        svg: findAllergySvg(n),
       }));
       setItems(mapped);
     } else {

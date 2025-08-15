@@ -10,8 +10,8 @@ export const useRecipesManager = () => {
   const recipes = useRecipes();
 
   const searchRecipesWithSelectedIngredients = async () => {
-    if (ingredients.isEmpty()) {
-      throw new Error('No hay ingredientes seleccionados');
+    if (ingredients.getIngredientsCount() < 2) {
+      throw new Error('Debes seleccionar al menos dos ingredientes');
     }
     
     const selectedIngredients = ingredients.getIngredients();
@@ -20,9 +20,9 @@ export const useRecipesManager = () => {
 
   const canSearchRecipes = (maxIngredients?: number) => {
     if (maxIngredients) {
-      return !ingredients.isEmpty() && !ingredients.isFull(maxIngredients);
+      return ingredients.getIngredientsCount() >= 2 && !ingredients.isFull(maxIngredients);
     }
-    return !ingredients.isEmpty();
+    return ingredients.getIngredientsCount() >= 2;
   };
 
   const getSearchSummary = () => {

@@ -55,8 +55,8 @@ function IngredientsSelect() {
 
     // Función para buscar recetas
     const handleSearchRecipes = async () => {
-        if (ingredients.isEmpty()) {
-            toast.error('No tienes ingredientes seleccionados');
+        if (ingredients.getIngredientsCount() < 2) {
+            toast.error('Debes seleccionar al menos dos ingredientes');
             return;
         }
 
@@ -135,14 +135,14 @@ function IngredientsSelect() {
                     <Button
                         label={isLoading
                             ? 'Generando recetas...'
-                            : selectedIngredientsData.length === 0
-                                ? 'Selecciona al menos 1 ingrediente'
+                            : selectedIngredientsData.length < 2
+                                ? 'Selecciona al menos 2 ingredientes'
                                 : `Generar Recetas`
                         }
                         variant="secondary"
                         size="medium"
                         onClick={handleSearchRecipes}
-                        disabled={ingredients.isEmpty() || isLoading || recipes.isLoading}
+                        disabled={ingredients.getIngredientsCount() < 2 || isLoading || recipes.isLoading}
                         className="w-full"
                     />
                     {selectedIngredientsData.length < maxIngredients && (

@@ -14,8 +14,8 @@ export const useRecipes = () => {
     const { getIngredients } = useRecipesStore.getState();
     const currentIngredients = getIngredients();
     
-    if (currentIngredients.length === 0) {
-      throw new Error('No hay ingredientes seleccionados');
+    if (currentIngredients.length < 2) {
+      throw new Error('Debes seleccionar al menos dos ingredientes');
     }
     
     await searchRecipes(currentIngredients);
@@ -38,7 +38,7 @@ export const useRecipes = () => {
   };
 
   const canSearch = (ingredients: string[]) => {
-    return ingredients.length > 0;
+    return ingredients.length >= 2;
   };
 
   return {

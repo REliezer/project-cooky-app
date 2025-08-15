@@ -1,17 +1,25 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-// Función para generar ID único para recetas
-function generateRecipeId(): string {
-  return `recipe_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-}
-
-// Función para agregar IDs a recetas que no los tienen
-function assignRecipeIds(recipes: Omit<Recipe, 'idRecipe'>[]): Recipe[] {
-  return recipes.map(recipe => ({
-    ...recipe,
-    idRecipe: generateRecipeId()
-  }));
+// Función para parsear steps JSON strings a objetos Step
+export function parseSteps(stepsArray: string[]): Step[] {
+  return stepsArray.map(stepString => {
+    try {
+      const parsed = JSON.parse(stepString);
+      return {
+        order: parsed.order || 1,
+        step: parsed.step || '',
+        time: parsed.time
+      };
+    } catch (error) {
+      console.error('Error parsing step:', stepString, error);
+      return {
+        order: 1,
+        step: stepString,
+        time: undefined
+      };
+    }
+  }).sort((a, b) => a.order - b.order); // Ordenar por order
 }
 
 export interface Ingredient {
@@ -29,16 +37,16 @@ export interface Step {
 }
 
 export interface Recipe {
-    idRecipe: string;
+    recipe_id:string;
     name: string;
     description: string;
-    ingredients: Ingredient[];
+    recipe_ingredients: Ingredient[];
     steps: Step[];
     cooking_time?: number;
     servings?: number;
     dietary_info?: string[];
     difficulty?: 'easy' | 'medium' | 'hard';
-    image?: string;
+    image_url?: string;
     sustitucion?: string;
     personalizacion?: string;
 }
@@ -73,8 +81,8 @@ export const useRecipesStore = create<RecipesState>()(
             lastSearchedIngredients: [],
 
             searchRecipes: async (ingredients: string[]) => {
-                if (ingredients.length === 0) {
-                    set({ error: 'Debes seleccionar al menos un ingrediente' });
+                if (ingredients.length < 2) {
+                    set({ error: 'Debes seleccionar al menos dos ingredientes' });
                     return;
                 }
 
@@ -84,11 +92,8 @@ export const useRecipesStore = create<RecipesState>()(
                     const { getRecipes } = await import('../services/recipes/recipes');
                     const recipesData = await getRecipes(ingredients);
 
-                    // Asignar IDs únicos a cada receta que venga de la API
-                    const recipesWithIds = assignRecipeIds(recipesData);
-
                     set({
-                        recipes: recipesWithIds,
+                        recipes: recipesData,
                         isLoading: false,
                         error: null
                     });

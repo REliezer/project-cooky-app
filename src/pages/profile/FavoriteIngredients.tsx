@@ -6,6 +6,7 @@ import { categories } from "../../data/Categories";
 import { quick, favorite as favoriteSeed } from "../../data/FavoriteIngredients";
 import type { Item } from "../../data/DislikeIngredientes";
 import type { FormFieldConfig } from "../../types";
+import { findSvgByName } from "../../utils/ingredientSvg";
 
 import Button from "../../components/common/Button";
 import Modal from "../../components/common/Modal";
@@ -29,17 +30,6 @@ function FavoriteIngredients() {
   // Mapear favoritos del perfil a items con svg
   useEffect(() => {
     const favs = profile?.favorite_ingredients ?? null;
-
-    const findSvgByName = (name: string): string => {
-      for (const cat of categories) {
-        for (const p of (cat.products ?? [])) {
-          if (p.name.toLowerCase() === name.toLowerCase()) return p.svg;
-        }
-      }
-      const q = quick.find(x => x.name.toLowerCase() === name.toLowerCase());
-      if (q) return q.svg;
-      return `<svg viewBox="0 0 24 24" width="24" height="24"><circle cx="12" cy="12" r="8" fill="#FFEDD5"/></svg>`;
-    };
 
     if (favs && favs.length) {
       const mapped: Item[] = favs.map(n => ({
@@ -102,9 +92,7 @@ function FavoriteIngredients() {
       const prev = (profile?.favorite_ingredients ?? []).map(n => ({
         id: n.trim().toLowerCase().replace(/\s+/g, "-"),
         name: n,
-        svg:
-          quick.find(q => q.name.toLowerCase() === n.toLowerCase())?.svg ||
-          `<svg viewBox="0 0 24 24" width="24" height="24"><circle cx="12" cy="12" r="8" fill="#FFEDD5"/></svg>`
+        svg: findSvgByName(n)
       }));
       setItems(prev);
     }
