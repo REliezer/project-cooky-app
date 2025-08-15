@@ -38,7 +38,7 @@ function ProfileMenu() {
           },
           {
             label: 'Comidas preferidas',
-            route: '/app/preferences',
+            route: '/app/saved/recipes',
             icon: <UtensilsCrossed size={18} className="text-orange-500" />
           }
         ]

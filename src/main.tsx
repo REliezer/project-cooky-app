@@ -26,7 +26,8 @@ import ProfileMenu from './pages/profile/ProfileMenu';
 import ProfileForm from './pages/profile/ProfileForm';
 import IngredientesFavoritos from './pages/profile/FavoriteIngredients';
 import IngredientesNoMeGustan from './pages/profile/DislikeIngredients';
-import Allergies from './pages/Profile/Allergies';
+import RecetasFavoritas from './pages/profile/SavedRecipes'
+import Allergies from './pages/profile/Allergies';
 import HomeRecipe from './pages/recipes/HomeRecipe';
 import IngredientsSelect from './pages/recipes/IngredientsSelect';
 
@@ -62,6 +63,7 @@ createRoot(document.getElementById('root')!).render(
               <Route path="favorites" element={<IngredientesFavoritos />} />
               <Route path="dislikes" element={<IngredientesNoMeGustan />} />
               <Route path="allergies" element={<Allergies />} />
+              <Route path="saved/recipes" element={<RecetasFavoritas />} />
               {/* Categorias para las listas */}
               <Route path="categories" element={<Categories title="Listas de compras" backUrl="/app/list" />} />
               <Route path="category/:categoryId" element={<CategoryProducts title="Listas de compras" backUrl="/app/categories" />} />
