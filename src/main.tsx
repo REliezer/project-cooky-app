@@ -22,15 +22,15 @@ import Categories from './pages/Categories/Categories';
 import CategoryProducts from './pages/Categories/CategoryProducts';
 import Recipes from './pages/recipes/Recipes';
 import RecipesDetails from './pages/recipes/RecipesDetails';
-import ProfileMenu from './pages/profile/ProfileMenu';
-import ProfileForm from './pages/profile/ProfileForm';
-import IngredientesFavoritos from './pages/profile/FavoriteIngredients';
-import IngredientesNoMeGustan from './pages/profile/DislikeIngredients';
-import RecetasFavoritas from './pages/profile/SavedRecipes'
-import Allergies from './pages/profile/Allergies';
+import ProfileMenu from './pages/Profile/ProfileMenu';
+import ProfileForm from './pages/Profile/ProfileForm';
+import IngredientesFavoritos from './pages/Profile/FavoriteIngredients';
+import IngredientesNoMeGustan from './pages/Profile/DislikeIngredients';
+import RecetasFavoritas from './pages/Profile/SavedRecipes'
+import Allergies from './pages/Profile/Allergies';
 import HomeRecipe from './pages/recipes/HomeRecipe';
 import IngredientsSelect from './pages/recipes/IngredientsSelect';
-import DietaryRestrictions from './pages/profile/DietaryRestrictions';
+import DietaryRestrictions from './pages/Profile/DietaryRestrictions';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
