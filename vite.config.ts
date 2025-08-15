@@ -23,12 +23,12 @@ export default defineConfig({
         start_url: '/login',
         icons: [
           {
-            src: '/cookyicon.png',
+            src: "/icon192x192.png",
             sizes: '192x192',
             type: 'image/png'
           },
           {
-            src: '/cookyicon.png',
+            src: "/icon512x512.png",
             sizes: '512x512',
             type: 'image/png'
           }
