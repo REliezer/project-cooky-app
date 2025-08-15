@@ -1,35 +1,51 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-interface Ingredient {
-  id: number;
-  ingredientName: string;
-  amount: string;
-  icon: string;
+// Función para generar ID único para recetas
+function generateRecipeId(): string {
+  return `recipe_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 }
 
-export interface instruction {
-  number: number;
-  description: string;
-  time?: string;
+// Función para agregar IDs a recetas que no los tienen
+function assignRecipeIds(recipes: Omit<Recipe, 'idRecipe'>[]): Recipe[] {
+  return recipes.map(recipe => ({
+    ...recipe,
+    idRecipe: generateRecipeId()
+  }));
 }
 
-interface Recipe {
-    id: string;
-    title: string;
+export interface Ingredient {
+    name: string;
+    quantity: number;
+    unit: string;
+    svg: string;
+    is_optional: boolean;
+}
+
+export interface Step {
+    order: number;
+    step: string;
+    time?: number;
+}
+
+export interface Recipe {
+    idRecipe: string;
+    name: string;
+    description: string;
     ingredients: Ingredient[];
-    instructions: instruction[];
-    preparationTime?: number;
+    steps: Step[];
+    cooking_time?: number;
+    servings?: number;
+    dietary_info?: string[];
     difficulty?: 'easy' | 'medium' | 'hard';
     image?: string;
     sustitucion?: string;
     personalizacion?: string;
-    aiTag?: string;
-    premium?: boolean;
-    coincidencia?: number;
 }
 
 interface RecipesState {
+    success: boolean;
+    message?: string;
     recipes: Recipe[];
     isLoading: boolean;
     error: string | null;
@@ -48,6 +64,8 @@ interface RecipesState {
 export const useRecipesStore = create<RecipesState>()(
     persist(
         (set, get) => ({
+            success: false,
+            message: '',
             recipes: [],
             isLoading: false,
             error: null,
@@ -61,15 +79,18 @@ export const useRecipesStore = create<RecipesState>()(
                 }
 
                 set({ isLoading: true, error: null, lastSearchedIngredients: ingredients });
-                
+
                 try {
                     const { getRecipes } = await import('../services/recipes/recipes');
                     const recipesData = await getRecipes(ingredients);
-                    
-                    set({ 
-                        recipes: recipesData, 
-                        isLoading: false, 
-                        error: null 
+
+                    // Asignar IDs únicos a cada receta que venga de la API
+                    const recipesWithIds = assignRecipeIds(recipesData);
+
+                    set({
+                        recipes: recipesWithIds,
+                        isLoading: false,
+                        error: null
                     });
                 } catch (error) {
                     console.error('Error searching recipes:', error);
@@ -101,7 +122,7 @@ export const useRecipesStore = create<RecipesState>()(
             },
 
             clearIngredients: () => {
-                set({ ingredients: [], recipes: [], lastSearchedIngredients: [] });
+                set({ ingredients: [] });
             },
 
             clearError: () => {

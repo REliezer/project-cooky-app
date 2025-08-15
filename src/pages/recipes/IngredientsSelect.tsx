@@ -12,6 +12,7 @@ import { categories } from '../../data/Categories';
 
 import { useRecipesManager } from '../../hooks/recipes/useRecipesManager';
 import { useAuthStore } from '../../store/useAuthStore.ts';
+import { isPremiumUser } from '../../services/auth/login';
 
 interface product {
     id: string;
@@ -22,7 +23,7 @@ interface product {
 function IngredientsSelect() {
     const { ingredients, recipes, searchRecipesWithSelectedIngredients, } = useRecipesManager();
     const { user } = useAuthStore();
-  const isPremium = user?.premium || false; // Verificar si el usuario es premium
+    const isPremium = user ? isPremiumUser(user) : false; // Verificar si el usuario es premium
     const navigate = useNavigate();
     const [selectedIngredientsData, setSelectedIngredientsData] = useState<product[]>([]);
     const [isLoading, setIsLoading] = useState(false);

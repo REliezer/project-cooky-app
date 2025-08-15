@@ -12,13 +12,14 @@ import RecetasFree from "./RecipesFree"
 import { useIngredients } from "../../hooks/recipes/useIngredients"
 import { useRecipes } from "../../hooks/recipes/useRecipes"
 import { useAuthStore } from '../../store/useAuthStore.ts';
+import { isPremiumUser } from '../../services/auth/login';
 
 export default function RecetasApp() {
   const { ingredients } = useIngredients();
   const { lastSearchedIngredients } = useRecipes();
   const { user } = useAuthStore();
   const location = useLocation();
-  const isPremium = user?.premium || false;
+  const isPremium = user ? isPremiumUser(user) : false; // Verificar si el usuario es premium
   
   // Priorizar ingredientes de la búsqueda reciente, luego location.state, luego ingredientes actuales
   const displayIngredients = useMemo(() => {
@@ -41,7 +42,7 @@ export default function RecetasApp() {
       {/* Header */}
       <div className="bg-bg-tertiary text-white p-4 pb-6">
         <div className="flex items-center justify-between mb-4">
-          <h1 className="text-xl font-bold">Mis Recetas</h1>
+          <h1 className="font-bold">Mis Recetas</h1>
           <div className="flex items-center gap-2">
             <Label htmlFor="premium-toggle" className="text-white">
               Premium

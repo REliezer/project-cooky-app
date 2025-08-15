@@ -1,53 +1,44 @@
 "use client"
 
 import { useState, useMemo } from "react"
-import { Clock, ChefHat, Sparkles, Filter, Crown } from 'lucide-react'
+import { Clock, ChefHat, Sparkles, Filter, Crown, Utensils } from 'lucide-react'
 import { Button } from "../../components/recipe/Button.tsx"
 import { Card, CardContent } from "../../components/recipe/Card.tsx"
 import { Badge } from "../../components/recipe/Badge.tsx"
 import { useNavigate } from 'react-router-dom'
-import { useEffect } from 'react'
 
 import { useRecipesManager } from '../../hooks/recipes/useRecipesManager';
 import { useAuthStore } from '../../store/useAuthStore.ts';
+import { isPremiumUser } from '../../services/auth/login';
 
-import type { Receta } from '../../data/Recipes.ts';
+import type { Recipe } from '../../store/useRecipesStore';
+import { capitalize } from "../../utils/utils.ts"
 
 interface RecetasFreeProps {
   searchQuery?: string
 }
 
 export default function RecetasFree({ searchQuery }: RecetasFreeProps) {
-  const { ingredients, recipes, } = useRecipesManager();
+  const { ingredients, recipes } = useRecipesManager();
   const { user } = useAuthStore();
-  const isPremium = user?.premium || false; // Verificar si el usuario es premium
+  const isPremium = user ? isPremiumUser(user) : false; // Verificar si el usuario es premium
   const [showFilters, setShowFilters] = useState(true)
 
   const navigate = useNavigate();
 
-  // En desarrollo, cargar recetas mock automáticamente
-  useEffect(() => {
-    if (recipes.recipes.length === 0 && !recipes.isLoading) {
-      recipes.searchRecipes(['tomate', 'pollo', 'cebolla']).catch(console.error);
-    }
-  }, []);
-
   // Usar recetas del store directamente
   const recetas = recipes.recipes || [];
+  console.log('Recetas Disponibles: ', recipes.recipes)
+  console.log('Is Loading: ', recipes.isLoading)
+  console.log('Error: ', recipes.error)
 
-  // Aplicar filtros combinados: búsqueda y tipo de usuario (con memoization)
-  const filteredRecipes = useMemo(() => {
-    return recetas.filter(receta => {
-      // Filtro por tipo de usuario
-      const userTypeFilter = isPremium ? receta.premium : !receta.premium;
-      return userTypeFilter;
-    });
-  }, [recetas, isPremium]);
+  // Usar todas las recetas directamente ya que no hay filtro premium
+  const filteredRecipes = recetas;
 
-  const handleRecipeClick = ( recipe : Receta ) => {
+  const handleRecipeClick = (recipe: Recipe) => {
     console.log('Recipe clicked:', recipe);
-    // Navegar a la página de detalles de la receta
-    navigate(`/app/recipes/details/${recipe.id}`)
+    // Navegar a la página de detalles usando el idRecipe único
+    navigate(`/app/recipes/details/${recipe.idRecipe}`);
   }
 
   return (
@@ -118,10 +109,10 @@ export default function RecetasFree({ searchQuery }: RecetasFreeProps) {
           {/* Results Header */}
           <div className="px-4 py-2 bg-gray-50">
             <div className="flex items-center justify-between">
-              <span className="text-sm text-gray-600">Recetas encontradas</span>
+              <span className="text-sm text-text-primary">Recetas encontradas</span>
               <span className="text-sm font-medium">{filteredRecipes.length} resultados</span>
             </div>
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="text-xs text-text-primary mt-1">
               Ordenadas por coincidencia básica de ingredientes
             </p>
           </div>
@@ -131,44 +122,36 @@ export default function RecetasFree({ searchQuery }: RecetasFreeProps) {
       <div className="p-4 space-y-4">
         {recipes.isLoading ? (
           <div className="text-center py-8">
-            <p className="text-gray-500">Buscando recetas...</p>
+            <p className="text-text-primary">Buscando recetas...</p>
           </div>
         ) : filteredRecipes.length > 0 ? filteredRecipes.map((receta) => (
-          <Card key={receta.id}
+          <Card key={receta.idRecipe}
             className="overflow-hidden hover:shadow-md border-purple-200 transition-shadow cursor-pointer"
             onClick={() => handleRecipeClick(receta)}>
             <CardContent className="p-0">
               <div className="flex">
                 <img
-                  src={receta.image || "/placeholder.png"}
-                  alt={receta.title}
+                  src={receta.image || `https://placehold.co/600x256?text=${receta.name}`}
+                  alt={receta.name}
                   className="w-24 h-24 object-cover"
                 />
-                
+
                 <div className="flex-1 p-3">
                   <div className="flex items-start justify-between mb-2">
-                    <p className="font-semibold text-text-tertiary leading-tight">{receta.title}</p>
-                    <div className="flex items-center gap-1 ml-2">
-                      <div
-                        className={`w-2 h-2 rounded-full ${receta.coincidencia >= 90
-                          ? "bg-green-500"
-                          : receta.coincidencia >= 70
-                            ? "bg-yellow-500"
-                            : "bg-orange-500"
-                          }`}
-                      />
-                      <span className="text-xs text-gray-500">{receta.coincidencia}%</span>
-                    </div>
+                    <p className="font-semibold text-text-tertiary leading-tight">{receta.name}</p>
                   </div>
-
                   <div className="flex items-center gap-3 text-xs mb-2">
                     <div className="flex items-center gap-1 text-black">
                       <Clock className="h-3 w-3" />
-                      {receta.preparationTime || 30} min
+                      {receta.cooking_time || 30} min
                     </div>
                     <div className="flex items-center gap-1">
                       <ChefHat className="h-3 w-3" />
-                      {receta.difficulty || 'medium'}
+                      {receta.difficulty ? capitalize(receta.difficulty.toString()) : 'medium'}
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <Utensils className="h-3 w-3" />
+                      {receta.servings || '0'}
                     </div>
                   </div>
 
@@ -191,8 +174,8 @@ export default function RecetasFree({ searchQuery }: RecetasFreeProps) {
                   {/* Ingredients */}
                   <div className="flex flex-wrap gap-1 mt-2">
                     {(receta.ingredients || []).slice(0, 3).map((ingrediente, index) => (
-                      <Badge key={ingrediente.id || index} variant="outline" className="text-xs px-1 py-0 border-purple-200">
-                        {ingrediente.ingredientName}
+                      <Badge key={ingrediente.name || index} variant="outline" className="text-xs px-1 py-0 border-purple-200">
+                        {ingrediente.name}
                       </Badge>
                     ))}
                     {(receta.ingredients || []).length > 3 && (
@@ -201,7 +184,7 @@ export default function RecetasFree({ searchQuery }: RecetasFreeProps) {
                       </Badge>
                     )}
                   </div>
-
+                  <p className="mt-2 font-light text-sm leading-5">{receta.description}</p>
                   {/* Upgrade Hint - Solo para usuarios free */}
                   {!isPremium && (
                     <div className="mt-2 p-2 bg-purple-50 rounded text-xs">
@@ -230,11 +213,14 @@ export default function RecetasFree({ searchQuery }: RecetasFreeProps) {
       </div>
 
       {/* Load More */}
-      <div className="p-4">
-        <Button variant="outline" className="w-full">
-          Ver más recetas
-        </Button>
-      </div>
+      {filteredRecipes.length > 3 && (
+        <div className="p-4">
+          <Button variant="outline" className="w-full">
+            Ver más recetas
+          </Button>
+        </div>
+      )
+      }
     </>
   )
 }

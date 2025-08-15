@@ -4,8 +4,9 @@ import perso from "../assets/images/recipes/personalizado.jpg"
 import mediterraneo from "../assets/images/recipes/mediterraneo.jpg"
 import guiso from "../assets/images/recipes/guiso.png"
 import ensalada from "../assets/images/recipes/ensalada.png"
+import type { Recipe, Ingredient, Step } from "../store/useRecipesStore";
 
-
+// Legacy interfaces for existing data
 export interface IngredienteDetalle {
   id: number;
   ingredientName: string;
@@ -34,6 +35,103 @@ export interface Receta {
   sustitucion: string;
   personalizacion: string;
   aiTag: string;
+}
+
+// Adaptadores para convertir entre formatos legacy y nuevos
+export function convertLegacyToNewRecipe(legacyRecipe: Receta): Recipe {
+  const ingredients: Ingredient[] = legacyRecipe.ingredientesList.map((ing, index) => ({
+    name: ing.id || index, // Usar ID o índice como identificador
+    quantity: ing.amount,
+    unit: extractUnit(ing.amount),
+    icon: ing.icon,
+    is_optional: false
+  }));
+
+  const steps: Step[] = legacyRecipe.instructions.map((inst) => ({
+    order: inst.numero,
+    step: inst.description,
+    time: inst.time
+  }));
+
+  return {
+    name: legacyRecipe.recipetitle,
+    description: `Receta ${legacyRecipe.recipetitle} con ${legacyRecipe.ingredientesNumero} ingredientes`,
+    ingredients,
+    steps,
+    cooking_time: parseTime(legacyRecipe.preparationTime),
+    servings: 4, // Default serving size
+    dietary_info: [],
+    difficulty: mapDifficulty(legacyRecipe.difficulty),
+    image: legacyRecipe.image,
+    sustitucion: legacyRecipe.sustitucion,
+    personalizacion: legacyRecipe.personalizacion
+  };
+}
+
+export function convertNewToLegacyRecipe(newRecipe: Recipe, id: number): Receta {
+  const ingredientesList: IngredienteDetalle[] = newRecipe.ingredients.map((ing, index) => ({
+    id: typeof ing.name === 'number' ? ing.name : index + 1,
+    ingredientName: getIngredientName(ing.name),
+    amount: `${ing.quantity} ${ing.unit}`.trim(),
+    icon: ing.icon
+  }));
+
+  const instructions: instruction[] = newRecipe.steps.map((step) => ({
+    numero: step.order,
+    description: step.step,
+    time: step.time
+  }));
+
+  return {
+    id,
+    recipetitle: newRecipe.name,
+    image: newRecipe.image || '',
+    preparationTime: `${newRecipe.cooking_time || 30} min`,
+    difficulty: mapDifficultyReverse(newRecipe.difficulty),
+    coincidencia: 85, // Default match percentage
+    ingredientesNumero: newRecipe.ingredients.length,
+    ingredientes: newRecipe.ingredients.map(ing => getIngredientName(ing.name)),
+    ingredientesList,
+    instructions,
+    premium: false,
+    sustitucion: newRecipe.sustitucion || '',
+    personalizacion: newRecipe.personalizacion || '',
+    aiTag: 'API'
+  };
+}
+
+// Helper functions
+function extractUnit(amount: string): string {
+  const match = amount.match(/\b(g|kg|ml|l|cucharada|cucharadita|taza|unidad|diente)s?\b/i);
+  return match ? match[0] : '';
+}
+
+function parseTime(timeStr: string): number {
+  const match = timeStr.match(/\d+/);
+  return match ? parseInt(match[0]) : 30;
+}
+
+function mapDifficulty(difficulty: string): 'easy' | 'medium' | 'hard' {
+  const lower = difficulty.toLowerCase();
+  if (lower.includes('fácil') || lower.includes('muy fácil')) return 'easy';
+  if (lower.includes('medio') || lower.includes('intermedio')) return 'medium';
+  return 'hard';
+}
+
+function mapDifficultyReverse(difficulty?: 'easy' | 'medium' | 'hard'): string {
+  switch (difficulty) {
+    case 'easy': return 'Fácil';
+    case 'medium': return 'Medio';
+    case 'hard': return 'Difícil';
+    default: return 'Fácil';
+  }
+}
+
+function getIngredientName(nameOrId: number | string): string {
+  // En una implementación real, esto consultaría una base de datos de ingredientes
+  // Por ahora, devolvemos un placeholder
+  if (typeof nameOrId === 'string') return nameOrId;
+  return `Ingrediente ${nameOrId}`;
 }
 
 export const recetas: Receta[] = [

@@ -9,17 +9,18 @@ import { Card, CardContent } from "../../components/recipe/Card"
 import Button from '../../components/common/Button';
 import StatsRecipe from "../../components/ui/StatsRecipe";
 
-import type { IngredienteDetalle } from '../../data/Recipes';
 import { useRecipesManager } from '../../hooks/recipes/useRecipesManager';
+import type { Ingredient } from '../../store/useRecipesStore';
 
 export default function DetalleReceta() {
-    const { recipes, } = useRecipesManager();
+    const { recipes } = useRecipesManager();
     const [activeTab, setActiveTab] = useState<"ingredientes" | "pasos">("ingredientes")
     const [isSaved, setIsSaved] = useState(false);
     const { idRecipe } = useParams();
     const navigate = useNavigate();
 
-    const recipe = recipes.recipes.find(r => r.id.toString() === idRecipe);
+    // Obtener receta por idRecipe único
+    const recipe = recipes.recipes.find((r) => r.idRecipe === idRecipe);
 
     console.log('Recipe Id from params:', idRecipe);
     console.log('Recipe found:', recipe);
@@ -40,7 +41,7 @@ export default function DetalleReceta() {
         setIsSaved(!isSaved);
     };
 
-    const generateShoppingList = (ingredients: IngredienteDetalle) => {
+    const generateShoppingList = (ingredients: Ingredient[]) => {
         console.log('Shopping list generated for:', ingredients);
     }
 
@@ -56,7 +57,7 @@ export default function DetalleReceta() {
         <div className="container mx-auto min-h-screen">
             {/* Header con imagen */}
             <div className="relative">
-                <img src={recipe.image || "/placeholder.svg"} alt={recipe.title} className="w-full h-64 object-cover" />
+                <img src={recipe.image || `https://placehold.co/600x256?text=${recipe.name}`} alt={recipe.name} className="w-full h-64 object-cover" />
 
                 {/* Botón de regreso */}
                 <button
@@ -68,7 +69,7 @@ export default function DetalleReceta() {
 
                 {/* Overlay con título */}
                 <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-4">
-                    <h1 className="text-text-secondary text-xl font-bold">{recipe.title}</h1>
+                    <h1 className="text-text-secondary text-xl font-bold">{recipe.name}</h1>
                 </div>
             </div>
 
@@ -76,8 +77,9 @@ export default function DetalleReceta() {
             <StatsRecipe
                 recipe={{
                     ingredientsNumber: recipe.ingredients.length,
-                    difficulty: recipe.difficulty,
-                    preparationTime: recipe.preparationTime,
+                    difficulty: recipe.difficulty || 'easy',
+                    preparationTime: `${recipe.cooking_time || 30}`,
+                    servings: recipe.servings || 0,
                 }}
                 isSaved={isSaved}
                 toggleSave={toggleSave}
@@ -111,17 +113,18 @@ export default function DetalleReceta() {
                 {activeTab === "ingredientes" ? (
                     <>
                         {/* Lista de ingredientes */}
-                        {recipe.ingredients.map((ingrediente, index) => (
-                            <Card key={ingrediente.id || index} className="bg-white shadow-sm">
+                        {recipe.ingredients.map((ingredient, index) => (
+                            <Card key={ingredient.name || index} className="bg-white shadow-sm">
                                 <CardContent className="p-4">
                                     <div className="flex items-center justify-between">
                                         <div className="flex items-center gap-3">
-                                            <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center text-lg">
-                                                {ingrediente.icon}
-                                            </div>
-                                            <span className="text-text-primary font-bold">{ingrediente.ingredientName}</span>
+                                            <div 
+                                              className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center text-lg"
+                                              dangerouslySetInnerHTML={{ __html: ingredient.svg }}
+                                            />                                            
+                                            <span className="text-text-primary font-bold">{ingredient.name}</span>
                                         </div>
-                                        <span className="text-text-primary font-light">{ingrediente.amount}</span>
+                                        <span className="text-text-primary font-light">{ingredient.quantity} {ingredient.unit}</span>
                                     </div>
                                 </CardContent>
                             </Card>
@@ -139,17 +142,17 @@ export default function DetalleReceta() {
                 ) : (
                     <>
                         {/* Lista de pasos */}
-                        {recipe.instructions.map((instruction) => (
-                            <Card key={instruction.number || instruction.description} className="bg-white shadow-sm">
+                        {recipe.steps.map((step) => (
+                            <Card key={step.order || step.step} className="bg-white shadow-sm">
                                 <CardContent className="p-4">
                                     <div className="flex  items-center gap-3">
                                         <div className="w-8 h-8 bg-[#a1390b] text-text-secondary rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0 mt-1">
-                                            {instruction.number}
+                                            {step.order}
                                         </div>
                                         <div>
-                                            <p className="text-text-primary font-light leading-relaxed">{instruction.description}</p>
-                                            {instruction.time && 
-                                                <span className="font-mono text-[12px] font-extralight">Tiempo: {instruction.time}</span>
+                                            <p className="text-text-primary font-light leading-relaxed">{step.step}</p>
+                                            {step.time && 
+                                                <span className="font-mono text-[12px] font-extralight">Tiempo: {step.time} min</span>
                                             }
                                         </div>
                                     </div>

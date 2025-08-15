@@ -1,89 +1,169 @@
-import { recetas } from "../../data/Recipes";
+// API Configuration
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+const API_RECIPE_PATH = import.meta.env.VITE_API_RECIPES_URL;
 
-// Usar las interfaces del store para ser consistentes
-interface Ingredient {
-  id: number;
-  ingredientName: string;
-  amount: string;
-  icon: string;
+if (!API_BASE_URL || !API_RECIPE_PATH) {
+  throw new Error('API configuration is missing. Please check your environment variables.');
 }
 
-interface instruction {
-  number: number;
-  description: string;
-  time?: string;
+const RECIPES_ENDPOINT = `${API_BASE_URL}${API_RECIPE_PATH}/generate`;
+
+import type { Recipe } from "../../store/useRecipesStore";
+import { useAuthStore } from "../../store/useAuthStore";
+
+interface RecipesApiResponse {
+  success: boolean;
+  message?: string;
+  data: {
+    recipe: {
+      recipes: Recipe[];
+      total: number;
+      generation_time?: number;
+    };
+  };
 }
 
-interface Recipe {
-  id: string;
-  title: string;
-  ingredients: Ingredient[];
-  instructions: instruction[];
-  preparationTime?: number;
-  difficulty?: 'easy' | 'medium' | 'hard';
-  image?: string;
-  sustitucion?: string;
-  personalizacion?: string;
-  aiTag?: string;
-}
-interface RecipesResponse {
-  recipes: Recipe[];
-  totalRecipes: number;
+interface RecipesRequest {
+  ingredients: string[];
+  preferences?: {
+    dietary_restrictions?: string[];
+    difficulty?: 'easy' | 'medium' | 'hard';
+    cooking_time_max?: number;
+    servings?: number;
+  };
 }
 
+// Función para obtener el token de autenticación
+function getAuthToken(): string {
+  const { token, isAuthenticated } = useAuthStore.getState();
+  
+  if (!isAuthenticated || !token) {
+    throw new Error('Usuario no autenticado');
+  }
+  
+  return token;
+}
+
+// Función principal para obtener recetas
 export async function getRecipes(ingredients: string[]): Promise<Recipe[]> {
-  console.log('Ingredients to search:', ingredients);
-  try {
-    // En desarrollo usamos datos mock
-    if (import.meta.env.DEV) {
-      return getMockRecipes();
-    }
+  if (!ingredients || ingredients.length === 0) {
+    throw new Error('Debe proporcionar al menos un ingrediente');
+  }
 
-    const response = await fetch('url', {
-      method: 'GET',
+  console.log('Buscando recetas con ingredientes:', ingredients);
+
+  try {
+    const token = getAuthToken();
+    
+    const requestBody: RecipesRequest = {
+      ingredients: ingredients.map(ing => ing.trim().toLowerCase())
+    };
+
+    console.log('Enviando request a:', RECIPES_ENDPOINT);
+    console.log('Request body:', requestBody);
+
+    const response = await fetch(RECIPES_ENDPOINT, {
+      method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        // 'Authorization': `Bearer ${token}`
+        'Authorization': `Bearer ${token}`,
+        'Accept': 'application/json'
       },
+      body: JSON.stringify(requestBody)
+    });
+
+    console.log('Response status:', response.status);
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Error response:', errorText);
+      
+      // Manejar diferentes tipos de errores HTTP
+      switch (response.status) {
+        case 401:
+          throw new Error('Sesión expirada. Por favor, inicia sesión nuevamente.');
+        case 403:
+          throw new Error('No tienes permisos para generar recetas.');
+        case 429:
+          throw new Error('Demasiadas solicitudes. Espera un momento antes de intentar de nuevo.');
+        case 500:
+          throw new Error('Error del servidor. Intenta de nuevo más tarde.');
+        default:
+          throw new Error(`Error ${response.status}: No se pudieron obtener las recetas`);
+      }
+    }
+
+    const data: RecipesApiResponse = await response.json();
+    console.log('Respuesta completa de la API:', data);
+
+    // Validar respuesta exitosa
+    if (!data.success) {
+      throw new Error(data.message || 'Error al procesar la solicitud de recetas');
+    }
+
+    // Extraer recetas de la estructura conocida
+    const recipes = data.data.recipe.recipes;
+    console.log(`Se encontraron ${recipes.length} recetas`);
+    return recipes;
+
+  } catch (error) {
+    console.error('Error al obtener recetas:', error);
+    
+    if (error instanceof Error) {
+      throw error;
+    }
+    
+    throw new Error('Error inesperado al obtener recetas');
+  }
+}
+
+// Función para obtener recetas con preferencias adicionales
+
+export async function getRecipesWithPreferences(
+  ingredients: string[],
+  preferences: RecipesRequest['preferences']
+): Promise<Recipe[]> {
+  if (!ingredients || ingredients.length === 0) {
+    throw new Error('Debe proporcionar al menos un ingrediente');
+  }
+
+  try {
+    const token = getAuthToken();
+    
+    const requestBody: RecipesRequest = {
+      ingredients: ingredients.map(ing => ing.trim().toLowerCase()),
+      preferences
+    };
+
+    console.log('Buscando recetas con preferencias:', requestBody);
+
+    const response = await fetch(RECIPES_ENDPOINT, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify(requestBody)
     });
 
     if (!response.ok) {
-      throw new Error(`Error ${response.status}: ${response.statusText}`);
+      const errorText = await response.text();
+      throw new Error(`Error ${response.status}: ${errorText}`);
     }
 
-    const data: RecipesResponse = await response.json();
-    return data.recipes;
+    const data: RecipesApiResponse = await response.json();
+    
+    if (!data.success) {
+      throw new Error(data.message || 'Error al obtener recetas con preferencias');
+    }
+
+    // Usar la misma estructura conocida
+    return data.data.recipe.recipes;
+
   } catch (error) {
-    console.error('Error fetching recipes:', error);
+    console.error('Error al obtener recetas con preferencias:', error);
     throw error;
   }
 }
 
-// Función para datos mock durante desarrollo
-function getMockRecipes(): Promise<Recipe[]> {
-  // Adaptar las recetas al formato esperado
-  const adaptedRecipes: Recipe[] = recetas.map(receta => ({
-    id: receta.id.toString(),
-    title: receta.recipetitle,
-    ingredients: receta.ingredientesList,
-    instructions: receta.instructions.map(inst => ({
-      number: inst.numero,
-      description: inst.description,
-      time: inst.time,
-    })),
-    preparationTime: parseInt(receta.preparationTime) || 30,
-    difficulty: receta.difficulty.toLowerCase() as 'easy' | 'medium' | 'hard',
-    image: receta.image,
-    // Propiedades adicionales del formato original
-    premium: receta.premium,
-    coincidencia: receta.coincidencia,
-    sustitucion: receta.sustitucion,
-    personalizacion: receta.personalizacion,
-    aiTag: receta.aiTag || 'AI Optimized',
-  }));
-
-  // Simular delay de API
-  return new Promise(resolve => {
-    setTimeout(() => resolve(adaptedRecipes), 1000);
-  });
-}

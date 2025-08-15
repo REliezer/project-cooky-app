@@ -4,10 +4,11 @@ import Button from '../../components/common/Button'
 import Graphics from '../../components/common/Graphics'
 
 import { useAuthStore } from '../../store/useAuthStore.ts';
+import { isPremiumUser } from '../../services/auth/login';
 
 function HomeRecipe() {
   const { user } = useAuthStore();
-  const isPremium = user?.premium || false; // Verificar si el usuario es premium
+  const isPremium = user ? isPremiumUser(user) : false; // Verificar si el usuario es premium
   const navigate = useNavigate()
 
   return (
