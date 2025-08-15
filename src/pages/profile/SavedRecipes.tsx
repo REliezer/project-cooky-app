@@ -51,7 +51,7 @@ export default function RecetasGuardadas() {
         <div className="fav-page">
             {/* Header */}
             <div className="bg-bg-primary text-white p-4">
-                <div className="flex items-center gap-3 mb-2">
+                <div className="flex items-center gap-3 mb-2 -mt-4">
                     <button
                         onClick={() => navigate(-1)}
                         className="back-btn"
@@ -60,7 +60,7 @@ export default function RecetasGuardadas() {
                     </button>
                     <h1 className="fav-title">Recetas Guardadas</h1>
                 </div>
-                <p className="text-black-100 text-sm ml-11.5">{recetasGuardadas.length} recetas en tu colección</p>
+                <p className="text-sm text-gray-500 mb-3">{recetasGuardadas.length} recetas en tu colección</p>
             </div>
 
             {recetasGuardadas.length === 0 ? (
