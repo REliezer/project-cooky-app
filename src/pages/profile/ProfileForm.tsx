@@ -1,133 +1,187 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-
-import DynamicForm from "../../components/common/DynamicForm";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Graphics from "../../components/common/Graphics";
 import Button from "../../components/common/Button";
+import { useProfileStore } from "../../store/useProfileStore";
+import { useNavigate } from "react-router-dom";
 
-import type { FormFieldConfig } from '../../types/components';
-import { useAuthStore } from "../../store/useAuthStore";
+export default function ProfileReadEdit() {
+  const { profile, status, error, fetchProfile, saveProfile, clearError } = useProfileStore();
+  const [editMode, setEditMode] = useState<boolean>(true);
+  const navigate = useNavigate();
 
-function ProfileForm() {
-    const { user } = useAuthStore();
-    const [profileImage, setProfileImage] = useState<string>('/user-placeholder.png'); // usa tu avatar por defecto
-    const navigate = useNavigate();
-    console.log('User data:', user)
-    
-    // Extract first and last name from user.name if available
-    const getNameParts = (fullName: string | undefined) => {
-        if (!fullName) return { firstName: '', lastName: '' };
-        const nameParts = fullName.trim().split(' ');
-        const firstName = nameParts[0] || '';
-        const lastName = nameParts.slice(1).join(' ') || '';
-        return { firstName, lastName };
-    };
-    
-    const { firstName, lastName } = getNameParts(user?.name);
-    
-    // Prepare initial values from user data
-    const initialValues = {
-        firstName: firstName,
-        lastName: lastName,
-        email: user?.email || ''
-    };
-    // Manejar carga de imagen localmente
-    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (file) {
-            const imageURL = URL.createObjectURL(file);
-            setProfileImage(imageURL);
-        }
-    };
+  // avatar (preview local)
+  const [avatar, setAvatar] = useState<string>("/user-placeholder.png");
+  const fileRef = useRef<HTMLInputElement | null>(null);
 
-    // Campos del formulario
-    const formFields: FormFieldConfig[] = [
-        {
-            name: 'firstName',
-            type: 'text',
-            label: 'Nombre',
-            placeholder: 'Ingresa tu nombre',
-            required: true,
-            validation: {
-                minLength: 2,
-                maxLength: 50
-            }
-        },
-        {
-            name: 'lastName',
-            type: 'text',
-            label: 'Apellido',
-            placeholder: 'Ingresa tu apellido',
-            required: true,
-            validation: {
-                minLength: 2,
-                maxLength: 50
-            }
-        },
-        {
-            name: 'email',
-            type: 'email',
-            label: 'Correo electrónico',
-            placeholder: 'ejemplo@email.com',
-            required: true,
-            validation: {
-                pattern: '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$'
-            }
-        }
-    ];
+  useEffect(() => {
+    fetchProfile(); }, []);
 
-    const handleSubmit = async (formData: Record<string, string>) => {
-        console.log("Datos enviados:", formData);
-        alert("Formulario enviado");
-    };
+  // Relleno inicial desde profile
+  const [firstName, setFirstName] = useState<string>("");
+  const [lastName, setLastName] = useState<string>("");
+  const [email, setEmail] = useState<string>("");
 
-    return (
-        <section>
-            <Graphics
-                variant="left"
-                title="Datos Personales"
-                subtitle="Edita tu información personal y tu foto de perfil."
+  useEffect(() => {
+    if (!profile) return;
+    const parts = (profile.name || "").trim().split(" ").filter(Boolean);
+    setFirstName(parts[0] || "");
+    setLastName(parts.slice(1).join(" ") || "");
+    setEmail(profile.email || "");
+   
+  }, [profile]);
+
+  const loading = status === "loading";
+
+  const dirty = useMemo(() => {
+    if (!profile) return false;
+    const full = (profile.name || "").trim().replace(/\s+/g, " ");
+    const local = `${firstName} ${lastName}`.trim().replace(/\s+/g, " ");
+    return full !== local;
+  }, [firstName, lastName, profile]);
+
+  const onSave = async () => {
+    const name = `${firstName} ${lastName}`.trim().replace(/\s+/g, " ");
+    if (!name) return;
+    await saveProfile({ name });
+    setEditMode(false);
+  };
+
+  const onCancel = () => {
+    const parts = (profile?.name || "").trim().split(" ").filter(Boolean);
+    setFirstName(parts[0] || "");
+    setLastName(parts.slice(1).join(" ") || "");
+    clearError();
+    setEditMode(false);
+  };
+
+  const onBack = () => {
+    if (window.history.length > 1) navigate(-1);
+    else navigate("/app/profile");
+  };
+
+  const onAvatarBtnClick = () => {
+    if (!editMode) return;
+    fileRef.current?.click();
+  };
+
+  const onAvatar = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const f = e.target.files?.[0];
+    if (f) {
+      const url = URL.createObjectURL(f);
+      setAvatar(url);
+    }
+  };
+
+  return (
+    <section className="relative">
+      <div className="pointer-events-none">
+        <Graphics
+          variant="left"
+          title="Datos Personales"
+          subtitle="Consulta y edita tu información básica."
+        />
+      </div>
+
+      <div className="absolute left-4 top-4 z-20">
+        <button
+          type="button"
+          onClick={onBack}
+          aria-label="Volver"
+          className="w-9 h-9 rounded-full bg-white/90 shadow flex items-center justify-center hover:bg-white"
+        >
+          <svg viewBox="0 0 24 24" width="18" height="18">
+            <path d="M15 18l-6-6 6-6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </button>
+      </div>
+
+      <div className="flex justify-center mb-6 relative -mt-20 z-20">
+        <div className="relative w-28 h-28">
+          <img
+            src={avatar}
+            alt="Foto de perfil"
+            className="w-36 h-36 rounded-full border-4 border-orange-500 shadow-md object-cover"
+          />
+
+          <input
+            ref={fileRef}
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={onAvatar}
+          />
+
+          <button
+            type="button"
+            onClick={onAvatarBtnClick}
+            className={`absolute bottom-1 right-1 text-white p-2 rounded-full shadow-md
+              ${editMode ? "bg-orange-500 hover:bg-orange-600" : "bg-gray-300 cursor-not-allowed"}`}
+          >
+            📷
+          </button>
+        </div>
+      </div>
+
+      <div className="rounded-lg shadow-lg p-8 max-w-[80%] md:max-w-[60%] mx-auto mb-8 relative z-10">
+        {error && (
+          <div className="mb-3 text-sm text-red-700 bg-red-50 border border-red-200 rounded p-2" onClick={clearError}>
+            {error}
+          </div>
+        )}
+
+        <div className="grid gap-6 grid-cols-1">
+          <div>
+            <label className="block text-sm font-medium mb-2">
+              Nombre <span className="text-feedback-error ml-1">*</span>
+            </label>
+            <input
+              className={`w-full px-4 py-3 border rounded-lg transition-all focus:outline-none focus:ring-1
+                ${editMode ? "bg-white" : "bg-gray-100"}
+                ${editMode ? "focus:ring-[#FE6700]" : ""}
+                border-gray-300`}
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
+              disabled={!editMode || loading}
             />
+          </div>
 
-            {/* Sección de la foto */}
-            <div className="flex justify-center mb-6 relative -mt-20">
-                <div className="relative w-28 h-28">
-                    <img
-                        src={profileImage}
-                        alt="Foto de perfil"
-                        className="w-36 h-36 rounded-full border-4 border-orange-500 shadow-md object-cover"
-                    />
-                    <label className="absolute bottom-1 right-1 bg-orange-500 hover:bg-orange-600 text-white p-2 rounded-full cursor-pointer shadow-md">
-                        <input
-                            type="file"
-                            accept="image/*"
-                            className="hidden"
-                            onChange={handleImageChange}
-                        />
-                        📷
-                    </label>
-                </div>
-            </div>
+          <div>
+            <label className="block text-sm font-medium mb-2">
+              Apellido <span className="text-feedback-error ml-1">*</span>
+            </label>
+            <input
+              className={`w-full px-4 py-3 border rounded-lg transition-all focus:outline-none focus:ring-1
+                ${editMode ? "bg-white" : "bg-gray-100"}
+                ${editMode ? "focus:ring-[#FE6700]" : ""}
+                border-gray-300`}
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
+              disabled={!editMode || loading}
+            />
+          </div>
 
-            {/* Formulario de datos */}
-            <DynamicForm
-                fields={formFields}
-                onSubmit={handleSubmit}
-                submitButtonText="Guardar"
-                submitButtonVariant="primary"
-                resetOnSubmit={false}
-                initialValues={initialValues}
-            >
-                <Button
-                    label="Cancelar"
-                    variant="outline"
-                    size="medium"
-                    onClick={() => navigate('/app/profile')}
-                />
-            </DynamicForm>
+          <div>
+            <label className="block text-sm font-medium mb-2">Correo</label>
+            <input
+              className="w-full px-4 py-3 border rounded-lg bg-gray-100 cursor-not-allowed border-gray-300"
+              value={email}
+              disabled
+            />
+          </div>
+        </div>
 
-        </section>
-    );
+        {/* Acciones */}
+        <div className="flex gap-3 justify-end pt-6">
+          {!editMode ? (
+            <Button label="Editar" variant="primary" onClick={() => setEditMode(true)} disabled={loading} />
+          ) : (
+            <>
+              <Button label={loading ? "Guardando…" : "Guardar"} variant="primary" onClick={onSave} disabled={!dirty || loading} />
+              <Button label="Cancelar" variant="outline" onClick={onCancel} disabled={loading} />
+            </>
+          )}
+        </div>
+      </div>
+    </section>
+  );
 }
-
-export default ProfileForm;

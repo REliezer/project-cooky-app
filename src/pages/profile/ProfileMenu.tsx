@@ -2,7 +2,7 @@ import Graphics from "../../components/common/Graphics";
 import Button from "../../components/common/Button";
 import CardItem from "../../components/profile/CardItem";
 
-import { User, Heart, ThumbsDown, UtensilsCrossed, AlertTriangle, } from "lucide-react";
+import { User, Heart, ThumbsDown, UtensilsCrossed, AlertTriangle, Leaf } from "lucide-react";
 import "../../styles/components/ProfileMenu.css"
 import CardSection from "../../components/profile/CardSection";
 import ProfileAvatar from "../../components/ui/ProfileAvatar";
@@ -50,6 +50,11 @@ function ProfileMenu() {
             label: 'Alergias',
             route: '/app/allergies',
             icon: <AlertTriangle size={18} className="text-yellow-500" />
+          },
+          {
+            label: 'Restricciones dietéticas',
+            route: '/app/dietaryrestrictions',
+            icon: <Leaf  size={18} className="text-yellow-500" />
           }
         ]
       }

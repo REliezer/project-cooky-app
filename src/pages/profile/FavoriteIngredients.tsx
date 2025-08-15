@@ -1,31 +1,59 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import "../../styles/components/FavoriteIngredients.css";
 import { useNavigate } from "react-router-dom";
 
 import { categories } from "../../data/Categories";
-import { quick, favorite } from "../../data/FavoriteIngredients";
+import { quick, favorite as favoriteSeed } from "../../data/FavoriteIngredients";
 import type { Item } from "../../data/DislikeIngredientes";
-import type { FormFieldConfig } from '../../types';
+import type { FormFieldConfig } from "../../types";
 
 import Button from "../../components/common/Button";
 import Modal from "../../components/common/Modal";
-import DynamicForm from '../../components/common/DynamicForm';
+import DynamicForm from "../../components/common/DynamicForm";
 import ItemList from "../../components/common/ItemList";
+import { useProfileStore } from "../../store/useProfileStore";
 
-import { useAuthStore } from "../../store/useAuthStore";
-import { useRecipes } from "../../hooks/recipes/useRecipes";
 function FavoriteIngredients() {
-  const { user } = useAuthStore();
-  const { lastSearchedIngredients } = useRecipes();
-  const [adding, setAdding] = useState(false);
-  const [newName, setNewName] = useState("");
-  const [items, setItems] = useState<Item[]>(user?.favorite_ingredients && user.favorite_ingredients.length > 0 ? user.favorite_ingredients : favorite);
-  const [selectedCategory, setSelectedCategory] = useState<string>("");
   const navigate = useNavigate();
-  console.log('User favorite ingredients: ', user?.favorite_ingredients);
-  console.log('Last searched ingredients: ', lastSearchedIngredients);
+  const { profile, status, error, fetchProfile, saveFavorites, clearError } = useProfileStore();
 
-  // Generate category options from imported categories
+  const [adding, setAdding] = useState(false);
+  const [items, setItems] = useState<Item[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<string>("");
+
+  // Cargar perfil al montar
+  useEffect(() => {
+    fetchProfile();
+  }, []);
+
+  // Mapear favoritos del perfil a items con svg
+  useEffect(() => {
+    const favs = profile?.favorite_ingredients ?? null;
+
+    const findSvgByName = (name: string): string => {
+      for (const cat of categories) {
+        for (const p of (cat.products ?? [])) {
+          if (p.name.toLowerCase() === name.toLowerCase()) return p.svg;
+        }
+      }
+      const q = quick.find(x => x.name.toLowerCase() === name.toLowerCase());
+      if (q) return q.svg;
+      return `<svg viewBox="0 0 24 24" width="24" height="24"><circle cx="12" cy="12" r="8" fill="#FFEDD5"/></svg>`;
+    };
+
+    if (favs && favs.length) {
+      const mapped: Item[] = favs.map(n => ({
+        id: n.trim().toLowerCase().replace(/\s+/g, "-"),
+        name: n,
+        svg: findSvgByName(n),
+      }));
+      setItems(mapped);
+    } else {
+      setItems(favoriteSeed);
+    }
+  }, [profile]);
+
+  // Opciones de categoría / producto
   const categoryOptions = categories.map(category => ({
     value: category.id,
     label: category.name
@@ -34,141 +62,144 @@ function FavoriteIngredients() {
   // Generate product options based on selected category
   const getProductOptions = (categoryId: string) => {
     const selectedCat = categories.find(cat => cat.id === categoryId);
-    if (!selectedCat || !selectedCat.products) {
-      return [];
-    }
+    if (!selectedCat || !selectedCat.products) return [];
     return selectedCat.products.map(product => ({
       value: product.id,
       label: product.name
     }));
   };
 
-  // Convert lastSearchedIngredients (string[]) to Item[] for suggestions
-  const getSearchedIngredientsSuggestions = (): Item[] => {
-    if (!lastSearchedIngredients || lastSearchedIngredients.length === 0) {
-      return [];
-    }
-
-    const suggestions: Item[] = [];
-    lastSearchedIngredients.forEach(ingredientName => {
-      // Search for the ingredient in all categories to get full Item data
-      categories.forEach(category => {
-        const product = category.products?.find(p => p.name.toLowerCase() === ingredientName.toLowerCase());
-        if (product && !suggestions.find(s => s.id === product.id)) {
-          suggestions.push({
-            id: product.id,
-            name: product.name,
-            svg: product.svg
-          });
-        }
-      });
-    });
-
-    return suggestions;
-  };
-
-  const searchedSuggestions = getSearchedIngredientsSuggestions();
-
-  // Dynamic form fields that update when selectedCategory changes
+  // Campos del form del modal
   const addProductFormFields: FormFieldConfig[] = useMemo(() => [
     {
-      name: 'categoria',
-      type: 'list',
-      label: 'Categoria',
-      placeholder: 'Selecciona una categoria',
+      name: "categoria",
+      type: "list",
+      label: "Categoria",
+      placeholder: "Selecciona una categoria",
       required: true,
       options: categoryOptions
     },
     {
-      name: 'productos',
-      type: 'list',
-      label: 'Productos',
-      placeholder: selectedCategory ? 'Selecciona un producto' : 'Primero selecciona una categoria',
+      name: "productos",
+      type: "list",
+      label: "Productos",
+      placeholder: selectedCategory ? "Selecciona un producto" : "Primero selecciona una categoria",
       required: true,
       options: getProductOptions(selectedCategory),
       disabled: !selectedCategory
     }
   ], [selectedCategory, categoryOptions]);
 
-  const handleDelete = (id: string) => {
-    setItems(prev => prev.filter(it => it.id !== id));
-  };
+  const loading = status === "loading";
 
-  const addItem = (name: string, svg: string) => {
-    if (!name.trim()) return;
-    const id = name.trim().toLowerCase().replace(/\s+/g, "-");
-    setItems(prev => [...prev, { id, name, svg }]);
-    setAdding(false);
-    setNewName("");
-  };
-
-  // Handle form submission from DynamicForm
-  const handleFormSubmit = (formData: any) => {
-    console.log('Form submitted with data:', formData);
-    const selectedCat = categories.find(cat => cat.id === formData.categoria);
-    const selectedProduct = selectedCat?.products?.find(prod => prod.id === formData.productos);
-
-    if (selectedProduct) {
-      addItem(selectedProduct.name, selectedProduct.svg);
+  // Guardado inmediato helper
+  const persist = async (nextItems: Item[]) => {
+    setItems(nextItems);                       
+    try {
+      await saveFavorites(nextItems.map(i => i.name));
+    } catch {
+      // si falla, restaura a estado previo del perfil
+      const prev = (profile?.favorite_ingredients ?? []).map(n => ({
+        id: n.trim().toLowerCase().replace(/\s+/g, "-"),
+        name: n,
+        svg:
+          quick.find(q => q.name.toLowerCase() === n.toLowerCase())?.svg ||
+          `<svg viewBox="0 0 24 24" width="24" height="24"><circle cx="12" cy="12" r="8" fill="#FFEDD5"/></svg>`
+      }));
+      setItems(prev);
     }
   };
 
-  // Handle category change to update product options
-  const handleCategoryChange = (categoryId: string) => {
-    setSelectedCategory(categoryId);
+  // Eliminar 
+  const handleDelete = async (id: string) => {
+    if (loading) return;
+    const next = items.filter(it => it.id !== id);
+    await persist(next);
   };
 
-  // Reset modal state when closing
-  const handleCloseModal = () => {
+  // Agregar 
+  const addItem = async (name: string, svg: string) => {
+    if (loading) return;
+    const cleaned = name.trim();
+    if (!cleaned) return;
+    if (items.some(x => x.name.toLowerCase() === cleaned.toLowerCase())) {
+      setAdding(false);
+      setSelectedCategory("");
+      return;
+    }
+    const next = [...items, {
+      id: cleaned.toLowerCase().replace(/\s+/g, "-"),
+      name: cleaned,
+      svg
+    }];
+    await persist(next);
     setAdding(false);
     setSelectedCategory("");
+  };
+
+  // Submit del DynamicForm 
+  const handleFormSubmit = async (formData: Record<string, string | number | boolean>) => {
+    const categoriaId = String(formData.categoria || "");
+    const productoId  = String(formData.productos || "");
+    const selectedCat = categories.find(cat => cat.id === categoriaId);
+    const selectedProduct = selectedCat?.products?.find(prod => prod.id === productoId);
+    if (selectedProduct) {
+      await addItem(selectedProduct.name, selectedProduct.svg);
+    }
   };
 
   return (
     <main className="fav-page">
       <div className="fav-wrap">
         <header className="fav-header">
-          <button className="back-btn" onClick={() => navigate('/app/profile')} aria-label="Volver">
-            <svg viewBox="0 0 24 24" width="18" height="18">
+          <button className="back-btn" onClick={() => navigate("/app/profile")} aria-label="Volver">
+            <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
               <path d="M15 18l-6-6 6-6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </button>
-          <h1 className="fav-title">Ingredientes<br />Favoritos</h1>
+          <h1 className="fav-title">Ingredientes Favoritos</h1>
         </header>
 
         {/* Lista */}
         <section className="fav-list">
+          {error && (
+            <div
+              className="mb-3 text-sm text-red-700 bg-red-50 border border-red-200 rounded p-2"
+              onClick={clearError}
+            >
+              {error}
+            </div>
+          )}
+
           {items.map(it => (
             <ItemList
               key={it.id}
               item={{ id: it.id, name: it.name, svg: it.svg }}
               onDelete={() => handleDelete(it.id)}
+              disabled={loading}
             />
           ))}
-          {/* Modal para añadir manualmente */}
+
           {adding && (
-            <Modal
-              title="Añadir ingrediente"
-              isOpen={adding}
-              type="form"
-            >
+            <Modal title="Añadir ingrediente" isOpen={adding} type="form">
               <DynamicForm
                 fields={addProductFormFields}
                 onSubmit={handleFormSubmit}
-                submitButtonText="Agregar"
+                submitButtonText={loading ? "Guardando…" : "Agregar"}
                 submitButtonVariant="secondary"
                 resetOnSubmit={true}
                 className="shadow-none p-0 m-0"
+                isLoading={loading}
                 onFieldChange={(fieldName, value) => {
-                  if (fieldName === 'categoria') {
-                    handleCategoryChange(value);
+                  if (fieldName === "categoria") {
+                    setSelectedCategory(String(value));
                   }
                 }}
               >
                 <Button
-                  label='Cancelar'
-                  variant='outline'
-                  onClick={handleCloseModal}
+                  label="Cerrar"
+                  variant="outline"
+                  onClick={() => { setAdding(false); setSelectedCategory(""); }}
                 />
               </DynamicForm>
             </Modal>
@@ -189,21 +220,19 @@ function FavoriteIngredients() {
             variant="secondary"
             size="medium"
             className="w-full mb-4"
-            onClick={() => setAdding(true)}>
-          </Button>
+            onClick={() => setAdding(true)}
+            disabled={loading}
+          />
         )}
 
-        {/* Sugerencias basadas en búsquedas recientes o sugerencias populares */}
-        <h3 className='font-medium text-sm text-left'>
-          {searchedSuggestions.length > 0 ? 'Ingredientes que buscaste recientemente' : 'Sugerencias populares'}
-        </h3>
-        <section className="quick-list-favorite">
-          {(searchedSuggestions.length > 0 ? searchedSuggestions : quick).map(q => (
+        {/* Sugerencias rápidas */}
+        <section className="quick-list">
+          {quick.map(q => (
             <button
               key={q.id}
-              className="quick-item"
+              className={`quick-item ${loading ? "opacity-60 pointer-events-none" : ""}`}
               onClick={() => addItem(q.name, q.svg)}
-              title={q.name}
+              disabled={loading}
             >
               <span
                 className="quick-avatar"

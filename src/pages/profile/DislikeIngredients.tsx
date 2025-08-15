@@ -1,106 +1,162 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import "../../styles/components/DislikeIngredientes.css";
 import { useNavigate } from "react-router-dom";
 
-import { quick, dislike } from "../../data/DislikeIngredientes";
+import { quick, dislike as dislikeSeed } from "../../data/DislikeIngredientes";
 import { categories } from "../../data/Categories";
-import type { Item } from "../../data/DislikeIngredientes";
-import type { FormFieldConfig } from '../../types';
+// import type { Item } from "../../data/DislikeIngredientes";
+import type { FormFieldConfig } from "../../types";
 
 import Button from "../../components/common/Button";
 import Modal from "../../components/common/Modal";
-import DynamicForm from '../../components/common/DynamicForm';
+import DynamicForm from "../../components/common/DynamicForm";
 import ItemList from "../../components/common/ItemList";
+import { useProfileStore } from "../../store/useProfileStore";
 
-import { useAuthStore } from "../../store/useAuthStore";
+// Tipo local consistente para esta pantalla
+type UIItem = { id: string; name: string; svg: string };
 
 function DislikeIngredients() {
-  const { user } = useAuthStore();
-  const [adding, setAdding] = useState(false);
-  const [newName, setNewName] = useState("");
-  const [items, setItems] = useState<Item[]>(user?.banned_ingredients && user.banned_ingredients.length > 0 ? user.banned_ingredients : dislike);
-  const [selectedCategory, setSelectedCategory] = useState<string>("");
   const navigate = useNavigate();
-  console.log('User: ', user )
-  // Generate category options from imported categories
+  const { profile, status, error, fetchProfile, saveBannedIngredients, clearError } = useProfileStore();
+
+  const [adding, setAdding] = useState(false);
+  const [items, setItems] = useState<UIItem[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<string>("");
+
+  const slugify = (s: string) =>
+    s
+      .trim()
+      .toLowerCase()
+      .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+      .replace(/\s+/g, "-");
+
+  // Cargar perfil
+  useEffect(() => {
+    fetchProfile();
+  }, [fetchProfile]);
+
+  // Mapear ingredientes del perfil
+  useEffect(() => {
+    const banned = profile?.banned_ingredients ?? [];
+
+    const findSvgByName = (name: string): string => {
+      // 1) catálogo
+      for (const cat of categories) {
+        for (const p of (cat.products ?? [])) {
+          if (p.name.toLowerCase() === name.toLowerCase()) return p.svg;
+        }
+      }
+      // 2) sugerencias rápidas
+      const q = quick.find(x => x.name.toLowerCase() === name.toLowerCase());
+      if (q) return q.svg;
+
+      // 3) fallback
+      return `<svg viewBox="0 0 24 24" width="24" height="24"><circle cx="12" cy="12" r="8" fill="#FEE2E2"/></svg>`;
+    };
+
+    if (banned.length) {
+      const mapped: UIItem[] = banned.map(n => ({
+        id: slugify(n),
+        name: n,
+        svg: findSvgByName(n),
+      }));
+      setItems(mapped);
+    } else {
+      // Normaliza el seed al shape UIItem
+      const mappedSeed: UIItem[] = dislikeSeed.map(it => ({
+        id: slugify(it.name),
+        name: it.name,
+        svg: it.svg,
+      }));
+      setItems(mappedSeed);
+    }
+  }, [profile]);
+
+  const loading = status === "loading";
+
   const categoryOptions = categories.map(category => ({
     value: category.id,
     label: category.name
   }));
 
-  // Generate product options based on selected category
   const getProductOptions = (categoryId: string) => {
     const selectedCat = categories.find(cat => cat.id === categoryId);
-    if (!selectedCat || !selectedCat.products) {
-      return [];
-    }
-    return selectedCat.products.map(product => ({
+    return selectedCat?.products?.map(product => ({
       value: product.id,
       label: product.name
-    }));
+    })) || [];
   };
 
-  // Dynamic form fields that update when selectedCategory changes
   const addProductFormFields: FormFieldConfig[] = useMemo(() => [
     {
-      name: 'categoria',
-      type: 'list',
-      label: 'Categoria',
-      placeholder: 'Selecciona una categoria',
+      name: "categoria",
+      type: "list",
+      label: "Categoria",
+      placeholder: "Selecciona una categoria",
       required: true,
       options: categoryOptions
     },
     {
-      name: 'productos',
-      type: 'list',
-      label: 'Productos',
-      placeholder: selectedCategory ? 'Selecciona un producto' : 'Primero selecciona una categoria',
+      name: "productos",
+      type: "list",
+      label: "Productos",
+      placeholder: selectedCategory ? "Selecciona un producto" : "Primero selecciona una categoria",
       required: true,
       options: getProductOptions(selectedCategory),
       disabled: !selectedCategory
     }
   ], [selectedCategory, categoryOptions]);
 
-  const handleDelete = (id: string) => {
-    setItems(prev => prev.filter(it => it.id !== id));
-  };
-
-  const addItem = (name: string, svg: string) => {
-    if (!name.trim()) return;
-    const id = name.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, "-");
-    setItems(prev => [...prev, { id, name, svg }]);
-    setAdding(false);
-    setNewName("");
-  };
-
-  // Handle form submission from DynamicForm
-  const handleFormSubmit = (formData: any) => {
-    console.log('Form submitted with data:', formData);
-    const selectedCat = categories.find(cat => cat.id === formData.categoria);
-    const selectedProduct = selectedCat?.products?.find(prod => prod.id === formData.productos);
-
-    if (selectedProduct) {
-      addItem(selectedProduct.name, selectedProduct.svg);
+  // Guardado inmediato (optimista con rollback)
+  const persist = async (nextItems: UIItem[]) => {
+    const prevItems = items;
+    setItems(nextItems);
+    try {
+      await saveBannedIngredients(nextItems.map(i => i.name));
+    } catch {
+      setItems(prevItems);
     }
   };
 
-  // Handle category change to update product options
-  const handleCategoryChange = (categoryId: string) => {
-    setSelectedCategory(categoryId);
+  const handleDelete = async (id: string) => {
+    if (loading) return;
+    await persist(items.filter(it => it.id !== id));
   };
 
-  // Reset modal state when closing
-  const handleCloseModal = () => {
+  const addItem = async (name: string, svg: string) => {
+    if (loading) return;
+    const cleaned = name.trim();
+    if (!cleaned) return;
+
+    const normalized = cleaned.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    if (items.some(x => x.name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "") === normalized)) {
+      setAdding(false);
+      setSelectedCategory("");
+      return;
+    }
+
+    const id = normalized.replace(/\s+/g, "-");
+    await persist([...items, { id, name: cleaned, svg }]);
     setAdding(false);
     setSelectedCategory("");
+  };
+
+  const handleFormSubmit = async (formData: Record<string, string | number | boolean>) => {
+    const categoriaId = String(formData.categoria || "");
+    const productoId  = String(formData.productos || "");
+    const selectedCat = categories.find(cat => cat.id === categoriaId);
+    const selectedProduct = selectedCat?.products?.find(prod => prod.id === productoId);
+    if (selectedProduct) {
+      await addItem(selectedProduct.name, selectedProduct.svg);
+    }
   };
 
   return (
     <main className="dislike-page">
       <div className="dislike-wrap">
-        {/* Header */}
         <header className="dislike-header">
-          <button className="back-btn" onClick={() => navigate('/app/profile')} aria-label="Volver">
+          <button className="back-btn" onClick={() => navigate("/app/profile")} aria-label="Volver">
             <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
               <path d="M15 18l-6-6 6-6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
@@ -108,46 +164,55 @@ function DislikeIngredients() {
           <h1 className="dislike-title">Ingredientes<br />que no me gustan</h1>
         </header>
 
-        {/* Lista con swipe */}
+        {/* Lista */}
         <section className="dislike-list">
+          {error && (
+            <div className="mb-3 text-sm text-red-700 bg-red-50 border border-red-200 rounded p-2" onClick={clearError}>
+              {error}
+            </div>
+          )}
+
+          {items.length === 0 && (
+            <p className="text-sm text-gray-500 mb-3">
+              Aún no has agregado ingredientes a evitar.
+            </p>
+          )}
+
           {items.map(it => (
             <ItemList
               key={it.id}
               item={{ id: it.id, name: it.name, svg: it.svg }}
               onDelete={() => handleDelete(it.id)}
+              disabled={loading} // asegúrate que ItemList tenga disabled?: boolean
             />
           ))}
-          {/* Modal para añadir manualmente */}
+
           {adding && (
-            <Modal
-              title="Añadir ingrediente"
-              isOpen={adding}
-              type="form"
-            >
+            <Modal title="Añadir ingrediente a evitar" isOpen={adding} type="form">
               <DynamicForm
                 fields={addProductFormFields}
                 onSubmit={handleFormSubmit}
-                submitButtonText="Agregar"
+                submitButtonText={loading ? "Guardando…" : "Agregar"}
                 submitButtonVariant="secondary"
                 resetOnSubmit={true}
                 className="shadow-none p-0 m-0"
+                isLoading={loading}
                 onFieldChange={(fieldName, value) => {
-                  if (fieldName === 'categoria') {
-                    handleCategoryChange(value);
+                  if (fieldName === "categoria") {
+                    setSelectedCategory(String(value));
                   }
                 }}
               >
                 <Button
-                  label='Cancelar'
-                  variant='outline'
-                  onClick={handleCloseModal}
+                  label="Cerrar"
+                  variant="outline"
+                  onClick={() => { setAdding(false); setSelectedCategory(""); }}
                 />
               </DynamicForm>
             </Modal>
           )}
         </section>
 
-        {/* Botón añadir */}
         {!adding && (
           <Button
             label={
@@ -161,23 +226,21 @@ function DislikeIngredients() {
             variant="secondary"
             size="medium"
             className="w-full mb-4"
-            onClick={() => setAdding(true)}>
-          </Button>
+            onClick={() => setAdding(true)}
+            disabled={loading}
+          />
         )}
 
-        {/* Sugerencias rápidas */}
         <section className="quick-list">
           {quick.map(q => (
             <button
               key={q.id}
-              className="quick-item"
+              className={`quick-item ${loading ? "opacity-60 pointer-events-none" : ""}`}
               onClick={() => addItem(q.name, q.svg)}
+              disabled={loading}
               aria-label={`Añadir ${q.name}`}
             >
-              <span
-                className="quick-avatar"
-                dangerouslySetInnerHTML={{ __html: q.svg }}
-              />
+              <span className="quick-avatar" dangerouslySetInnerHTML={{ __html: q.svg }} />
               <span className="quick-name">{q.name}</span>
             </button>
           ))}

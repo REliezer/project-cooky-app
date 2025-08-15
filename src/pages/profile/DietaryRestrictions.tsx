@@ -3,7 +3,7 @@ import "../../styles/components/FavoriteIngredients.css";
 import { useNavigate } from "react-router-dom";
 
 import { categories } from "../../data/Categories";
-import type { Item } from "../../data/DislikeIngredientes"; 
+import type { Item } from "../../data/DislikeIngredientes";
 import type { FormFieldConfig } from "../../types";
 
 import Button from "../../components/common/Button";
@@ -12,17 +12,17 @@ import DynamicForm from "../../components/common/DynamicForm";
 import ItemList from "../../components/common/ItemList";
 import { useProfileStore } from "../../store/useProfileStore";
 
-const ALLERGY_QUICK: { id: string; name: string; svg: string }[] = [
-  { id: "gluten", name: "Gluten", svg: `<svg viewBox="0 0 24 24" width="24" height="24"><rect x="5" y="5" width="14" height="14" fill="#FDE68A"/></svg>` },
-  { id: "lactosa", name: "Lactosa", svg: `<svg viewBox="0 0 24 24" width="24" height="24"><rect x="6" y="4" width="12" height="16" rx="2" fill="#BFDBFE"/></svg>` },
-  { id: "mani", name: "Maní", svg: `<svg viewBox="0 0 24 24" width="24" height="24"><circle cx="9" cy="12" r="4" fill="#FDE68A"/><circle cx="15" cy="12" r="4" fill="#F59E0B"/></svg>` },
-  { id: "nueces", name: "Nueces", svg: `<svg viewBox="0 0 24 24" width="24" height="24"><path d="M7 12a5 5 0 0 1 10 0v4H7z" fill="#D1FAE5"/></svg>` },
-  { id: "soya", name: "Soya", svg: `<svg viewBox="0 0 24 24" width="24" height="24"><circle cx="9" cy="12" r="3" fill="#BBF7D0"/><circle cx="15" cy="12" r="3" fill="#86EFAC"/></svg>` },
+const DIET_QUICK: { id: string; name: string; svg: string }[] = [
+  { id: "vegano",        name: "Vegano",        svg: `<svg viewBox="0 0 24 24" width="24" height="24"><path d="M12 2L4 20h16L12 2z" fill="#4ADE80"/></svg>` },
+  { id: "vegetariano",   name: "Vegetariano",   svg: `<svg viewBox="0 0 24 24" width="24" height="24"><circle cx="12" cy="12" r="8" fill="#A3E635"/></svg>` },
+  { id: "sin_gluten",    name: "Sin Gluten",    svg: `<svg viewBox="0 0 24 24" width="24" height="24"><rect x="4" y="4" width="16" height="16" fill="#FBBF24"/></svg>` },
+  { id: "paleo",         name: "Paleo",         svg: `<svg viewBox="0 0 24 24" width="24" height="24"><ellipse cx="12" cy="12" rx="8" ry="6" fill="#F59E0B"/></svg>` },
+  { id: "sin_lactosa",   name: "Sin Lactosa",   svg: `<svg viewBox="0 0 24 24" width="24" height="24"><rect x="6" y="4" width="12" height="16" rx="2" fill="#60A5FA"/></svg>` },
 ];
 
-export default function Allergies() {
+export default function DietaryRestrictions() {
   const navigate = useNavigate();
-  const { profile, status, error, fetchProfile, saveAllergies, clearError } = useProfileStore();
+  const { profile, status, error, fetchProfile, saveDietaryRestrictions, clearError } = useProfileStore();
 
   const [adding, setAdding] = useState(false);
   const [items, setItems] = useState<Item[]>([]);
@@ -34,7 +34,7 @@ export default function Allergies() {
   }, [fetchProfile]);
 
   useEffect(() => {
-    const allergies = profile?.allergies ?? [];
+    const restrictions = profile?.dietary_restrictions ?? [];
 
     const findSvgByName = (name: string): string => {
       for (const cat of categories) {
@@ -42,22 +42,18 @@ export default function Allergies() {
           if (p.name.toLowerCase() === name.toLowerCase()) return p.svg;
         }
       }
-      const q = ALLERGY_QUICK.find(x => x.name.toLowerCase() === name.toLowerCase());
+      const q = DIET_QUICK.find(x => x.name.toLowerCase() === name.toLowerCase());
       if (q) return q.svg;
 
-      return `<svg viewBox="0 0 24 24" width="24" height="24"><circle cx="12" cy="12" r="8" fill="#FFE4E6"/></svg>`;
+      return `<svg viewBox="0 0 24 24" width="24" height="24"><circle cx="12" cy="12" r="8" fill="#E5E7EB"/></svg>`;
     };
 
-    if (allergies.length) {
-      const mapped: Item[] = allergies.map(n => ({
-        id: n.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, "-"),
-        name: n,
-        svg: findSvgByName(n),
-      }));
-      setItems(mapped);
-    } else {
-      setItems([]); 
-    }
+    const mapped: Item[] = restrictions.map(n => ({
+      id: n.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, "-"),
+      name: n,
+      svg: findSvgByName(n),
+    }));
+    setItems(mapped);
   }, [profile]);
 
   const loading = status === "loading";
@@ -99,19 +95,17 @@ export default function Allergies() {
     const prev = items;
     setItems(nextItems);
     try {
-      await saveAllergies(nextItems.map(i => i.name));
+      await saveDietaryRestrictions(nextItems.map(i => i.name));
     } catch {
       setItems(prev);
     }
   };
 
-  // Eliminar
   const handleDelete = async (id: string) => {
     if (loading) return;
     await persist(items.filter(it => it.id !== id));
   };
 
-  // Agregar 
   const addItem = async (name: string, svg: string) => {
     if (loading) return;
     const cleaned = name.trim();
@@ -130,7 +124,6 @@ export default function Allergies() {
     setSelectedCategory("");
   };
 
-  // Submit del DynamicForm 
   const handleFormSubmit = async (formData: Record<string, string | number | boolean>) => {
     const categoriaId = String(formData.categoria || "");
     const productoId  = String(formData.productos || "");
@@ -142,27 +135,36 @@ export default function Allergies() {
   };
 
   return (
-    <main className="fav-page">
-      <div className="fav-wrap">
+    <main className="fav-page relative">
+     
+      <div className="fav-wrap relative z-10 pt-6 md:pt-10">
         <header className="fav-header">
-          <button className="back-btn" onClick={() => (window.history.length > 1 ? navigate(-1) : navigate("/app/profile"))} aria-label="Volver">
-            <svg viewBox="0 0 24 24" width="18" height="18">
+          <button
+            className="back-btn"
+            onClick={() => (window.history.length > 1 ? navigate(-1) : navigate("/app/profile"))}
+            aria-label="Volver"
+          >
+            <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
               <path d="M15 18l-6-6 6-6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </button>
-          <h1 className="fav-title">Alergias</h1>
+          <h1 className="fav-title">Restricciones dietéticas</h1>
         </header>
 
+        {/* Lista */}
         <section className="fav-list">
           {error && (
-            <div className="mb-3 text-sm text-red-700 bg-red-50 border border-red-200 rounded p-2" onClick={clearError}>
+            <div
+              className="mb-3 text-sm text-red-700 bg-red-50 border border-red-200 rounded p-2"
+              onClick={clearError}
+            >
               {error}
             </div>
           )}
 
           {items.length === 0 && (
             <p className="text-sm text-gray-500 mb-3">
-              Aún no has agregado alérgenos.
+              Aún no has agregado restricciones dietéticas.
             </p>
           )}
 
@@ -176,7 +178,7 @@ export default function Allergies() {
           ))}
 
           {adding && (
-            <Modal title="Añadir alérgeno" isOpen={adding} type="form">
+            <Modal title="Añadir restricción dietética" isOpen={adding} type="form">
               <DynamicForm
                 fields={addProductFormFields}
                 onSubmit={handleFormSubmit}
@@ -208,7 +210,7 @@ export default function Allergies() {
                 <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
                   <path d="M12 2v20M2 12h20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
-                Añadir alérgeno
+                Añadir restricción
               </>
             }
             variant="secondary"
@@ -220,14 +222,17 @@ export default function Allergies() {
         )}
 
         <section className="quick-list">
-          {ALLERGY_QUICK.map(q => (
+          {DIET_QUICK.map(q => (
             <button
               key={q.id}
               className={`quick-item ${loading ? "opacity-60 pointer-events-none" : ""}`}
               onClick={() => addItem(q.name, q.svg)}
               disabled={loading}
             >
-              <span className="quick-avatar" dangerouslySetInnerHTML={{ __html: q.svg }} />
+              <span
+                className="quick-avatar"
+                dangerouslySetInnerHTML={{ __html: q.svg }}
+              />
               <span className="quick-name">{q.name}</span>
             </button>
           ))}
