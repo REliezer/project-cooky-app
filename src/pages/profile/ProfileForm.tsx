@@ -1,14 +1,36 @@
 import { useState } from "react";
-import DynamicForm from "../../components/common/DynamicForm";
-import Graphics from "../../components/common/Graphics";
-import type { FormFieldConfig } from '../../types/components';
-import Button from "../../components/common/Button";
 import { useNavigate } from "react-router-dom";
 
+import DynamicForm from "../../components/common/DynamicForm";
+import Graphics from "../../components/common/Graphics";
+import Button from "../../components/common/Button";
+
+import type { FormFieldConfig } from '../../types/components';
+import { useAuthStore } from "../../store/useAuthStore";
+
 function ProfileForm() {
+    const { user } = useAuthStore();
     const [profileImage, setProfileImage] = useState<string>('/user-placeholder.png'); // usa tu avatar por defecto
     const navigate = useNavigate();
-
+    console.log('User data:', user)
+    
+    // Extract first and last name from user.name if available
+    const getNameParts = (fullName: string | undefined) => {
+        if (!fullName) return { firstName: '', lastName: '' };
+        const nameParts = fullName.trim().split(' ');
+        const firstName = nameParts[0] || '';
+        const lastName = nameParts.slice(1).join(' ') || '';
+        return { firstName, lastName };
+    };
+    
+    const { firstName, lastName } = getNameParts(user?.name);
+    
+    // Prepare initial values from user data
+    const initialValues = {
+        firstName: firstName,
+        lastName: lastName,
+        email: user?.email || ''
+    };
     // Manejar carga de imagen localmente
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -94,6 +116,7 @@ function ProfileForm() {
                 submitButtonText="Guardar"
                 submitButtonVariant="primary"
                 resetOnSubmit={false}
+                initialValues={initialValues}
             >
                 <Button
                     label="Cancelar"

@@ -50,6 +50,7 @@ export interface DynamicFormProps {
   size?: 'small' | 'medium' | 'large';
   children?: React.ReactNode;
   onFieldChange?: (fieldName: string, value: string) => void;
+  initialValues?: Record<string, string | number>;
 }
 
 export interface PlanCardProps {

@@ -1,5 +1,8 @@
-export type Item = { id: string; name: string; svg: string };
-
+export type Item = {
+    id: string;
+    name: string;
+    svg: string
+};
 
 export const dislike: Item[] = [
     { 

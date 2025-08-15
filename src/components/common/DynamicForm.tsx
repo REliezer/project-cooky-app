@@ -1,5 +1,5 @@
 import type { JSX } from 'react';
-import { useState, useCallback } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import type { DynamicFormProps, FormFieldConfig } from '../../types/components';
 
 export default function DynamicForm({
@@ -12,7 +12,8 @@ export default function DynamicForm({
     resetOnSubmit = false,
     size = 'medium',
     children,
-    onFieldChange
+    onFieldChange,
+    initialValues = {}
 }: DynamicFormProps): JSX.Element {
     type valueType = string | number | undefined;
     const [formData, setFormData] = useState<Record<string, valueType>>({});
@@ -25,15 +26,35 @@ export default function DynamicForm({
         large: 'px-8 py-4 text-lg'
     };
 
-    // Initialize form data with empty values
-    const initializeFormData = useCallback(() => {
+    // Keep track of initialization to prevent unnecessary re-initializations
+    const isInitialized = useRef(false);
+    const previousInitialValues = useRef<Record<string, any>>({});
+    
+    // Initialize form data with empty values or provided initial values
+    const initializeFormData = () => {
         const initialData: Record<string, valueType> = {};
         fields.forEach(field => {
-            initialData[field.name] = '';
+            // Use initial value if provided, otherwise use empty string
+            initialData[field.name] = initialValues[field.name] !== undefined 
+                ? String(initialValues[field.name]) 
+                : '';
         });
         setFormData(initialData);
         setErrors({});
-    }, [fields]);
+        isInitialized.current = true;
+        previousInitialValues.current = { ...initialValues };
+    };
+    
+    // Initialize form data on component mount or when initialValues change
+    useEffect(() => {
+        // Check if this is the first initialization or if initialValues have actually changed
+        const hasInitialValuesChanged = !isInitialized.current || 
+            JSON.stringify(previousInitialValues.current) !== JSON.stringify(initialValues);
+            
+        if (hasInitialValuesChanged) {
+            initializeFormData();
+        }
+    }, [fields, initialValues]);
 
     // Handle input changes
     const handleInputChange = (name: string, value: string) => {

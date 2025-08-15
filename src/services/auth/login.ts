@@ -1,3 +1,4 @@
+import type { Item } from "../../data/DislikeIngredientes";
 
 // API Configuration
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
@@ -19,7 +20,9 @@ export interface User {
   email: string;
   name: string;
   dietary_restrictions: string[];
-  banned_ingredients: string[];
+  banned_ingredients: Item[];
+  favorite_ingredients: Item[];
+  allergies: Item[];
   subscription_status: 'free' | 'premium' | 'trial';
   trial_end_date: string | null;
   subscription_end_date: string | null;
@@ -108,13 +111,25 @@ export async function postLogin(credentials: LoginRequest): Promise<LoginRespons
     }
     
     // Transform and return successful response
+    // Handle missing fields from API response
+    const userData = responseData.data.user;
+    const transformedUser: User = {
+      ...userData,
+      // Ensure favorite_ingredients exists even if not provided by API
+      favorite_ingredients: userData.favorite_ingredients || [],
+      // Ensure banned_ingredients exists even if not provided by API
+      banned_ingredients: userData.banned_ingredients || [],
+      // Ensure allergies exists even if not provided by API
+      allergies: userData.allergies || []
+    };
+    
     const loginResponse: LoginResponse = {
       success: true,
       data: {
-        user: responseData.data.user,
+        user: transformedUser,
         token: responseData.data.token,
         expires_in: responseData.data.expires_in,
-        premium: responseData.data.user.subscription_status !== 'free'
+        premium: transformedUser.subscription_status !== 'free'
       }
     };
     

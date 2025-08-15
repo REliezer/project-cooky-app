@@ -1,9 +1,9 @@
-import React, { useState, useMemo } from "react";
+import { useState, useMemo } from "react";
 import "../../styles/components/FavoriteIngredients.css";
 import { useNavigate } from "react-router-dom";
 
 import { categories } from "../../data/Categories";
-import { quick, favorite } from "../../data/FavoriteIngredients";
+import { dislike } from "../../data/DislikeIngredientes";
 import type { Item } from "../../data/DislikeIngredientes";
 import type { FormFieldConfig } from '../../types';
 
@@ -13,17 +13,15 @@ import DynamicForm from '../../components/common/DynamicForm';
 import ItemList from "../../components/common/ItemList";
 
 import { useAuthStore } from "../../store/useAuthStore";
-import { useRecipes } from "../../hooks/recipes/useRecipes";
-function FavoriteIngredients() {
+
+function Allergies() {
   const { user } = useAuthStore();
-  const { lastSearchedIngredients } = useRecipes();
   const [adding, setAdding] = useState(false);
   const [newName, setNewName] = useState("");
-  const [items, setItems] = useState<Item[]>(user?.favorite_ingredients && user.favorite_ingredients.length > 0 ? user.favorite_ingredients : favorite);
+  const [items, setItems] = useState<Item[]>(user?.allergies && user.allergies.length > 0 ? user.allergies : dislike);
   const [selectedCategory, setSelectedCategory] = useState<string>("");
   const navigate = useNavigate();
-  console.log('User favorite ingredients: ', user?.favorite_ingredients);
-  console.log('Last searched ingredients: ', lastSearchedIngredients);
+  console.log('User allergies: ', user?.allergies);
 
   // Generate category options from imported categories
   const categoryOptions = categories.map(category => ({
@@ -42,32 +40,6 @@ function FavoriteIngredients() {
       label: product.name
     }));
   };
-
-  // Convert lastSearchedIngredients (string[]) to Item[] for suggestions
-  const getSearchedIngredientsSuggestions = (): Item[] => {
-    if (!lastSearchedIngredients || lastSearchedIngredients.length === 0) {
-      return [];
-    }
-
-    const suggestions: Item[] = [];
-    lastSearchedIngredients.forEach(ingredientName => {
-      // Search for the ingredient in all categories to get full Item data
-      categories.forEach(category => {
-        const product = category.products?.find(p => p.name.toLowerCase() === ingredientName.toLowerCase());
-        if (product && !suggestions.find(s => s.id === product.id)) {
-          suggestions.push({
-            id: product.id,
-            name: product.name,
-            svg: product.svg
-          });
-        }
-      });
-    });
-
-    return suggestions;
-  };
-
-  const searchedSuggestions = getSearchedIngredientsSuggestions();
 
   // Dynamic form fields that update when selectedCategory changes
   const addProductFormFields: FormFieldConfig[] = useMemo(() => [
@@ -133,7 +105,7 @@ function FavoriteIngredients() {
               <path d="M15 18l-6-6 6-6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </button>
-          <h1 className="fav-title">Ingredientes<br />Favoritos</h1>
+          <h1 className="fav-title">Alergias<br />Alimentarias</h1>
         </header>
 
         {/* Lista */}
@@ -148,7 +120,7 @@ function FavoriteIngredients() {
           {/* Modal para añadir manualmente */}
           {adding && (
             <Modal
-              title="Añadir ingrediente"
+              title="Añadir alergia"
               isOpen={adding}
               type="form"
             >
@@ -183,7 +155,7 @@ function FavoriteIngredients() {
                 <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
                   <path d="M12 2v20M2 12h20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
-                Añadir ítem a lista
+                Añadir alergia
               </>
             }
             variant="secondary"
@@ -193,17 +165,13 @@ function FavoriteIngredients() {
           </Button>
         )}
 
-        {/* Sugerencias basadas en búsquedas recientes o sugerencias populares */}
-        <h3 className='font-medium text-sm text-left'>
-          {searchedSuggestions.length > 0 ? 'Ingredientes que buscaste recientemente' : 'Sugerencias populares'}
-        </h3>
-        <section className="quick-list-favorite">
-          {(searchedSuggestions.length > 0 ? searchedSuggestions : quick).map(q => (
+        {/* Alergias comunes */}
+        <section className="quick-list">
+          {dislike.map(q => (
             <button
               key={q.id}
               className="quick-item"
               onClick={() => addItem(q.name, q.svg)}
-              title={q.name}
             >
               <span
                 className="quick-avatar"
@@ -218,4 +186,4 @@ function FavoriteIngredients() {
   );
 }
 
-export default FavoriteIngredients;
+export default Allergies;

@@ -72,7 +72,7 @@ function ItemList({ item, onToggle, onDelete }: ItemListType): JSX.Element {
 
             >
                 <div className='flex flex-row items-center gap-4'>
-                    <div className='border rounded-full shadow-lg w-[50px] h-[50px] flex items-center justify-center overflow-hidden'>
+                    <div className='rounded-full shadow-lg w-[50px] h-[50px] flex items-center justify-center overflow-hidden'>
                         <div
                             className="w-[40px] h-[40px] flex-shrink-0"
                             dangerouslySetInnerHTML={{ __html: item.svg }}

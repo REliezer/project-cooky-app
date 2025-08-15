@@ -12,13 +12,16 @@ import Modal from "../../components/common/Modal";
 import DynamicForm from '../../components/common/DynamicForm';
 import ItemList from "../../components/common/ItemList";
 
+import { useAuthStore } from "../../store/useAuthStore";
+
 function DislikeIngredients() {
+  const { user } = useAuthStore();
   const [adding, setAdding] = useState(false);
   const [newName, setNewName] = useState("");
-  const [items, setItems] = useState<Item[]>(dislike);
+  const [items, setItems] = useState<Item[]>(user?.banned_ingredients && user.banned_ingredients.length > 0 ? user.banned_ingredients : dislike);
   const [selectedCategory, setSelectedCategory] = useState<string>("");
   const navigate = useNavigate();
-
+  console.log('User: ', user )
   // Generate category options from imported categories
   const categoryOptions = categories.map(category => ({
     value: category.id,

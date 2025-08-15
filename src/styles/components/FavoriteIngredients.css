@@ -32,7 +32,7 @@
   box-shadow:0 2px 0 var(--ring);
 }
 /* Sugerencias */
-.quick-list{ display:flex; align-items:center; justify-content:space-between; gap:12px; }
+.quick-list-favorite{ display:flex; align-items:center; justify-content:flex-start; gap:12px; }
 .quick-item{ background:transparent; border:none; padding:0; cursor:pointer; }
 .quick-item:focus-visible{ outline:2px solid #FFCEAE; border-radius:12px; }
 .quick-avatar{
