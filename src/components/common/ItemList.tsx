@@ -1,10 +1,20 @@
 import type { JSX } from 'react';
-import type { ItemListType } from '../../types/components';
+import type { ShoppingListItem } from '../../types/shoppingList';
 import { motion, useMotionValue, useAnimation, useTransform } from 'framer-motion';
+import { findSvgByName } from '../../utils/ingredientSvg';
 
-function ItemList({ item, onToggle, onDelete }: ItemListType): JSX.Element {
+interface ItemListProps {
+    item: ShoppingListItem;
+    onToggle?: () => void;
+    onDelete?: (id: string) => void;
+}
+
+function ItemList({ item, onToggle, onDelete }: ItemListProps): JSX.Element {
     const x = useMotionValue(0);
     const controls = useAnimation();
+    
+    // Obtener el SVG dinámicamente
+    const itemSvg = findSvgByName(item.name);
     
     // Calcular la opacidad del overlay rojo basado en la distancia arrastrada
     const redOpacity = useTransform(x, [0, -50], [0, 0.6]);
@@ -18,8 +28,8 @@ function ItemList({ item, onToggle, onDelete }: ItemListType): JSX.Element {
             controls.start({ x: 0 }); // si no pasó el umbral, regresa a posición inicial
         } else {
             // Si pasó el umbral, ejecutar eliminación
-            if (onDelete) {
-                onDelete(item.id);
+            if (onDelete && item.item_id) {
+                onDelete(item.item_id);
             }
         }
     };
@@ -35,7 +45,7 @@ function ItemList({ item, onToggle, onDelete }: ItemListType): JSX.Element {
             {/* Botón visible mientras se desliza */}
             <div className="absolute right-0 top-0 bottom-0 w-12 bg-red-600 flex items-center justify-center rounded-lg z-[6]">
                 <motion.button 
-                    onClick={() => onDelete && onDelete(item.id)}
+                    onClick={() => onDelete && item.item_id && onDelete(item.item_id)}
                     style={{ scale: deleteButtonScale }}
                     className="transition-transform duration-150 relative z-[7]"
                 >
@@ -75,12 +85,12 @@ function ItemList({ item, onToggle, onDelete }: ItemListType): JSX.Element {
                     <div className='rounded-full shadow-lg w-[50px] h-[50px] flex items-center justify-center overflow-hidden'>
                         <div
                             className="w-[40px] h-[40px] flex-shrink-0"
-                            dangerouslySetInnerHTML={{ __html: item.svg }}
+                            dangerouslySetInnerHTML={{ __html: itemSvg }}
                         />
                     </div>
-                    <span className={`flex-1 ${item.isSelected ? 'line-through text-gray-500 font-normal' : ''}`}>{item.name}</span>
-                    {item.quantity && <p className={`p-0 ${item.isSelected ? 'line-through text-gray-500 font-normal' : ''}`}>{item.quantity}</p>}
-                    {item.isSelected !== undefined && <input type="checkbox" name="itemSelect" id="" checked={item.isSelected} className="w-5 h-5" onChange={onToggle} />}
+                    <span className={`flex-1 ${item.is_purchased ? 'line-through text-gray-500 font-normal' : ''}`}>{item.name}</span>
+                    <p className={`p-0 ${item.is_purchased ? 'line-through text-gray-500 font-normal' : ''}`}>{item.quantity} {item.unit}</p>
+                    <input type="checkbox" name="itemSelect" id="" checked={item.is_purchased} className="w-5 h-5" onChange={onToggle} />
                 </div>
             </motion.div>
         </div>

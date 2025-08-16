@@ -16,8 +16,8 @@ import Login from './pages/auth/Login'
 import Register from './pages/auth/Register'
 import PaymentInformation from './pages/payment/PaymentInformation'
 import Plans from './pages/subscription/Plans'
-import MyList from './pages/lists/MyLists'
-import MyListDetail from './pages/lists/MyListDetail'
+import MyList from './pages/shoppingList/MyLists'
+import MyListDetail from './pages/shoppingList/MyListDetail'
 import Categories from './pages/Categories/Categories';
 import CategoryProducts from './pages/Categories/CategoryProducts';
 import Recipes from './pages/recipes/Recipes';
@@ -57,7 +57,7 @@ createRoot(document.getElementById('root')!).render(
               <Route path="recipes/details/:idRecipe" element={<RecipesDetails />} />
               {/* Rutas para listas*/}
               <Route path="list" element={<MyList />} />
-              <Route path="list/:id" element={<MyListDetail />} />
+              <Route path="list/:listId" element={<MyListDetail />} />
               {/* Rutas para el perfil*/}
               <Route path="profile" element={<ProfileMenu />} />
               <Route path="details" element={<ProfileForm />} />

@@ -9,17 +9,27 @@ import Loading from "../../components/common/Loading";
 import Alert from "../../components/common/Alert";
 import DynamicForm from "../../components/common/DynamicForm";
 
-import { list as initialLists } from "../../data/List";
-import type { ListCardProps, FormFieldConfig } from "../../types";
-
-const LOCAL_STORAGE_KEY = 'cooky-my-lists';
+import { useShoppingListStore } from "../../store/useShoppingListStore";
+import type { ShoppingList } from "../../types/shoppingList";
+import type { FormFieldConfig, ListCardProps } from "../../types";
+import { findSvgByName } from "../../utils/ingredientSvg";
 
 function MyList() {
     const navigate = useNavigate();
-
-    const [lists, setLists] = useState<ListCardProps[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
+    
+    // Store
+    const { 
+        lists,
+        listsWithStats, 
+        isLoading, 
+        error, 
+        success,
+        message,
+        getShoppingList, 
+        saveShoppingList, 
+        deleteShoppingListById,
+        setCurrentListId,
+    } = useShoppingListStore();
     const [deleteModal, setDeleteModal] = useState<{
         isOpen: boolean;
         listId: string | null;
@@ -27,8 +37,7 @@ function MyList() {
     }>({ isOpen: false, listId: null, listName: '' });
     const [newListModal, setNewListModal] = useState<{
         isOpen: boolean;
-        newList: ListCardProps | null;
-    }>({ isOpen: false, newList: null });
+    }>({ isOpen: false });
 
     const newListFormFields: FormFieldConfig[] = [
         {
@@ -58,40 +67,18 @@ function MyList() {
     useEffect(() => {
         loadLists();
     }, []);
-
-    // Función para cargar listas desde localStorage o datos iniciales
-    const loadLists = useCallback(() => {
-        try {
-            setIsLoading(true);
-            setError(null);
-
-            const savedLists = localStorage.getItem(LOCAL_STORAGE_KEY);
-
-            if (savedLists) {
-                const parsedLists = JSON.parse(savedLists);
-                setLists(parsedLists);
-            } else {
-                // Usar las listas iniciales que ya tienen IDs únicos
-                setLists(initialLists);
-                localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(initialLists));
-            }
-        } catch (err) {
-            setError('Error al cargar las listas');
-            console.error('Error loading lists:', err);
-        } finally {
-            setIsLoading(false);
+    
+    // Mostrar mensajes de éxito
+    useEffect(() => {
+        if (success && message) {
+            toast.success(message);
         }
-    }, []);
+    }, [success, message]);
 
-    // Función para guardar listas en localStorage
-    const saveLists = useCallback((updatedLists: ListCardProps[]) => {
-        try {
-            localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updatedLists));
-        } catch (err) {
-            console.error('Error saving lists:', err);
-            setError('Error al guardar los cambios');
-        }
-    }, []);
+    // Función para cargar listas
+    const loadLists = useCallback(async () => {
+        await getShoppingList();
+    }, [getShoppingList]);
 
     // Función para abrir modal de confirmación de eliminación
     const handleDeleteClick = useCallback((listId: string, listName: string) => {
@@ -103,15 +90,16 @@ function MyList() {
     }, []);
 
     // Función para confirmar eliminación
-    const handleConfirmDelete = useCallback(() => {
+    const handleConfirmDelete = useCallback(async () => {
         if (!deleteModal.listId) return;
 
-        const updatedLists = lists.filter(list => list.id !== deleteModal.listId);
-        setLists(updatedLists);
-        saveLists(updatedLists);
-
-        setDeleteModal({ isOpen: false, listId: null, listName: '' });
-    }, [deleteModal.listId, lists, saveLists]);
+        try {
+            await deleteShoppingListById(deleteModal.listId);
+            setDeleteModal({ isOpen: false, listId: null, listName: '' });
+        } catch (err) {
+            console.error('Error deleting list:', err);
+        }
+    }, [deleteModal.listId, deleteShoppingListById]);
 
     // Función para cancelar eliminación
     const handleCancelDelete = useCallback(() => {
@@ -121,52 +109,34 @@ function MyList() {
     // Función para manejar click en tarjeta
     const handleCardClick = useCallback((listId: string) => {
         try {
-            // Buscar la lista completa para pasarla como state
-            const selectedList = lists.find(list => list.id === listId);
-
-            if (selectedList) {
-                navigate(`/app/list/${listId}`, {
-                    state: {
-                        listData: selectedList,
-                        itemsList: selectedList.itemsList
-                    }
-                });
-            } else {
-                // Fallback si no encuentra la lista
-                navigate(`/app/list/${listId}`);
-            }
+            // Establecer la lista actual en el store global
+            setCurrentListId(listId);
+            // Navegar al detalle de la lista
+            navigate(`/app/list/${listId}`);
         } catch (err) {
             console.error('Navigation error:', err);
-            setError('Error al navegar a la lista');
         }
-    }, [navigate, lists]);
+    }, [navigate, setCurrentListId]);
 
     // Función para crear nueva lista
     const handleCreateList = () => {
-        setNewListModal({isOpen: true, newList: null})
+        setNewListModal({isOpen: true})
     };
 
     // Función para guardar nueva lista
-    const handleSaveList = (formData: Record<string, string | number | boolean>) => {
+    const handleSaveList = async (formData: Record<string, string | number | boolean>) => {
         try {
-            const newList: ListCardProps = {
-                id: Date.now().toString(), // Generar ID único
-                nameList: formData.nameList as string,
+            const newShoppingList: ShoppingList = {
+                name: formData.nameList as string,
                 description: formData.description as string,
-                date: new Date().toISOString().split('T')[0], // Fecha actual en formato YYYY-MM-DD
-                itemsList: [] // Lista vacía inicialmente
+                items: [], // Lista vacía inicialmente
+                created_at: new Date().toISOString()
             };
-
-            const updatedLists = [...lists, newList];
-            setLists(updatedLists);
-            saveLists(updatedLists);
             
-            setNewListModal({ isOpen: false, newList: null });
-            setError(null); // Limpiar errores previos
-            toast.success(`Lista "${newList.nameList}" creada correctamente`);
+            await saveShoppingList(newShoppingList);
+            setNewListModal({ isOpen: false });
         } catch (err) {
             console.error('Error creating new list:', err);
-            setError('Error al crear la nueva lista');
         }
     };
 
@@ -233,18 +203,48 @@ function MyList() {
             ) : (
                 <div className="grid grid-cols-1 gap-3 w-full">
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                        {lists.map((item) => (
-                            <ListCard
-                                key={item.id}
-                                id={item.id}
-                                nameList={item.nameList}
-                                description={item.description}
-                                date={item.date}
-                                itemsList={item.itemsList}
-                                onDelete={() => handleDeleteClick(item.id, item.nameList)}
-                                onClick={() => handleCardClick(item.id)}
-                            />
-                        ))}
+                        {(listsWithStats.length > 0 ? listsWithStats : lists.map(list => ({ 
+                            ShoppingList: list, 
+                            stats: { 
+                                total_items: list.items.length, 
+                                purchased_items: list.items.filter(i => i.is_purchased).length, 
+                                pending_items: list.items.filter(i => !i.is_purchased).length, 
+                                completion_percentage: list.items.length > 0 ? Math.round((list.items.filter(i => i.is_purchased).length / list.items.length) * 100) : 0
+                            }, 
+                            formatted_created_at: list.created_at ? new Date(list.created_at).toLocaleDateString() : '', 
+                            item_count: list.items.length 
+                        }))).map((listGetItem) => {
+                            const item = listGetItem.ShoppingList;
+                            const stats = listGetItem.stats;
+                            
+                            // Adaptador mejorado para convertir ShoppingListGet a ListCardProps
+                            const adaptedItem: ListCardProps = {
+                                id: item.list_id || '',
+                                nameList: item.name,
+                                description: item.description || `${stats.total_items} items • ${stats.completion_percentage}% completado`,
+                                date: listGetItem.formatted_created_at || (item.created_at ? new Date(item.created_at).toLocaleDateString() : ''),
+                                itemsList: item.items.slice(0, 5).map(shoppingItem => ({ // Mostrar solo los primeros 5 items
+                                    id: shoppingItem.item_id || '',
+                                    name: shoppingItem.name,
+                                    quantity: `${shoppingItem.quantity} ${shoppingItem.unit}`,
+                                    svg: findSvgByName(shoppingItem.name),
+                                    isSelected: shoppingItem.is_purchased
+                                }))
+                            };
+                            
+                            return (
+                                <ListCard
+                                    key={adaptedItem.id}
+                                    id={adaptedItem.id}
+                                    nameList={adaptedItem.nameList}
+                                    description={adaptedItem.description}
+                                    date={adaptedItem.date}
+                                    itemsList={adaptedItem.itemsList}
+                                    onDelete={() => handleDeleteClick(adaptedItem.id, adaptedItem.nameList)}
+                                    onClick={() => handleCardClick(adaptedItem.id)}
+                                />
+                            );
+                        })}
                     </div>
                     <Button
                         label="+ Nueva Lista"
@@ -285,7 +285,7 @@ function MyList() {
                 type='form'
                 title="Nueva Lista"
                 onConfirm={() => {}} // Se maneja desde el formulario
-                onCancel={() => setNewListModal({ isOpen: false, newList: null })}
+                onCancel={() => setNewListModal({ isOpen: false })}
             >
                 <DynamicForm
                     fields={newListFormFields}
@@ -298,7 +298,7 @@ function MyList() {
                     <Button
                         label='Cancelar'
                         variant='outline'
-                        onClick={() => setNewListModal({ isOpen: false, newList: null })}
+                        onClick={() => setNewListModal({ isOpen: false })}
                     />
                 </DynamicForm>
             </Modal>

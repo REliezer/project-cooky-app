@@ -80,10 +80,10 @@ export interface ItemListType {
 
 export interface ListCardProps {
   id: string;
-  nameList: string;
+  nameList: string; // Se mantiene para compatibilidad con componentes existentes
   description?: string;
-  date: string;
-  itemsList: ItemListType[];
+  date: string;     // Se mantiene para compatibilidad con componentes existentes  
+  itemsList: ItemType[]; // Cambiar de ItemListType[] a ItemType[] para simplicidad
   onDelete?: () => void;
   onClick?: () => void;
 }

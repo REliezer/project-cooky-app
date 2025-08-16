@@ -1,6 +1,6 @@
 "use client"
 import { useParams, useNavigate } from "react-router-dom"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 
 import { toast } from "sonner";
 import { ArrowLeft } from "lucide-react"
@@ -10,19 +10,47 @@ import Button from '../../components/common/Button';
 import StatsRecipe from "../../components/ui/StatsRecipe";
 
 import { useRecipesManager } from '../../hooks/recipes/useRecipesManager';
-import type { Ingredient } from '../../store/useRecipesStore';
+import { useShoppingListStore } from '../../store/useShoppingListStore';
 
 export default function DetalleReceta() {
     const { recipes } = useRecipesManager();
     const [activeTab, setActiveTab] = useState<"ingredientes" | "pasos">("ingredientes")
     const [isSaved, setIsSaved] = useState(false);
+    const [isGeneratingList, setIsGeneratingList] = useState(false);
     const { idRecipe } = useParams();
     const navigate = useNavigate();
+    
+    // Store de listas de compras
+    const { saveShoppingListRecipe, success, message, error, clearError } = useShoppingListStore();
 
     // Obtener receta por recipe_id único
     const recipe = recipes.recipes.find((r) => r.recipe_id === idRecipe);
 
     console.log('Recipe Id from params:', idRecipe);
+    
+    // Verificar si la receta está guardada al cargar
+    useEffect(() => {
+        const savedRecipes = JSON.parse(localStorage.getItem("savedRecipes") || "[]");
+        setIsSaved(savedRecipes.includes(idRecipe));
+    }, [idRecipe]);
+    
+    // Manejar mensajes de éxito y error del store
+    useEffect(() => {
+        if (success && message) {
+            toast.success(message);
+            // Navegar a la página de listas después de crear la lista
+            setTimeout(() => {
+                navigate('/app/lists');
+            }, 1500);
+        }
+    }, [success, message, navigate]);
+    
+    useEffect(() => {
+        if (error) {
+            toast.error(error);
+            clearError();
+        }
+    }, [error, clearError]);
 
     const toggleSave = () => {
         const savedRecipes = JSON.parse(localStorage.getItem("savedRecipes") || "[]");
@@ -30,19 +58,36 @@ export default function DetalleReceta() {
         let updated;
         if (isSaved) {
             updated = savedRecipes.filter((rid: string) => rid !== idRecipe);
+            toast.success('Receta eliminada de favoritos');
         } else {
             // Si no estaba guardada, la añadimos
             updated = [...savedRecipes, idRecipe];
-            toast.success('Receta guardada');
+            toast.success('Receta guardada en favoritos');
         }
 
         localStorage.setItem("savedRecipes", JSON.stringify(updated));
         setIsSaved(!isSaved);
     };
 
-    const generateShoppingList = (ingredients: Ingredient[]) => {
-        console.log('Shopping list generated for:', ingredients);
-    }
+    const generateShoppingList = async () => {
+        if (!recipe?.recipe_id) {
+            toast.error('No se pudo obtener el ID de la receta');
+            return;
+        }
+        
+        console.log('🛒 Generando lista de compras para receta:', recipe.recipe_id);
+        
+        setIsGeneratingList(true);
+        
+        try {
+            await saveShoppingListRecipe(recipe.recipe_id);
+        } catch (err) {
+            console.error('Error generando lista de compras:', err);
+            toast.error('Error al generar la lista de compras');
+        } finally {
+            setIsGeneratingList(false);
+        }
+    };
 
     if (!recipe) {
         return (
@@ -130,12 +175,12 @@ export default function DetalleReceta() {
                         ))}
 
                         <Button
-                            label="Generar lista de compra"
+                            label={isGeneratingList ? 'Generando lista...' : 'Generar lista de compra'}
                             variant="secondary"
                             size="medium"
                             className="w-full"
-                            onClick={() => generateShoppingList(
-                                recipe.recipe_ingredients)}
+                            onClick={generateShoppingList}
+                            disabled={isGeneratingList}
                         />
                     </>
                 ) : (

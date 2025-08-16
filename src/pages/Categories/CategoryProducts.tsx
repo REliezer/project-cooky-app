@@ -15,6 +15,8 @@ import IconWithTitle from "../../components/ui/IconWithTitle";
 import { useIngredients } from '../../hooks/recipes/useIngredients';
 import { useRecipesManager } from '../../hooks/recipes/useRecipesManager';
 import { useAuthStore } from '../../store/useAuthStore.ts';
+import { useShoppingListStore } from '../../store/useShoppingListStore';
+import { isPremiumUser } from '../../services/auth/login';
 
 interface CategoryProductsProps {
     title?: string;
@@ -32,7 +34,8 @@ function CategoryProducts({ title: propTitle, backUrl: propBackUrl, subtitle: pr
     const { hasIngredient, toggleIngredient, getIngredientsCount, canAddMore, isFull } = useIngredients();
     const { ingredients, recipes, searchRecipesWithSelectedIngredients, } = useRecipesManager();
     const { user } = useAuthStore();
-    const isPremium = user?.premium || false; // Verificar si el usuario es premium
+    const { addItemShoppingList, currentListId } = useShoppingListStore();
+    const isPremium = user ? isPremiumUser(user) : false; // Verificar si el usuario es premium
     const { categoryId } = useParams<{ categoryId: string }>();
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
@@ -86,15 +89,50 @@ function CategoryProducts({ title: propTitle, backUrl: propBackUrl, subtitle: pr
     };
 
     // Agregación de productos modo lista de compras
-    const handleAddProduct = (formData: Record<string, string | number | boolean>) => {
-        console.log('Producto agregado:', {
-            product: selectedProduct,
-            quantity: formData.count,
-            unit: formData.unidad
-        });
-        setIsOpenModal(false);
-        setSelectedProduct(null);
-        toast.success('Producto agregado a la lista')
+    const handleAddProduct = async (formData: Record<string, string | number | boolean>) => {
+        if (!selectedProduct) {
+            toast.error('No hay producto seleccionado');
+            return;
+        }
+        
+        // Verificar que hay una lista seleccionada
+        if (!currentListId) {
+            toast.error('No hay lista seleccionada. Ve a "Mis Listas" y selecciona una lista primero.');
+            navigate('/app/list');
+            return;
+        }
+
+        try {
+            setIsLoading(true);
+
+            // Crear el item para agregar a la lista de compras
+            const newShoppingListItem = {
+                name: selectedProduct.name,
+                quantity: Number(formData.count),
+                unit: String(formData.unidad),
+                is_purchased: false, // Por defecto no está comprado
+                is_optional: false,  // Por defecto no es opcional
+                notes: ''            // Campo notes requerido por el backend
+            };
+
+            // Usar el store para agregar el item a la lista
+            await addItemShoppingList(currentListId, newShoppingListItem);
+
+            // Cerrar modal y limpiar selección
+            setIsOpenModal(false);
+            setSelectedProduct(null);
+
+            toast.success(`${selectedProduct.name} agregado a la lista`);
+
+            // Navegar de regreso a la lista actualizada
+            navigate(`/app/list/${currentListId}`);
+
+        } catch (error) {
+            console.error('Error adding product to list:', error);
+            toast.error('Error al agregar el producto a la lista');
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     const handleProductClick = (product: product) => {
@@ -142,7 +180,6 @@ function CategoryProducts({ title: propTitle, backUrl: propBackUrl, subtitle: pr
         setIsLoading(true);
         try {
             await searchRecipesWithSelectedIngredients();
-
             // Navegar a la página de recetas (los ingredientes ya están guardados en lastSearchedIngredients)
             navigate('/app/recipes');
 
@@ -151,7 +188,6 @@ function CategoryProducts({ title: propTitle, backUrl: propBackUrl, subtitle: pr
             toast.success('Búsqueda completada. Ingredientes limpiados para nueva búsqueda.');
         } catch (error) {
             console.error('Error:', error);
-            toast.error('Error al buscar recetas. Intenta de nuevo.');
             // Fallback para desarrollo
             navigate('/app/recipes');
         } finally {
