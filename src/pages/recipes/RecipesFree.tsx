@@ -28,7 +28,7 @@ export default function RecetasFree({ searchQuery }: RecetasFreeProps) {
 
   // Usar recetas del store directamente
   const recetas = recipes.recipes || [];
-  console.log('Recetas Disponibles: ', recipes.recipes)
+  console.log('Recetas Disponibles: ', recetas)
 
   // Usar todas las recetas directamente ya que no hay filtro premium
   const filteredRecipes = recetas;

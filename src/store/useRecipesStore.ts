@@ -37,7 +37,9 @@ export interface Step {
 }
 
 export interface Recipe {
-    recipe_id:string;
+    recipe_id: string;
+    user_id?: string;
+    prompt?: string;
     name: string;
     description: string;
     recipe_ingredients: Ingredient[];
@@ -46,7 +48,13 @@ export interface Recipe {
     servings?: number;
     dietary_info?: string[];
     difficulty?: 'easy' | 'medium' | 'hard';
+    model_version?: string;
     image_url?: string;
+    is_cached?: boolean;
+    cached_until?: string;
+    feedback?: any;
+    created_at?: string;
+    commonIngredientsCount?: number;
     sustitucion?: string;
     personalizacion?: string;
 }

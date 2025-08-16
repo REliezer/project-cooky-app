@@ -1,4 +1,3 @@
-import type { Item } from "../../data/DislikeIngredientes";
 
 // API Configuration
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
@@ -20,9 +19,9 @@ export interface User {
   email: string;
   name: string;
   dietary_restrictions: string[];
-  banned_ingredients: Item[];
-  favorite_ingredients: Item[];
-  allergies: Item[];
+  banned_ingredients: string[];
+  favorite_ingredients: string[];
+  allergies: string[];
   subscription_status: 'free' | 'premium' | 'trial';
   trial_end_date: string | null;
   subscription_end_date: string | null;

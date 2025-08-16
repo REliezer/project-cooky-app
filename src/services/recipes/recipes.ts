@@ -49,17 +49,12 @@ export async function getRecipes(ingredients: string[]): Promise<Recipe[]> {
     throw new Error('Debe proporcionar al menos dos ingredientes');
   }
 
-  console.log('Buscando recetas con ingredientes:', ingredients);
-
   try {
     const token = getAuthToken();
     
     const requestBody: RecipesRequest = {
       ingredients: ingredients.map(ing => ing.trim().toLowerCase())
     };
-
-    console.log('Enviando request a:', RECIPES_ENDPOINT);
-    console.log('Request body:', requestBody);
 
     const response = await fetch(RECIPES_ENDPOINT, {
       method: 'POST',
@@ -70,8 +65,6 @@ export async function getRecipes(ingredients: string[]): Promise<Recipe[]> {
       },
       body: JSON.stringify(requestBody)
     });
-
-    console.log('Response status:', response.status);
 
     if (!response.ok) {
       const errorText = await response.text();
@@ -93,7 +86,6 @@ export async function getRecipes(ingredients: string[]): Promise<Recipe[]> {
     }
 
     const data: RecipesApiResponse = await response.json();
-    console.log('Respuesta completa de la API:', data);
 
     // Validar respuesta exitosa
     if (!data.success) {
@@ -102,17 +94,47 @@ export async function getRecipes(ingredients: string[]): Promise<Recipe[]> {
 
     // Extraer recetas de la API
     const recipes = data.data.recipes;
-    console.log('Recipes found: ', recipes)
     console.log(`Se encontraron ${recipes.length} recetas`);
     
-    // Asignar SVGs a ingredientes si no los tienen
-    const processedRecipes = recipes.map(recipe => ({
-      ...recipe,
-      recipe_ingredients: recipe.recipe_ingredients.map(ingredient => ({
-        ...ingredient,
-        svg: ingredient.svg || findSvgByName(ingredient.name) // Asignar SVG si no existe
-      }))
-    }));
+    // Procesar recetas: SVGs y steps
+    const processedRecipes = recipes.map(recipe => {
+      // Procesar steps si vienen como strings JSON
+      let processedSteps = recipe.steps;
+      if (Array.isArray(recipe.steps) && recipe.steps.length > 0 && typeof recipe.steps[0] === 'string') {
+        try {
+          processedSteps = recipe.steps.map(stepString => {
+            const parsed = JSON.parse(stepString);
+            return {
+              order: parsed.order || 1,
+              step: parsed.step || stepString,
+              time: parsed.time
+            };
+          }).sort((a, b) => a.order - b.order);
+        } catch (error) {
+          console.error('Error parsing steps for recipe:', recipe.name, error);
+          processedSteps = recipe.steps.map((step, index) => ({
+            order: index + 1,
+            step: typeof step === 'string' ? step : step.step || '',
+            time: typeof step === 'object' ? step.time : undefined
+          }));
+        }
+      }
+
+      // Procesar ingredientes con verificación defensiva
+      let processedIngredients = [];
+      if (recipe.recipe_ingredients && Array.isArray(recipe.recipe_ingredients)) {
+        processedIngredients = recipe.recipe_ingredients.map(ingredient => ({
+          ...ingredient,
+          svg: ingredient.svg || findSvgByName(ingredient.name)
+        }));
+      }
+
+      return {
+        ...recipe,
+        steps: processedSteps,
+        recipe_ingredients: processedIngredients
+      };
+    });
     
     return processedRecipes;
 
@@ -171,13 +193,24 @@ export async function getRecipesWithPreferences(
     const recipes = data.data.recipes;
     
     // Asignar SVGs a ingredientes si no los tienen
-    const processedRecipes = recipes.map(recipe => ({
-      ...recipe,
-      recipe_ingredients: recipe.recipe_ingredients.map(ingredient => ({
-        ...ingredient,
-        svg: ingredient.svg || findSvgByName(ingredient.name) // Asignar SVG si no existe
-      }))
-    }));
+    const processedRecipes = recipes.map(recipe => {
+      // Procesar ingredientes con verificación defensiva
+      let processedIngredients = [];
+      if (recipe.recipe_ingredients && Array.isArray(recipe.recipe_ingredients)) {
+        processedIngredients = recipe.recipe_ingredients.map(ingredient => ({
+          ...ingredient,
+          svg: ingredient.svg || findSvgByName(ingredient.name) // Asignar SVG si no existe
+        }));
+      } else {
+        console.warn('recipe_ingredients not found for recipe:', recipe.name);
+        processedIngredients = [];
+      }
+      
+      return {
+        ...recipe,
+        recipe_ingredients: processedIngredients
+      };
+    });
     
     return processedRecipes;
 

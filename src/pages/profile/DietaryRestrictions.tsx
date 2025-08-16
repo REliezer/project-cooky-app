@@ -9,8 +9,9 @@ import type { FormFieldConfig } from "../../types";
 import Button from "../../components/common/Button";
 import Modal from "../../components/common/Modal";
 import DynamicForm from "../../components/common/DynamicForm";
-import ItemList from "../../components/common/ItemList";
+import ItemListProfile from "../../components/common/ItemListProfile";
 import { useProfileStore } from "../../store/useProfileStore";
+import { normalizeDietaryRestriction, denormalizeDietaryRestriction } from "../../utils/dietaryUtils";
 
 const DIET_QUICK: { id: string; name: string; svg: string }[] = [
   { id: "vegano",        name: "Vegano",        svg: `<svg viewBox="0 0 24 24" width="24" height="24"><path d="M12 2L4 20h16L12 2z" fill="#4ADE80"/></svg>` },
@@ -48,11 +49,16 @@ export default function DietaryRestrictions() {
       return `<svg viewBox="0 0 24 24" width="24" height="24"><circle cx="12" cy="12" r="8" fill="#E5E7EB"/></svg>`;
     };
 
-    const mapped: Item[] = restrictions.map(n => ({
-      id: n.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, "-"),
-      name: n,
-      svg: findSvgByName(n),
-    }));
+    const mapped: Item[] = restrictions.map(n => {
+      // El backend devuelve las restricciones normalizadas, necesitamos convertirlas de vuelta
+      // a formato legible para mostrar en la UI
+      const displayName = denormalizeDietaryRestriction(n);
+      return {
+        id: n, // Usar el valor normalizado del backend como ID
+        name: displayName,
+        svg: findSvgByName(displayName),
+      };
+    });
     setItems(mapped);
   }, [profile]);
 
@@ -102,6 +108,7 @@ export default function DietaryRestrictions() {
   };
 
   const handleDelete = async (id: string) => {
+    console.log('Eliminando: ', id)
     if (loading) return;
     await persist(items.filter(it => it.id !== id));
   };
@@ -111,14 +118,16 @@ export default function DietaryRestrictions() {
     const cleaned = name.trim();
     if (!cleaned) return;
 
-    const normalized = cleaned.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-    if (items.some(x => x.name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "") === normalized)) {
+    // Verificar si ya existe usando normalización consistente
+    const normalizedNew = normalizeDietaryRestriction(cleaned);
+    if (items.some(x => x.id === normalizedNew)) {
       setAdding(false);
       setSelectedCategory("");
       return;
     }
 
-    const id = normalized.replace(/\s+/g, "-");
+    // Usar el valor normalizado como ID para consistencia
+    const id = normalizedNew;
     await persist([...items, { id, name: cleaned, svg }]);
     setAdding(false);
     setSelectedCategory("");
@@ -169,7 +178,7 @@ export default function DietaryRestrictions() {
           )}
 
           {items.map(it => (
-            <ItemList
+            <ItemListProfile
               key={it.id}
               item={{ id: it.id, name: it.name, svg: it.svg }}
               onDelete={() => handleDelete(it.id)}

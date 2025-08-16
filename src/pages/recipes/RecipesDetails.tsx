@@ -11,6 +11,7 @@ import StatsRecipe from "../../components/ui/StatsRecipe";
 
 import { useRecipesManager } from '../../hooks/recipes/useRecipesManager';
 import { useShoppingListStore } from '../../store/useShoppingListStore';
+import { findSvgByName } from "../../utils/ingredientSvg";
 
 export default function DetalleReceta() {
     const { recipes } = useRecipesManager();
@@ -33,18 +34,7 @@ export default function DetalleReceta() {
         const savedRecipes = JSON.parse(localStorage.getItem("savedRecipes") || "[]");
         setIsSaved(savedRecipes.includes(idRecipe));
     }, [idRecipe]);
-    
-    // Manejar mensajes de éxito y error del store
-    useEffect(() => {
-        if (success && message) {
-            toast.success(message);
-            // Navegar a la página de listas después de crear la lista
-            setTimeout(() => {
-                navigate('/app/lists');
-            }, 1500);
-        }
-    }, [success, message, navigate]);
-    
+        
     useEffect(() => {
         if (error) {
             toast.error(error);
@@ -120,7 +110,7 @@ export default function DetalleReceta() {
             {/* Stats */}
             <StatsRecipe
                 recipe={{
-                    ingredientsNumber: recipe.recipe_ingredients.length,
+                    ingredientsNumber: recipe.ingredients.length,
                     difficulty: recipe.difficulty || 'easy',
                     preparationTime: `${recipe.cooking_time || 30}`,
                     servings: recipe.servings || 0,
@@ -157,14 +147,14 @@ export default function DetalleReceta() {
                 {activeTab === "ingredientes" ? (
                     <>
                         {/* Lista de ingredientes */}
-                        {recipe.recipe_ingredients.map((ingredient, index) => (
+                        {recipe.ingredients.map((ingredient, index) => (
                             <Card key={ingredient.name || index} className="bg-white shadow-sm">
                                 <CardContent className="p-4">
                                     <div className="flex items-center justify-between">
                                         <div className="flex items-center gap-3">
                                             <div 
                                               className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center text-lg"
-                                              dangerouslySetInnerHTML={{ __html: ingredient.svg }}
+                                              dangerouslySetInnerHTML={{ __html: findSvgByName(ingredient.name) }}
                                             />                                            
                                             <span className="text-text-primary font-bold">{ingredient.name}</span>
                                         </div>

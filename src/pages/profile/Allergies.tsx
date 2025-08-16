@@ -10,7 +10,7 @@ import { findSvgByName } from "../../utils/ingredientSvg";
 import Button from "../../components/common/Button";
 import Modal from "../../components/common/Modal";
 import DynamicForm from "../../components/common/DynamicForm";
-import ItemList from "../../components/common/ItemList";
+import ItemListProfile from "../../components/common/ItemListProfile";
 import { useProfileStore } from "../../store/useProfileStore";
 
 const ALLERGY_QUICK: { id: string; name: string; svg: string }[] = [
@@ -169,7 +169,7 @@ export default function Allergies() {
           )}
 
           {items.map(it => (
-            <ItemList
+            <ItemListProfile
               key={it.id}
               item={{ id: it.id, name: it.name, svg: it.svg }}
               onDelete={() => handleDelete(it.id)}

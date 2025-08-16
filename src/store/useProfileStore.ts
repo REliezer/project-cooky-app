@@ -10,6 +10,7 @@ import {
   type UpdateProfileDto,
 } from "../services/profile/profile";
 import type { User } from "../services/auth/login";
+import { normalizeDietaryRestrictions } from "../utils/dietaryUtils";
 
 type Status = "idle" | "loading" | "success" | "error";
 
@@ -87,7 +88,11 @@ export const useProfileStore = create<ProfileState>()(persist(
     async saveDietaryRestrictions(items) {
       set({ status: "loading", error: null });
       try {
-        const res = await updateDietaryRestrictions(items);
+        // Normalizar las restricciones antes de enviar al backend
+        const normalizedItems = normalizeDietaryRestrictions(items);
+        console.log('🔄 Normalizando restricciones:', items, '->', normalizedItems);
+        
+        const res = await updateDietaryRestrictions(normalizedItems);
         const curr = get().profile;
         set({
           profile: curr ? { ...curr, dietary_restrictions: res.dietary_restrictions } : curr,

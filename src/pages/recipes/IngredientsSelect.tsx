@@ -45,7 +45,7 @@ function IngredientsSelect() {
             });
         });
         setSelectedIngredientsData(ingredientsData);
-    }, [ingredients.ingredients]); // Se actualiza cuando cambian los ingredientes
+    }, [ingredients.getIngredientsCount()]); // Se actualiza cuando cambian los ingredientes
 
     const handleProductClick = (product: product) => {
         // Remover ingrediente de la selección

@@ -11,7 +11,7 @@ import { findSvgByName } from "../../utils/ingredientSvg";
 import Button from "../../components/common/Button";
 import Modal from "../../components/common/Modal";
 import DynamicForm from "../../components/common/DynamicForm";
-import ItemList from "../../components/common/ItemList";
+import ItemListProfile from "../../components/common/ItemListProfile";
 import { useProfileStore } from "../../store/useProfileStore";
 
 function FavoriteIngredients() {
@@ -160,7 +160,7 @@ function FavoriteIngredients() {
           )}
 
           {items.map(it => (
-            <ItemList
+            <ItemListProfile
               key={it.id}
               item={{ id: it.id, name: it.name, svg: it.svg }}
               onDelete={() => handleDelete(it.id)}
