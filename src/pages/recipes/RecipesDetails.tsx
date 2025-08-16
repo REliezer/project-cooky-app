@@ -22,7 +22,7 @@ export default function DetalleReceta() {
     const navigate = useNavigate();
     
     // Store de listas de compras
-    const { saveShoppingListRecipe, success, message, error, clearError } = useShoppingListStore();
+    const { saveShoppingListRecipe, error, clearError } = useShoppingListStore();
 
     // Obtener receta por recipe_id único
     const recipe = recipes.recipes.find((r) => r.recipe_id === idRecipe);
@@ -110,7 +110,7 @@ export default function DetalleReceta() {
             {/* Stats */}
             <StatsRecipe
                 recipe={{
-                    ingredientsNumber: recipe.ingredients.length,
+                    ingredientsNumber: recipe?.ingredients?.length || 0,
                     difficulty: recipe.difficulty || 'easy',
                     preparationTime: `${recipe.cooking_time || 30}`,
                     servings: recipe.servings || 0,
