@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 
 import { quick, dislike as dislikeSeed } from "../../data/DislikeIngredientes";
 import { categories } from "../../data/Categories";
-// import type { Item } from "../../data/DislikeIngredientes";
+//import type { Item } from "../../data/DislikeIngredientes";
 import type { FormFieldConfig } from "../../types";
 
 import Button from "../../components/common/Button";
@@ -161,7 +161,7 @@ function DislikeIngredients() {
               <path d="M15 18l-6-6 6-6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </button>
-          <h1 className="dislike-title">Ingredientes<br />que no me gustan</h1>
+          <h1 className="dislike-title">Ingredientes que no <br />me gustan</h1>
         </header>
 
         {/* Lista */}
@@ -183,7 +183,7 @@ function DislikeIngredients() {
               key={it.id}
               item={{ id: it.id, name: it.name, svg: it.svg }}
               onDelete={() => handleDelete(it.id)}
-              disabled={loading} // asegúrate que ItemList tenga disabled?: boolean
+              disabled={loading} 
             />
           ))}
 
