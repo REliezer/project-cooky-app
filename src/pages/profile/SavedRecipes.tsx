@@ -48,19 +48,19 @@ export default function RecetasGuardadas() {
 
 
     return (
-        <div className="container mx-auto bg-gray-50 min-h-screen">
+        <div className="fav-page">
             {/* Header */}
-            <div className="bg-bg-tertiary text-white p-4">
-                <div className="flex items-center gap-3 mb-2">
+            <div className="bg-bg-primary text-white p-4">
+                <div className="flex items-center gap-3 mb-2 -mt-4">
                     <button
                         onClick={() => navigate(-1)}
-                        className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center hover:bg-white/30 transition-colors"
+                        className="back-btn"
                     >
                         <ArrowLeft className="h-5 w-5" />
                     </button>
-                    <h1 className="text-xl font-bold">Recetas Guardadas</h1>
+                    <h1 className="fav-title">Recetas Guardadas</h1>
                 </div>
-                <p className="text-orange-100 text-sm">{recetasGuardadas.length} recetas en tu colección</p>
+                <p className="text-sm text-gray-500 mb-3">{recetasGuardadas.length} recetas en tu colección</p>
             </div>
 
             {recetasGuardadas.length === 0 ? (

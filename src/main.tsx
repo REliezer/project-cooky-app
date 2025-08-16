@@ -3,6 +3,7 @@ import { Toaster } from 'sonner';
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { RegistrationProvider } from './contexts/RegistrationContext'
+import { registerSW } from 'virtual:pwa-register';
 
 // Layouts
 import AppLayout from './components/layout/MainLayout'    // Para páginas con Navigation responsiva
@@ -80,4 +81,12 @@ createRoot(document.getElementById('root')!).render(
   </StrictMode>
 )
 
+registerSW({
+  onNeedRefresh() {
+    console.log("Nueva versión disponible, recarga la página para actualizar");
+  },
+  onOfflineReady() {
+    console.log("La PWA está lista para funcionar sin conexión");
+  }
+});
 
