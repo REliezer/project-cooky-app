@@ -1,69 +1,99 @@
-# React + TypeScript + Vite
+# Cooky App
+<div align="center">
+  <img src="src/assets/cooky.svg" alt="Cooky App Logo" width="80" height="80">
+</div>
+Cooky App es una aplicación web moderna para descubrir recetas y gestionar listas de compras, diseñada para ayudar a los usuarios a planificar sus comidas y compras de manera eficiente.
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Características principales ✨
 
-Currently, two official plugins are available:
+- **Recetas personalizadas**: Explora recetas basadas en tus preferencias e ingredientes disponibles
+- **Listas de compras**: Crea y gestiona tus listas de compras
+- **Perfil personalizado**: Guarda tus ingredientes favoritos y los que no te gustan
+- **Restricciones dietéticas**: Configura tus alergias y preferencias alimentarias
+- **Diseño responsivo**: Funciona perfectamente en dispositivos móviles y de escritorio
+- **Modo offline**: Funciona como PWA (Progressive Web App)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Tecnologías utilizadas 🚀
 
-## Expanding the ESLint configuration
+- React 19 con TypeScript
+- Vite 7 como build tool
+- React Router para la navegación
+- Zustand para la gestión del estado
+- Framer Motion para animaciones
+- Tailwind CSS para estilos
+- PWA para funcionalidad offline
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Estructura del proyecto 📁
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```
+src/
+  ├── components/       # Componentes reutilizables
+  ├── contexts/         # Contextos de React (RegistrationContext)
+  ├── data/             # Datos mock para desarrollo
+  ├── hooks/            # Custom hooks 
+  ├── pages/            # Páginas de la aplicación
+  ├── store/            # Stores de Zustand
+  └── types/            # Definiciones de TypeScript
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Comenzando 🏁
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+### Requisitos previos
 
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+- Node.js (versión recomendada: 18.x o superior)
+- npm o yarn
+
+### Instalación
+
+```bash
+# Clonar el repositorio
+git clone https://github.com/REliezer/project-cooky-app
+
+# Navegar al directorio del proyecto
+cd project-cooky-app
+
+# Instalar dependencias
+npm install
+# o
+yarn install
 ```
+
+### Scripts disponibles
+
+```bash
+# Modo desarrollo
+npm run dev
+
+# Compilar para producción
+npm run build
+
+# Vista previa de la build
+npm run preview
+
+# Lint
+npm run lint
+```
+
+## Características principales
+
+### Autenticación y registro
+- Sistema de registro y login
+- Selección de plan de suscripción
+- Proceso de pago
+
+### Recetas
+- Búsqueda y filtrado de recetas
+- Detalles de recetas con ingredientes y pasos
+- Selección de ingredientes disponibles
+- Recetas favoritas
+
+### Listas de compras
+- Creación y gestión de listas
+- Organización por categorías
+- Añadir productos a listas
+
+### Perfil de usuario
+- Edición de datos personales
+- Gestión de ingredientes favoritos
+- Gestión de ingredientes no deseados
+- Configuración de alergias y restricciones dietéticas
